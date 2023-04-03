@@ -12,12 +12,29 @@ class Drawer {
     this.ctx = this.canvas.getContext("2d")!;
   }
 
-  addNode(point: Point) {
+  addNode(point: Point): void {
     this.nodes.push(point);
     this.draw()
   }
 
-  draw() {
+  deleteNode(i: number): void {
+    this.nodes.splice(i, 1);
+    this.draw()
+  }
+
+  nodeAt(point: Point): number | undefined {
+    let ret : number | undefined = undefined;
+    for (let i = 0; i < this.nodes.length; i++) {
+      let dx = point.x - this.nodes[i].x;
+      let dy = point.y - this.nodes[i].y;
+      if (dx * dx + dy * dy < this.radius * this.radius) {
+        ret = i;
+      }
+    }
+    return ret;
+  }
+
+  draw(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     for (let i = 0; i < this.nodes.length; i++) {
       this.drawNode(this.nodes[i], i.toString());
@@ -29,7 +46,7 @@ class Drawer {
     }
   }
 
-  drawEdge(i: number, j: number) {
+  drawEdge(i: number, j: number): void {
     let [x1, y1, x2, y2]: number[] = [this.nodes[i].x, this.nodes[i].y, this.nodes[j].x, this.nodes[j].y];
     let angle = Math.atan2(y2 - y1, x2 - x1);
     let dx = this.radius * Math.cos(angle);
@@ -43,7 +60,7 @@ class Drawer {
     this.ctx.stroke();
   }
 
-  drawNode(p: Point, label: string) {
+  drawNode(p: Point, label: string): void {
     // circle
     this.ctx.beginPath();
     this.ctx.arc(p.x, p.y, this.radius, 0, 2 * Math.PI);
@@ -62,6 +79,12 @@ const drawer = new Drawer();
 drawer.canvas.addEventListener("click", (event) => {
   const x = event.clientX - drawer.canvas.offsetLeft;
   const y = event.clientY - drawer.canvas.offsetTop;
-  drawer.addNode({ x, y })
+  const i = drawer.nodeAt({x, y});
+  if (i === undefined) {
+    drawer.addNode({ x, y });
+  }
+  else {
+    drawer.deleteNode(i);
+  }
 });
 
