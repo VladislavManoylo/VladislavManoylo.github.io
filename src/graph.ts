@@ -1,4 +1,10 @@
 type Point = { x: number; y: number; };
+function overlap(p1: Point, p2: Point, r: number): Boolean {
+  const dx = p1.x - p2.x;
+  const dy = p1.y - p2.y;
+  return dx * dx + dy * dy < r * r;
+}
+
 class Drawer {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -14,7 +20,7 @@ class Drawer {
 
   addNode(point: Point): void {
     this.nodes.push(point);
-    this.draw()
+    this.draw(false)
   }
 
   deleteNode(i: number): void {
@@ -22,22 +28,23 @@ class Drawer {
     this.draw()
   }
 
+  /** returns the highest index node that overlaps with the point */
   nodeAt(point: Point): number | undefined {
-    let ret : number | undefined = undefined;
-    for (let i = 0; i < this.nodes.length; i++) {
-      let dx = point.x - this.nodes[i].x;
-      let dy = point.y - this.nodes[i].y;
-      if (dx * dx + dy * dy < this.radius * this.radius) {
-        ret = i;
+    for (let i = this.nodes.length - 1; i >= 0; i--) {
+      if (overlap(point, this.nodes[i], this.radius)) {
+        return i;
       }
     }
-    return ret;
+    return undefined;
   }
 
-  draw(): void {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  /** clears the screen and draws all nodes and edges */
+  draw(clear: Boolean = true): void {
+    if (clear) {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
     for (let i = 0; i < this.nodes.length; i++) {
-      this.drawNode(this.nodes[i], i.toString());
+      this.drawCircle(this.nodes[i], i.toString());
     }
     for (let i = 0; i < this.nodes.length; i++) {
       for (let j = i + 1; j < this.nodes.length; j++) {
@@ -46,6 +53,7 @@ class Drawer {
     }
   }
 
+  /** drawEdge(i,j) connects node i with node j*/
   drawEdge(i: number, j: number): void {
     let [x1, y1, x2, y2]: number[] = [this.nodes[i].x, this.nodes[i].y, this.nodes[j].x, this.nodes[j].y];
     let angle = Math.atan2(y2 - y1, x2 - x1);
@@ -60,10 +68,11 @@ class Drawer {
     this.ctx.stroke();
   }
 
-  drawNode(p: Point, label: string): void {
+  /** draws a labeled circle, centered at a point, with a label */
+  drawCircle(p: Point, label: string, r: number = this.radius): void {
     // circle
     this.ctx.beginPath();
-    this.ctx.arc(p.x, p.y, this.radius, 0, 2 * Math.PI);
+    this.ctx.arc(p.x, p.y, r, 0, 2 * Math.PI);
     this.ctx.fillStyle = "grey";
     this.ctx.fill();
     this.ctx.stroke();
@@ -79,7 +88,7 @@ const drawer = new Drawer();
 drawer.canvas.addEventListener("click", (event) => {
   const x = event.clientX - drawer.canvas.offsetLeft;
   const y = event.clientY - drawer.canvas.offsetTop;
-  const i = drawer.nodeAt({x, y});
+  const i = drawer.nodeAt({ x, y });
   if (i === undefined) {
     drawer.addNode({ x, y });
   }
