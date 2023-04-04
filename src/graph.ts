@@ -21,11 +21,14 @@ function angleBetween(p1: Point, p2: Point) {
 const radius = 50;
 const buttonRadius = 20;
 
+type Edge = { i: number, j: number };
+
 class Drawer {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   prev: Point = { x: 0, y: 0 };
   nodes: Point[] = [];
+  edges: Edge[] = []
   constructor() {
     this.canvas = document.getElementById("graph-canvas") as HTMLCanvasElement;
     this.canvas.width = 1000;
@@ -34,11 +37,20 @@ class Drawer {
   }
 
   addNode(point: Point): void {
+    let j = this.nodes.length;
+    for (let i = 0; i < this.nodes.length; i++) {
+      this.edges.push({ i, j })
+    }
     this.nodes.push(point);
   }
 
   deleteNode(i: number): void {
     this.nodes.splice(i, 1);
+    let removeI = (x: number) => { return x > i ? x - 1 : x };
+    this.edges = this.edges
+      .filter(e => e.i != i && e.j != i)
+      .map(e => { return { i: removeI(e.i), j: removeI(e.j) } });
+    // renumber points in edges
   }
 
   /** returns the highest index node that overlaps with the point */
@@ -59,25 +71,25 @@ class Drawer {
     for (let i = 0; i < this.nodes.length; i++) {
       this.drawCircle(this.nodes[i], i.toString());
     }
-    for (let i = 0; i < this.nodes.length; i++) {
-      for (let j = i + 1; j < this.nodes.length; j++) {
-        this.drawEdge(i, j);
-      }
+    for (const e of this.edges) {
+      this.drawEdge(e);
     }
   }
 
   /** drawEdge(i,j) connects node i with node j*/
-  drawEdge(i: number, j: number): void {
-    let offset = polarToPoint(angleBetween(this.nodes[i], this.nodes[j]), radius);
-    let p1 = addPoint(this.nodes[i], offset);
-    let p2 = subPoint(this.nodes[j], offset);
+  private drawEdge(e: Edge): void {
+    let p1 = this.nodes[e.i]
+    let p2 = this.nodes[e.j]
+    let offset = polarToPoint(angleBetween(p1, p2), radius);
+    p1 = addPoint(p1, offset);
+    p2 = subPoint(p2, offset);
     this.ctx.moveTo(p1.x, p1.y);
     this.ctx.lineTo(p2.x, p2.y);
     this.ctx.stroke();
   }
 
   /** draws a labeled circle, centered at a point, with a label */
-  drawCircle(p: Point, label: string, r: number = radius): void {
+  private drawCircle(p: Point, label: string, r: number = radius): void {
     // circle
     this.ctx.beginPath();
     this.ctx.arc(p.x, p.y, r, 0, 2 * Math.PI);
@@ -160,4 +172,5 @@ class Controller {
   }
 }
 
-new Controller();
+// setting variable makes inspection easier from browser
+let controller = new Controller();
