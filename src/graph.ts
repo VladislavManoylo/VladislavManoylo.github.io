@@ -151,6 +151,11 @@ class Drawer {
   }
 }
 
+enum ButtonChoice {
+  DeleteNode,
+  DeleteEdge,
+  AddEdge,
+}
 class Buttons {
   ctx: CanvasRenderingContext2D;
   buttons: Point[];
@@ -163,7 +168,7 @@ class Buttons {
       this.buttons.push(addPoint(pos, polarToPoint(a * Math.PI, radius)))
     }
   }
-  buttonAt(pos: Point): number | undefined {
+  buttonAt(pos: Point): ButtonChoice | undefined {
     for (let i = 0; i < this.buttons.length; i++) {
       if (overlap(pos, this.buttons[i], buttonRadius)) {
         return i;
@@ -184,6 +189,7 @@ class Buttons {
 
 class Controller {
   buttons: Buttons | undefined = undefined;
+  lastButton: ButtonChoice | undefined = undefined;
   drawer: Drawer = new Drawer();
   deletingEdge: Boolean = false;
   addingEdge: Boolean = false;
@@ -197,52 +203,47 @@ class Controller {
     });
   }
   click(pos: Point): void {
-    let i = this.buttons?.buttonAt(pos)
-    if (i !== undefined) {
+    let button = this.buttons?.buttonAt(pos)
+    if (button !== undefined) {
       console.log('a');
-      if (i == 0) { // delete node
-        this.drawer.deleteNode(this.buttons!.selected);
-        this.drawer.draw();
-        this.buttons = undefined;
-        this.deletingEdge = false;
-      }
-      else if (i == 1) { // delete edge
-        this.deletingEdge = true;
-        this.addingEdge = false;
-      }
-      else if (i == 2) { // add edge
-        this.addingEdge = true;
-        this.deletingEdge = false;
+      this.lastButton = button;
+      switch (button) {
+        case ButtonChoice.DeleteNode:
+          this.drawer.deleteNode(this.buttons!.selected);
+          this.drawer.draw();
+          this.buttons = undefined;
+          break;
       }
       return;
     }
-    i = this.drawer.nodeAt(pos);
+    let i = this.drawer.nodeAt(pos);
     if (i !== undefined) {
-      console.log('b')
-      if (this.deletingEdge) {
-        this.drawer.deleteEdge({ i, j: this.buttons!.selected });
-        this.buttons = undefined;
-        this.drawer.draw();
-      } else if (this.addingEdge) {
-        this.drawer.addEdge({ i, j: this.buttons!.selected });
-        this.buttons = undefined;
-        this.drawer.draw();
-      } else {
-        this.buttons = new Buttons(this.drawer.ctx, this.drawer.nodePositions[i], i);
-        this.drawer.draw();
-        this.buttons.draw();
+      console.log('b', ButtonChoice[this.lastButton])
+      switch (this.lastButton) {
+        case ButtonChoice.DeleteEdge:
+          this.drawer.deleteEdge({ i, j: this.buttons!.selected });
+          break;
+        case ButtonChoice.AddEdge:
+          this.drawer.addEdge({ i, j: this.buttons!.selected });
+          break;
+        case undefined:
+        default:
+          this.buttons = new Buttons(this.drawer.ctx, this.drawer.nodePositions[i], i);
+          this.lastButton = undefined;
+          break;
       }
-      this.deletingEdge = false;
-      this.addingEdge = false;
+      this.drawer.draw();
+      this.buttons?.draw();
       return;
     }
     else {
       console.log('c');
-      this.drawer.addNode(pos);
+      if (this.lastButton === undefined) {
+        this.drawer.addNode(pos);
+      }
       this.buttons = undefined;
       this.drawer.draw();
-      this.deletingEdge = false;
-      this.addingEdge = false;
+      this.lastButton = undefined;
       return;
     }
   }
