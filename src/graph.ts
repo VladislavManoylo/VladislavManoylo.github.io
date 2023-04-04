@@ -144,6 +144,7 @@ class Drawer {
 }
 
 enum ButtonChoice {
+  MoveVertex,
   DeleteVertex,
   DeleteEdge,
   AddEdge,
@@ -155,7 +156,7 @@ class Buttons {
   constructor(ctx: CanvasRenderingContext2D, pos: Point, selected: number) {
     this.ctx = ctx;
     this.selected = selected;
-    this.buttons = [];
+    this.buttons = [pos];
     for (const a of [-1 / 6, -1 / 2, -5 / 6]) {
       this.buttons.push(addPoint(pos, polarToPoint(a * Math.PI, radius)))
     }
@@ -227,8 +228,13 @@ class Controller {
     }
     else {
       console.log('c');
-      if (this.lastButton === undefined) {
-        this.drawer.addVertex(pos);
+      switch (this.lastButton) {
+        case ButtonChoice.MoveVertex:
+          this.drawer.vertexPositions[this.buttons!.selected] = pos;
+          break;
+        case undefined:
+          this.drawer.addVertex(pos);
+          break;
       }
       this.buttons = undefined;
       this.drawer.draw();
