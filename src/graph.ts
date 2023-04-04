@@ -189,8 +189,10 @@ class Controller {
   addingEdge: Boolean = false;
   constructor() {
     this.drawer.canvas.addEventListener("click", (event) => {
-      const x = event.clientX - this.drawer.canvas.offsetLeft;
-      const y = event.clientY - this.drawer.canvas.offsetTop;
+      const scrollX = window.scrollX || window.pageXOffset;
+      const scrollY = window.scrollY || window.pageYOffset;
+      const x = event.clientX - this.drawer.canvas.offsetLeft + scrollX;
+      const y = event.clientY - this.drawer.canvas.offsetTop + scrollY;
       this.click({ x, y });
     });
   }
