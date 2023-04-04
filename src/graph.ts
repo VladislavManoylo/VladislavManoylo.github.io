@@ -21,7 +21,8 @@ function angleBetween(p1: Point, p2: Point) {
 const radius = 50;
 const buttonRadius = 20;
 
-type Edge = { i: number, j: number };
+type Vertex = number;
+type Edge = { i: Vertex, j: Vertex };
 function swap(edge: Edge): Edge {
   return { i: edge.j, j: edge.i };
 }
@@ -30,18 +31,18 @@ function equal(e1: Edge, e2: Edge) {
 }
 
 class Graph {
-  nodes: number = 0;
+  vertices: number = 0;
   edges: Edge[] = [];
 
-  addNode(): void {
-    for (let i = 0; i < this.nodes; i++) {
-      this.edges.push({ i, j: this.nodes });
+  addVertex(): void {
+    for (let i = 0; i < this.vertices; i++) {
+      this.edges.push({ i, j: this.vertices });
     }
-    this.nodes++;
+    this.vertices++;
   }
 
-  deleteNode(i: number): void {
-    this.nodes--;
+  deleteVertex(i: number): void {
+    this.vertices--;
     let removeI = (x: number) => { return x > i ? x - 1 : x };
     this.edges = this.edges
       .filter(e => e.i != i && e.j != i)
@@ -70,13 +71,12 @@ class Graph {
     let i2 = this.edges.findIndex(e => equal(e, swap(edge)));
     return i2 >= 0 ? i2 : undefined;
   }
-
 }
 
 class Drawer {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  nodePositions: Point[] = [];
+  vertexPositions: Point[] = [];
   private graph: Graph = new Graph();
   constructor() {
     this.canvas = document.getElementById("graph-canvas") as HTMLCanvasElement;
@@ -85,40 +85,40 @@ class Drawer {
     this.ctx = this.canvas.getContext("2d")!;
   }
 
-  addNode(point: Point): void {
-    this.graph.addNode();
-    this.nodePositions.push(point);
+  addVertex(point: Point): void {
+    this.graph.addVertex();
+    this.vertexPositions.push(point);
   }
-  deleteNode(i: number): void {
-    this.graph.deleteNode(i);
-    this.nodePositions.splice(i, 1);
+  deleteVertex(i: number): void {
+    this.graph.deleteVertex(i);
+    this.vertexPositions.splice(i, 1);
   }
   deleteEdge(edge: Edge): void { this.graph.deleteEdge(edge); }
   addEdge(edge: Edge): void { this.graph.addEdge(edge); }
 
-  /** returns the highest index node that overlaps with the point */
-  nodeAt(point: Point): number | undefined {
-    let i = this.nodePositions.findIndex(it => overlap(point, it, radius));
+  /** returns the highest index vertex that overlaps with the point */
+  vertexAt(point: Point): number | undefined {
+    let i = this.vertexPositions.findIndex(it => overlap(point, it, radius));
     return i >= 0 ? i : undefined;
   }
 
-  /** clears the screen and draws all nodes and edges */
+  /** clears the screen and draws all vertices and edges */
   draw(clear: Boolean = true): void {
     if (clear) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    for (let i = 0; i < this.nodePositions.length; i++) {
-      this.drawCircle(this.nodePositions[i], i.toString());
+    for (let i = 0; i < this.vertexPositions.length; i++) {
+      this.drawCircle(this.vertexPositions[i], i.toString());
     }
     for (const e of this.graph.edges) {
       this.drawEdge(e);
     }
   }
 
-  /** drawEdge(i,j) connects node i with node j*/
+  /** drawEdge(i,j) connects vertex i with vertex j*/
   private drawEdge(e: Edge): void {
-    let p1 = this.nodePositions[e.i]
-    let p2 = this.nodePositions[e.j]
+    let p1 = this.vertexPositions[e.i]
+    let p2 = this.vertexPositions[e.j]
     let offset = polarToPoint(angleBetween(p1, p2), radius);
     p1 = addPoint(p1, offset);
     p2 = subPoint(p2, offset);
@@ -144,14 +144,14 @@ class Drawer {
 }
 
 enum ButtonChoice {
-  DeleteNode,
+  DeleteVertex,
   DeleteEdge,
   AddEdge,
 }
 class Buttons {
   ctx: CanvasRenderingContext2D;
   buttons: Point[];
-  selected: number; // the selected node in the graph
+  selected: number; // the selected vertex in the graph
   constructor(ctx: CanvasRenderingContext2D, pos: Point, selected: number) {
     this.ctx = ctx;
     this.selected = selected;
@@ -196,17 +196,18 @@ class Controller {
       console.log('a');
       this.lastButton = button;
       switch (button) {
-        case ButtonChoice.DeleteNode:
-          this.drawer.deleteNode(this.buttons!.selected);
+        case ButtonChoice.DeleteVertex:
+          this.drawer.deleteVertex(this.buttons!.selected);
           this.drawer.draw();
           this.buttons = undefined;
           break;
       }
       return;
     }
-    let i = this.drawer.nodeAt(pos);
+    let i = this.drawer.vertexAt(pos);
     if (i !== undefined) {
-      console.log('b', ButtonChoice[this.lastButton])
+      console.log('b');
+      // console.log('b', ButtonChoice[this.lastButton])
       switch (this.lastButton) {
         case ButtonChoice.DeleteEdge:
           this.drawer.deleteEdge({ i, j: this.buttons!.selected });
@@ -216,7 +217,7 @@ class Controller {
           break;
         case undefined:
         default:
-          this.buttons = new Buttons(this.drawer.ctx, this.drawer.nodePositions[i], i);
+          this.buttons = new Buttons(this.drawer.ctx, this.drawer.vertexPositions[i], i);
           this.lastButton = undefined;
           break;
       }
@@ -227,7 +228,7 @@ class Controller {
     else {
       console.log('c');
       if (this.lastButton === undefined) {
-        this.drawer.addNode(pos);
+        this.drawer.addVertex(pos);
       }
       this.buttons = undefined;
       this.drawer.draw();
