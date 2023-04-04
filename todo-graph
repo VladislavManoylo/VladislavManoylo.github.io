@@ -1,5 +1,4 @@
 moving nodes
-adding edges
 auto space
 more efficient rendering (don't redraw unchanged stuff)
 icons for buttons

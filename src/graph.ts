@@ -61,14 +61,29 @@ class Drawer {
 
   deleteEdge(edge: Edge): void {
     // have to check both directions for undirected graph
+    let i = this.findEdge(edge);
+    if (i !== undefined) {
+      this.edges.splice(i, 1);
+    }
+  }
+
+  addEdge(edge: Edge): void {
+    if (this.findEdge(edge) === undefined) {
+      this.edges.push(edge);
+    }
+  }
+
+  private findEdge(edge: Edge): number | undefined {
+    // currently checking both directions for undirected graph
     let i1 = this.edges.findIndex(e => equal(e, edge));
-    let i2 = this.edges.findIndex(e => equal(e, swap(edge)));
     if (i1 >= 0) {
-      this.edges.splice(i1, 1);
+      return i1;
     }
+    let i2 = this.edges.findIndex(e => equal(e, swap(edge)));
     if (i2 >= 0) {
-      this.edges.splice(i2, 1);
+      return i2;
     }
+    return undefined;
   }
 
   /** returns the highest index node that overlaps with the point */
@@ -157,6 +172,7 @@ class Controller {
   buttons: Buttons | undefined = undefined;
   drawer: Drawer = new Drawer();
   deletingEdge: Boolean = false;
+  addingEdge: Boolean = false;
   constructor() {
     this.drawer.canvas.addEventListener("click", (event) => {
       const x = event.clientX - this.drawer.canvas.offsetLeft;
@@ -176,6 +192,11 @@ class Controller {
       }
       else if (i == 1) { // delete edge
         this.deletingEdge = true;
+        this.addingEdge = false;
+      }
+      else if (i == 2) { // add edge
+        this.addingEdge = true;
+        this.deletingEdge = false;
       }
       return;
     }
@@ -186,12 +207,17 @@ class Controller {
         this.drawer.deleteEdge({ i, j: this.buttons!.selected });
         this.buttons = undefined;
         this.drawer.draw();
+      } else if (this.addingEdge) {
+        this.drawer.addEdge({ i, j: this.buttons!.selected });
+        this.buttons = undefined;
+        this.drawer.draw();
       } else {
         this.buttons = new Buttons(this.drawer.ctx, this.drawer.nodes[i], i);
         this.drawer.draw();
         this.buttons.draw();
       }
       this.deletingEdge = false;
+      this.addingEdge = false;
       return;
     }
     else {
@@ -200,6 +226,7 @@ class Controller {
       this.buttons = undefined;
       this.drawer.draw();
       this.deletingEdge = false;
+      this.addingEdge = false;
       return;
     }
   }
