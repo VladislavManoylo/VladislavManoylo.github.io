@@ -29,34 +29,29 @@ function equal(e1: Edge, e2: Edge) {
   return e1.i == e2.i && e1.j == e2.j;
 }
 
-class Drawer {
-  canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
-  prev: Point = { x: 0, y: 0 };
-  nodes: Point[] = [];
-  edges: Edge[] = []
-  constructor() {
-    this.canvas = document.getElementById("graph-canvas") as HTMLCanvasElement;
-    this.canvas.width = 1000;
-    this.canvas.height = 1000;
-    this.ctx = this.canvas.getContext("2d")!;
-  }
+class Graph {
+  nodes: number = 0;
+  edges: Edge[] = [];
 
-  addNode(point: Point): void {
-    let j = this.nodes.length;
-    for (let i = 0; i < this.nodes.length; i++) {
-      this.edges.push({ i, j })
+  addNode(): void {
+    for (let i = 0; i < this.nodes; i++) {
+      this.edges.push({ i, j: this.nodes });
     }
-    this.nodes.push(point);
+    this.nodes++;
   }
 
   deleteNode(i: number): void {
-    this.nodes.splice(i, 1);
+    this.nodes--;
     let removeI = (x: number) => { return x > i ? x - 1 : x };
     this.edges = this.edges
       .filter(e => e.i != i && e.j != i)
       .map(e => { return { i: removeI(e.i), j: removeI(e.j) } });
-    // renumber points in edges
+  }
+
+  addEdge(edge: Edge): void {
+    if (this.findEdge(edge) === undefined) {
+      this.edges.push(edge);
+    }
   }
 
   deleteEdge(edge: Edge): void {
@@ -64,12 +59,6 @@ class Drawer {
     let i = this.findEdge(edge);
     if (i !== undefined) {
       this.edges.splice(i, 1);
-    }
-  }
-
-  addEdge(edge: Edge): void {
-    if (this.findEdge(edge) === undefined) {
-      this.edges.push(edge);
     }
   }
 
@@ -86,10 +75,35 @@ class Drawer {
     return undefined;
   }
 
+}
+
+class Drawer {
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  nodePositions: Point[] = [];
+  private graph: Graph = new Graph();
+  constructor() {
+    this.canvas = document.getElementById("graph-canvas") as HTMLCanvasElement;
+    this.canvas.width = 1000;
+    this.canvas.height = 1000;
+    this.ctx = this.canvas.getContext("2d")!;
+  }
+
+  addNode(point: Point): void {
+    this.graph.addNode();
+    this.nodePositions.push(point);
+  }
+  deleteNode(i: number): void {
+    this.graph.deleteNode(i);
+    this.nodePositions.splice(i, 1);
+  }
+  deleteEdge(edge: Edge): void { this.graph.deleteEdge(edge); }
+  addEdge(edge: Edge): void { this.graph.addEdge(edge); }
+
   /** returns the highest index node that overlaps with the point */
   nodeAt(point: Point): number | undefined {
-    for (let i = this.nodes.length - 1; i >= 0; i--) {
-      if (overlap(point, this.nodes[i], radius)) {
+    for (let i = this.nodePositions.length - 1; i >= 0; i--) {
+      if (overlap(point, this.nodePositions[i], radius)) {
         return i;
       }
     }
@@ -101,18 +115,18 @@ class Drawer {
     if (clear) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    for (let i = 0; i < this.nodes.length; i++) {
-      this.drawCircle(this.nodes[i], i.toString());
+    for (let i = 0; i < this.nodePositions.length; i++) {
+      this.drawCircle(this.nodePositions[i], i.toString());
     }
-    for (const e of this.edges) {
+    for (const e of this.graph.edges) {
       this.drawEdge(e);
     }
   }
 
   /** drawEdge(i,j) connects node i with node j*/
   private drawEdge(e: Edge): void {
-    let p1 = this.nodes[e.i]
-    let p2 = this.nodes[e.j]
+    let p1 = this.nodePositions[e.i]
+    let p2 = this.nodePositions[e.j]
     let offset = polarToPoint(angleBetween(p1, p2), radius);
     p1 = addPoint(p1, offset);
     p2 = subPoint(p2, offset);
@@ -212,7 +226,7 @@ class Controller {
         this.buttons = undefined;
         this.drawer.draw();
       } else {
-        this.buttons = new Buttons(this.drawer.ctx, this.drawer.nodes[i], i);
+        this.buttons = new Buttons(this.drawer.ctx, this.drawer.nodePositions[i], i);
         this.drawer.draw();
         this.buttons.draw();
       }
