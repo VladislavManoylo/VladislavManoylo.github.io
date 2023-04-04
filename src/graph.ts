@@ -228,13 +228,10 @@ class Controller {
     }
     else {
       console.log('c');
-      switch (this.lastButton) {
-        case ButtonChoice.MoveVertex:
+      if (this.lastButton == ButtonChoice.MoveVertex) {
           this.drawer.vertexPositions[this.buttons!.selected] = pos;
-          break;
-        case undefined:
-          this.drawer.addVertex(pos);
-          break;
+      } else if (this.buttons == undefined) {
+        this.drawer.addVertex(pos);
       }
       this.buttons = undefined;
       this.drawer.draw();
