@@ -13,6 +13,10 @@ function addPoint(p1: Point, p2: Point) {
 function subPoint(p1: Point, p2: Point) {
   return { x: p1.x - p2.x, y: p1.y - p2.y };
 }
+function angleBetween(p1: Point, p2: Point) {
+  let d = subPoint(p2, p1);
+  return Math.atan2(d.y, d.x);
+}
 
 const radius = 50;
 const buttonRadius = 20;
@@ -64,9 +68,7 @@ class Drawer {
 
   /** drawEdge(i,j) connects node i with node j*/
   drawEdge(i: number, j: number): void {
-    let [x1, y1, x2, y2]: number[] = [this.nodes[i].x, this.nodes[i].y, this.nodes[j].x, this.nodes[j].y];
-    let angle = Math.atan2(y2 - y1, x2 - x1);
-    let offset = polarToPoint(angle, radius);
+    let offset = polarToPoint(angleBetween(this.nodes[i], this.nodes[j]), radius);
     let p1 = addPoint(this.nodes[i], offset);
     let p2 = subPoint(this.nodes[j], offset);
     this.ctx.moveTo(p1.x, p1.y);
