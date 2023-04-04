@@ -55,7 +55,6 @@ class Graph {
   }
 
   deleteEdge(edge: Edge): void {
-    // have to check both directions for undirected graph
     let i = this.findEdge(edge);
     if (i !== undefined) {
       this.edges.splice(i, 1);
@@ -69,10 +68,7 @@ class Graph {
       return i1;
     }
     let i2 = this.edges.findIndex(e => equal(e, swap(edge)));
-    if (i2 >= 0) {
-      return i2;
-    }
-    return undefined;
+    return i2 >= 0 ? i2 : undefined;
   }
 
 }
@@ -102,12 +98,8 @@ class Drawer {
 
   /** returns the highest index node that overlaps with the point */
   nodeAt(point: Point): number | undefined {
-    for (let i = this.nodePositions.length - 1; i >= 0; i--) {
-      if (overlap(point, this.nodePositions[i], radius)) {
-        return i;
-      }
-    }
-    return undefined;
+    let i = this.nodePositions.findIndex(it => overlap(point, it, radius));
+    return i >= 0 ? i : undefined;
   }
 
   /** clears the screen and draws all nodes and edges */
@@ -169,12 +161,8 @@ class Buttons {
     }
   }
   buttonAt(pos: Point): ButtonChoice | undefined {
-    for (let i = 0; i < this.buttons.length; i++) {
-      if (overlap(pos, this.buttons[i], buttonRadius)) {
-        return i;
-      }
-    }
-    return undefined;
+    let i = this.buttons.findIndex(it => overlap(it, pos, buttonRadius));
+    return i >= 0 ? i : undefined;
   }
   draw(): void {
     for (const it of this.buttons) {
