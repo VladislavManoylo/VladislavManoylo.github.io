@@ -41,9 +41,11 @@ export class Graph {
     this.edges = [];
   }
 
-  addVertex(): void {
-    for (let i = 0; i < this.vertices; i++) {
-      this.edges.push({ i, j: this.vertices });
+  addVertex(connected: Boolean = false): void {
+    if (connected) {
+      for (let i = 0; i < this.vertices; i++) {
+        this.edges.push({ i, j: this.vertices });
+      }
     }
     this.vertices++;
   }
@@ -86,20 +88,22 @@ export class Drawer {
   vertexPositions: Point[] = [];
   radius: number;
   private graph: Graph = new Graph();
-  constructor(radius: number) {
+  private labeled: Boolean;
+  constructor(radius: number, labeled: Boolean = false) {
     this.canvas = document.getElementById("graph-canvas") as HTMLCanvasElement;
     this.canvas.width = 1000;
     this.canvas.height = 1000;
     this.ctx = this.canvas.getContext("2d")!;
     this.radius = radius;
+    this.labeled = labeled;
   }
   clear(): void {
     this.vertexPositions = [];
     this.graph.clear();
   }
 
-  addVertex(point: Point): void {
-    this.graph.addVertex();
+  addVertex(point: Point, connected: Boolean = false): void {
+    this.graph.addVertex(connected);
     this.vertexPositions.push(point);
   }
   deleteVertex(i: number): void {
@@ -149,11 +153,11 @@ export class Drawer {
     this.ctx.fill();
     this.ctx.stroke();
     // label
-    // if (label !== "") {
-    //   this.ctx.font = "40px Arial";
-    //   this.ctx.fillStyle = "white";
-    //   this.ctx.textAlign = "center";
-    //   this.ctx.fillText(label, p.x, p.y);
-    // }
+    if (this.labeled &&label !== "") {
+      this.ctx.font = "40px Arial";
+      this.ctx.fillStyle = "white";
+      this.ctx.textAlign = "center";
+      this.ctx.fillText(label, p.x, p.y);
+    }
   }
 }
