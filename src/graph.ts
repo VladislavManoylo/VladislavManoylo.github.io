@@ -1,28 +1,4 @@
-export type Point = { x: number; y: number; };
-export function overlap(p1: Point, p2: Point, r: number): Boolean {
-  const dx = p1.x - p2.x;
-  const dy = p1.y - p2.y;
-  return dx * dx + dy * dy < r * r;
-}
-export function polarToPoint(a: number, r: number) {
-  return { x: r * Math.cos(a), y: r * Math.sin(a) };
-}
-export function addPoint(p1: Point, p2: Point) {
-  return { x: p1.x + p2.x, y: p1.y + p2.y };
-}
-export function subPoint(p1: Point, p2: Point) {
-  return { x: p1.x - p2.x, y: p1.y - p2.y };
-}
-export function angleBetween(p1: Point, p2: Point) {
-  let d = subPoint(p2, p1);
-  return Math.atan2(d.y, d.x);
-}
-export function distPoint(p1: Point, p2: Point): number {
-  let x = p1.x - p2.x;
-  let y = p1.y - p2.y;
-  return x * x + y * y;
-}
-
+import * as v2 from "./v2.js"
 type Vertex = number;
 type Edge = { i: Vertex, j: Vertex };
 function swap(edge: Edge): Edge {
@@ -85,7 +61,7 @@ export class Graph {
 export class Drawer {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  vertexPositions: Point[] = [];
+  vertexPositions: v2.v2[] = [];
   radius: number;
   private graph: Graph = new Graph();
   private labeled: Boolean;
@@ -102,7 +78,7 @@ export class Drawer {
     this.graph.clear();
   }
 
-  addVertex(point: Point, connected: Boolean = false): void {
+  addVertex(point: v2.v2, connected: Boolean = false): void {
     this.graph.addVertex(connected);
     this.vertexPositions.push(point);
   }
@@ -114,8 +90,8 @@ export class Drawer {
   addEdge(edge: Edge): void { this.graph.addEdge(edge); }
 
   /** returns the highest index vertex that overlaps with the point */
-  vertexAt(point: Point): number | undefined {
-    let i = this.vertexPositions.findIndex(it => overlap(point, it, this.radius));
+  vertexAt(point: v2.v2): number | undefined {
+    let i = this.vertexPositions.findIndex(it => v2.overlap(point, it, this.radius));
     return i >= 0 ? i : undefined;
   }
 
@@ -144,7 +120,7 @@ export class Drawer {
   }
 
   /** draws a labeled circle, centered at a point, with a label */
-  drawCircle(p: Point, label: string, r: number = this.radius, color = "grey"): void {
+  drawCircle(p: v2.v2, label: string, r: number = this.radius, color = "grey"): void {
     // circle
     this.ctx.resetTransform()
     this.ctx.beginPath();
@@ -153,7 +129,7 @@ export class Drawer {
     this.ctx.fill();
     this.ctx.stroke();
     // label
-    if (this.labeled &&label !== "") {
+    if (this.labeled && label !== "") {
       this.ctx.font = "40px Arial";
       this.ctx.fillStyle = "white";
       this.ctx.textAlign = "center";

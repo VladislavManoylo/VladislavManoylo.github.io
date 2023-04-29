@@ -1,4 +1,5 @@
-import { Drawer, addPoint, polarToPoint, overlap } from "./graph.js";
+import * as v2 from "./v2.js";
+import { Drawer } from "./graph.js";
 var ButtonChoice;
 (function (ButtonChoice) {
     ButtonChoice[ButtonChoice["MoveVertex"] = 0] = "MoveVertex";
@@ -13,11 +14,11 @@ class Buttons {
         this.selected = selected;
         this.buttons = [pos];
         for (const a of [-1 / 6, -1 / 2, -5 / 6]) {
-            this.buttons.push(addPoint(pos, polarToPoint(a * Math.PI, this.radius)));
+            this.buttons.push(v2.addPoint(pos, v2.polarToPoint(a * Math.PI, this.radius)));
         }
     }
     buttonAt(pos) {
-        let i = this.buttons.findIndex(it => overlap(it, pos, this.radius));
+        let i = this.buttons.findIndex(it => v2.overlap(it, pos, this.radius));
         return i >= 0 ? i : undefined;
     }
     draw() {

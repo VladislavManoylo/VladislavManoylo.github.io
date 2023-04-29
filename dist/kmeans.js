@@ -1,4 +1,5 @@
-import { Drawer, distPoint, addPoint } from "./graph.js";
+import * as v2 from "./v2.js";
+import { Drawer } from "./graph.js";
 const radius = 10;
 class KMeans {
     constructor() {
@@ -23,7 +24,7 @@ class KMeans {
                 let bj = 0;
                 let bd = null;
                 for (let j = 0; j < this.k; j++) {
-                    let d = distPoint(p, this.centroids[j]);
+                    let d = v2.distPoint(p, this.centroids[j]);
                     if (bd === null || d < bd) {
                         bd = d;
                         bj = j;
@@ -40,7 +41,7 @@ class KMeans {
                 for (let j = 0; j < this.centroidAssignment.length; j++) {
                     if (this.centroidAssignment[j] == i) {
                         c++;
-                        p = addPoint(p, this.points[j]);
+                        p = v2.addPoint(p, this.points[j]);
                     }
                 }
                 if (c != 0) {

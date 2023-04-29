@@ -1,4 +1,5 @@
-import { Point, Drawer, addPoint, polarToPoint, overlap } from "./graph.js"
+import * as v2 from "./v2.js"
+import { Drawer } from "./graph.js"
 
 enum ButtonChoice {
   MoveVertex,
@@ -9,18 +10,18 @@ enum ButtonChoice {
 class Buttons {
   radius: number = 20;
   ctx: CanvasRenderingContext2D;
-  buttons: Point[];
+  buttons: v2.v2[];
   selected: number; // the selected vertex in the graph
-  constructor(ctx: CanvasRenderingContext2D, pos: Point, selected: number) {
+  constructor(ctx: CanvasRenderingContext2D, pos: v2.v2, selected: number) {
     this.ctx = ctx;
     this.selected = selected;
     this.buttons = [pos];
     for (const a of [-1 / 6, -1 / 2, -5 / 6]) {
-      this.buttons.push(addPoint(pos, polarToPoint(a * Math.PI, this.radius)))
+      this.buttons.push(v2.addPoint(pos, v2.polarToPoint(a * Math.PI, this.radius)))
     }
   }
-  buttonAt(pos: Point): ButtonChoice | undefined {
-    let i = this.buttons.findIndex(it => overlap(it, pos, this.radius));
+  buttonAt(pos: v2.v2): ButtonChoice | undefined {
+    let i = this.buttons.findIndex(it => v2.overlap(it, pos, this.radius));
     return i >= 0 ? i : undefined;
   }
   draw(): void {
@@ -49,7 +50,7 @@ class Controller {
       this.click({ x, y });
     });
   }
-  click(pos: Point): void {
+  click(pos: v2.v2): void {
     let button = this.buttons?.buttonAt(pos)
     if (button !== undefined) {
       console.log('a');
