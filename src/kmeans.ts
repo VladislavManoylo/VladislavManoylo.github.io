@@ -1,5 +1,5 @@
 import * as v2 from "./v2.js"
-import { Drawer} from "./graph.js"
+import { Drawer } from "./graph.js"
 
 const radius = 10;
 
@@ -90,10 +90,7 @@ class KMeans {
     }
     let lp = this.centroidAssignment.length;
     for (let i = 0; i < lp; i++) {
-      this.drawer.addEdge({
-        i: this.centroidAssignment[i],
-        j: this.k + i
-      })
+      this.drawer.addEdge(this.centroidAssignment[i], this.k + i)
     }
     this.drawer.draw();
     for (let p of this.centroids) {

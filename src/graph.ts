@@ -1,16 +1,9 @@
 import * as v2 from "./v2.js"
 type Vertex = number;
-type Edge = { i: Vertex, j: Vertex };
-function swap(edge: Edge): Edge {
-  return { i: edge.j, j: edge.i };
-}
-function equal(e1: Edge, e2: Edge) {
-  return e1.i == e2.i && e1.j == e2.j;
-}
 
 export class Graph {
   vertices: number = 0;
-  edges: Edge[] = [];
+  edges: Vertex[][] = [];
 
   clear(): void {
     this.vertices = 0;
@@ -18,43 +11,44 @@ export class Graph {
   }
 
   addVertex(connected: Boolean = false): void {
+    this.vertices++;
+    this.edges.push([]);
     if (connected) {
-      for (let i = 0; i < this.vertices; i++) {
-        this.edges.push({ i, j: this.vertices });
+      let j = this.vertices - 1;
+      for (let i = 0; i < j; i++) {
+        this.edges[i].push(j)
+      }
+      for (let i = 0; i < j; i++) {
+        this.edges[j][i] = i;
       }
     }
-    this.vertices++;
   }
 
-  deleteVertex(i: number): void {
+  deleteVertex(n: number): void {
     this.vertices--;
-    let removeI = (x: number) => { return x > i ? x - 1 : x };
-    this.edges = this.edges
-      .filter(e => e.i != i && e.j != i)
-      .map(e => { return { i: removeI(e.i), j: removeI(e.j) } });
-  }
-
-  addEdge(edge: Edge): void {
-    if (this.findEdge(edge) === undefined) {
-      this.edges.push(edge);
+    this.edges.splice(n, 1);
+    for (let i = 0; i < this.vertices; i++) {
+      this.edges[i] = this.edges[i].filter(i => i == n);
     }
   }
 
-  deleteEdge(edge: Edge): void {
-    let i = this.findEdge(edge);
-    if (i !== undefined) {
-      this.edges.splice(i, 1);
+  addEdge(i: number, j: number): void {
+    if (this.edges[i].indexOf(j) !== -1) {
+      this.edges[i].push(j);
+      this.edges[j].push(i);
     }
   }
 
-  private findEdge(edge: Edge): number | undefined {
-    // currently checking both directions for undirected graph
-    let i1 = this.edges.findIndex(e => equal(e, edge));
-    if (i1 >= 0) {
-      return i1;
+  private deleteEdgeIJ(i: number, j: number): void {
+    let ei = this.edges[i].indexOf(j);
+    if (ei !== -1) {
+      this.edges[i].splice(ei, 1);
     }
-    let i2 = this.edges.findIndex(e => equal(e, swap(edge)));
-    return i2 >= 0 ? i2 : undefined;
+  }
+
+  deleteEdge(i: number, j: number): void {
+    this.deleteEdgeIJ(i, j);
+    this.deleteEdgeIJ(j, i);
   }
 }
 
@@ -86,8 +80,8 @@ export class Drawer {
     this.graph.deleteVertex(i);
     this.vertexPositions.splice(i, 1);
   }
-  deleteEdge(edge: Edge): void { this.graph.deleteEdge(edge); }
-  addEdge(edge: Edge): void { this.graph.addEdge(edge); }
+  deleteEdge(i: number, j: number): void { this.graph.deleteEdge(i, j); }
+  addEdge(i: number, j: number): void { this.graph.addEdge(i, j); }
 
   /** returns the highest index vertex that overlaps with the point */
   vertexAt(point: v2.v2): number | undefined {
@@ -100,8 +94,10 @@ export class Drawer {
     if (clear) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    for (const e of this.graph.edges) {
-      this.drawEdge(e);
+    for (let i = 0; i < this.graph.vertices; i++) {
+      for (let j of this.graph.edges[i]) {
+        this.drawEdge(i, j);
+      }
     }
     for (let i = 0; i < this.vertexPositions.length; i++) {
       this.drawCircle(this.vertexPositions[i], i.toString());
@@ -109,11 +105,10 @@ export class Drawer {
   }
 
   /** drawEdge(i,j) connects vertex i with vertex j*/
-  private drawEdge(e: Edge): void {
+  private drawEdge(i: number, j: number): void {
     // this.ctx.reset();
-    this.ctx.resetTransform()
-    let p1 = this.vertexPositions[e.i]
-    let p2 = this.vertexPositions[e.j]
+    let p1 = this.vertexPositions[i]
+    let p2 = this.vertexPositions[j]
     this.ctx.moveTo(p1.x, p1.y);
     this.ctx.lineTo(p2.x, p2.y);
     this.ctx.stroke();

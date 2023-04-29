@@ -67,10 +67,10 @@ class Controller {
             // console.log('b', ButtonChoice[this.lastButton])
             switch (this.lastButton) {
                 case ButtonChoice.DeleteEdge:
-                    this.drawer.deleteEdge({ i, j: this.buttons.selected });
+                    this.drawer.deleteEdge(i, this.buttons.selected);
                     break;
                 case ButtonChoice.AddEdge:
-                    this.drawer.addEdge({ i, j: this.buttons.selected });
+                    this.drawer.addEdge(i, this.buttons.selected);
                     break;
                 case undefined:
                 default:
