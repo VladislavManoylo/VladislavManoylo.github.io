@@ -8,23 +8,22 @@ class KMeans {
   points: v2.v2[] = [];
   centroidAssignment: number[] = [];
   drawer: Drawer = new Drawer(radius);
-  k: number = 3;
   constructor() {
+    this.resetCentroids(3);
     document.getElementById("k")?.addEventListener("input", (event) => {
       let k = +(event.target as HTMLInputElement).value;
       if (Number.isFinite(k)) {
-        this.k = k;
-        this.reset();
+        this.resetCentroids(k);
       }
     });
     // document.getElementById("reset")?.addEventListener("click", this.reset);
-    document.getElementById("reset")?.addEventListener("click", () => { this.reset() });
+    document.getElementById("reset")?.addEventListener("click", () => { this.resetCentroids(this.centroids.length) });
     document.getElementById("assign")?.addEventListener("click", () => {
       this.centroidAssignment = [];
       for (let p of this.points) {
         let bj = 0;
         let bd = null;
-        for (let j = 0; j < this.k; j++) {
+        for (let j = 0; j < this.centroids.length; j++) {
           let d = v2.distPoint(p, this.centroids[j]);
           if (bd === null || d < bd) {
             bd = d;
@@ -60,16 +59,15 @@ class KMeans {
       this.draw();
     });
   }
-  reset(): void {
+  resetCentroids(k: number): void {
     this.centroids = [];
     this.centroidAssignment = [];
-    for (let i = 0; i < this.k; i++) {
+    for (let i = 0; i < k; i++) {
       let x = Math.random() * this.drawer.canvas.width;
       let y = Math.random() * this.drawer.canvas.height;
       this.centroids.push({ x, y });
     }
     this.draw();
-    // this.draw();
   };
   draw(): void {
     this.drawer.clear();
@@ -80,8 +78,9 @@ class KMeans {
       this.drawer.addVertex(p);
     }
     let lp = this.centroidAssignment.length;
+    let k = this.centroids.length;
     for (let i = 0; i < lp; i++) {
-      this.drawer.addEdge(this.centroidAssignment[i], this.k + i)
+      this.drawer.addEdge(this.centroidAssignment[i], k + i)
     }
     this.drawer.draw();
     for (let p of this.centroids) {
@@ -89,8 +88,6 @@ class KMeans {
     }
   }
 }
-
-
 
 // setting variable makes inspection easier from browser
 // let controller = new Controller();

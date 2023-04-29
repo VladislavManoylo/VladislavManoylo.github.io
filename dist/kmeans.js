@@ -8,22 +8,21 @@ class KMeans {
         this.points = [];
         this.centroidAssignment = [];
         this.drawer = new Drawer(radius);
-        this.k = 3;
+        this.resetCentroids(3);
         (_a = document.getElementById("k")) === null || _a === void 0 ? void 0 : _a.addEventListener("input", (event) => {
             let k = +event.target.value;
             if (Number.isFinite(k)) {
-                this.k = k;
-                this.reset();
+                this.resetCentroids(k);
             }
         });
         // document.getElementById("reset")?.addEventListener("click", this.reset);
-        (_b = document.getElementById("reset")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => { this.reset(); });
+        (_b = document.getElementById("reset")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => { this.resetCentroids(this.centroids.length); });
         (_c = document.getElementById("assign")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => {
             this.centroidAssignment = [];
             for (let p of this.points) {
                 let bj = 0;
                 let bd = null;
-                for (let j = 0; j < this.k; j++) {
+                for (let j = 0; j < this.centroids.length; j++) {
                     let d = v2.distPoint(p, this.centroids[j]);
                     if (bd === null || d < bd) {
                         bd = d;
@@ -59,16 +58,15 @@ class KMeans {
             this.draw();
         });
     }
-    reset() {
+    resetCentroids(k) {
         this.centroids = [];
         this.centroidAssignment = [];
-        for (let i = 0; i < this.k; i++) {
+        for (let i = 0; i < k; i++) {
             let x = Math.random() * this.drawer.canvas.width;
             let y = Math.random() * this.drawer.canvas.height;
             this.centroids.push({ x, y });
         }
         this.draw();
-        // this.draw();
     }
     ;
     draw() {
@@ -80,8 +78,9 @@ class KMeans {
             this.drawer.addVertex(p);
         }
         let lp = this.centroidAssignment.length;
+        let k = this.centroids.length;
         for (let i = 0; i < lp; i++) {
-            this.drawer.addEdge(this.centroidAssignment[i], this.k + i);
+            this.drawer.addEdge(this.centroidAssignment[i], k + i);
         }
         this.drawer.draw();
         for (let p of this.centroids) {
