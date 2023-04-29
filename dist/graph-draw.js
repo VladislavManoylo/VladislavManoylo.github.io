@@ -8,9 +8,9 @@ var ButtonChoice;
     ButtonChoice[ButtonChoice["AddEdge"] = 3] = "AddEdge";
 })(ButtonChoice || (ButtonChoice = {}));
 class Buttons {
-    constructor(ctx, pos, selected) {
+    constructor(pencil, pos, selected) {
         this.radius = 20;
-        this.ctx = ctx;
+        this.pencil = pencil;
         this.selected = selected;
         this.buttons = [pos];
         for (const a of [-1 / 6, -1 / 2, -5 / 6]) {
@@ -23,11 +23,7 @@ class Buttons {
     }
     draw() {
         for (const it of this.buttons) {
-            this.ctx.beginPath();
-            this.ctx.arc(it.x, it.y, this.radius, 0, 2 * Math.PI);
-            this.ctx.fillStyle = "red";
-            this.ctx.fill();
-            this.ctx.stroke();
+            this.pencil.circle(it, this.radius, "red");
         }
     }
 }
@@ -74,7 +70,7 @@ class Controller {
                     break;
                 case undefined:
                 default:
-                    this.buttons = new Buttons(this.drawer.ctx, this.drawer.vertexPositions[i], i);
+                    this.buttons = new Buttons(this.drawer.pencil, this.drawer.vertexPositions[i], i);
                     this.lastButton = undefined;
                     break;
             }

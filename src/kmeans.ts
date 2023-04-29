@@ -48,12 +48,6 @@ class KMeans {
         if (c != 0) {
           this.centroids[i] = { x: p.x / c, y: p.y / c };
         }
-        else { // cheating
-          console.log("ohno");
-          // let x = Math.random() * this.drawer.canvas.width;
-          // let y = Math.random() * this.drawer.canvas.height;
-          // this.centroids[i] = { x, y };
-        }
       }
       this.draw();
     });
@@ -63,9 +57,6 @@ class KMeans {
       const x = event.clientX - this.drawer.canvas.offsetLeft + scrollX;
       const y = event.clientY - this.drawer.canvas.offsetTop + scrollY;
       this.points.push({ x, y });
-      let huh = Math.floor(Math.random() * this.k)
-      console.log("huh", huh);
-      // this.centroidAssignment.push(huh);
       this.draw();
     });
   }
@@ -94,7 +85,7 @@ class KMeans {
     }
     this.drawer.draw();
     for (let p of this.centroids) {
-      this.drawer.drawCircle(p, "", radius, "red");
+      this.drawer.pencil.circle(p, radius, "red")
     }
   }
 }

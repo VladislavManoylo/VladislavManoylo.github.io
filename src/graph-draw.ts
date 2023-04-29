@@ -1,5 +1,6 @@
 import * as v2 from "./v2.js"
 import { Drawer } from "./graph.js"
+import { Pencil } from "./pencil.js"
 
 enum ButtonChoice {
   MoveVertex,
@@ -9,11 +10,11 @@ enum ButtonChoice {
 }
 class Buttons {
   radius: number = 20;
-  ctx: CanvasRenderingContext2D;
+  pencil: Pencil;
   buttons: v2.v2[];
   selected: number; // the selected vertex in the graph
-  constructor(ctx: CanvasRenderingContext2D, pos: v2.v2, selected: number) {
-    this.ctx = ctx;
+  constructor(pencil: Pencil, pos: v2.v2, selected: number) {
+    this.pencil = pencil;
     this.selected = selected;
     this.buttons = [pos];
     for (const a of [-1 / 6, -1 / 2, -5 / 6]) {
@@ -26,11 +27,7 @@ class Buttons {
   }
   draw(): void {
     for (const it of this.buttons) {
-      this.ctx.beginPath();
-      this.ctx.arc(it.x, it.y, this.radius, 0, 2 * Math.PI);
-      this.ctx.fillStyle = "red";
-      this.ctx.fill();
-      this.ctx.stroke();
+      this.pencil.circle(it, this.radius, "red");
     }
   }
 }
@@ -77,7 +74,7 @@ class Controller {
           break;
         case undefined:
         default:
-          this.buttons = new Buttons(this.drawer.ctx, this.drawer.vertexPositions[i], i);
+          this.buttons = new Buttons(this.drawer.pencil, this.drawer.vertexPositions[i], i);
           this.lastButton = undefined;
           break;
       }

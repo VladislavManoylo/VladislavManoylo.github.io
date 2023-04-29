@@ -1,4 +1,5 @@
 import * as v2 from "./v2.js";
+import { Pencil } from "./pencil.js";
 export class Graph {
     constructor() {
         this.vertices = 0;
@@ -52,7 +53,7 @@ export class Drawer {
         this.canvas = document.getElementById("graph-canvas");
         this.canvas.width = 1000;
         this.canvas.height = 1000;
-        this.ctx = this.canvas.getContext("2d");
+        this.pencil = new Pencil(this.canvas);
         this.radius = radius;
         this.labeled = labeled;
     }
@@ -76,43 +77,20 @@ export class Drawer {
         return i >= 0 ? i : undefined;
     }
     /** clears the screen and draws all vertices and edges */
-    draw(clear = true) {
-        if (clear) {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        }
+    draw() {
+        this.pencil.clear();
         for (let i = 0; i < this.graph.vertices; i++) {
             for (let j of this.graph.edges[i]) {
-                this.drawEdge(i, j);
+                let p1 = this.vertexPositions[i];
+                let p2 = this.vertexPositions[j];
+                this.pencil.line(p1, p2);
             }
         }
         for (let i = 0; i < this.vertexPositions.length; i++) {
-            this.drawCircle(this.vertexPositions[i], i.toString());
-        }
-    }
-    /** drawEdge(i,j) connects vertex i with vertex j*/
-    drawEdge(i, j) {
-        // this.ctx.reset();
-        let p1 = this.vertexPositions[i];
-        let p2 = this.vertexPositions[j];
-        this.ctx.moveTo(p1.x, p1.y);
-        this.ctx.lineTo(p2.x, p2.y);
-        this.ctx.stroke();
-    }
-    /** draws a labeled circle, centered at a point, with a label */
-    drawCircle(p, label, r = this.radius, color = "grey") {
-        // circle
-        this.ctx.resetTransform();
-        this.ctx.beginPath();
-        this.ctx.arc(p.x, p.y, r, 0, 2 * Math.PI);
-        this.ctx.fillStyle = color;
-        this.ctx.fill();
-        this.ctx.stroke();
-        // label
-        if (this.labeled && label !== "") {
-            this.ctx.font = "40px Arial";
-            this.ctx.fillStyle = "white";
-            this.ctx.textAlign = "center";
-            this.ctx.fillText(label, p.x, p.y);
+            this.pencil.circle(this.vertexPositions[i], this.radius);
+            if (this.labeled) {
+                this.pencil.text(this.vertexPositions[i], i.toString());
+            }
         }
     }
 }
