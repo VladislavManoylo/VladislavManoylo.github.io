@@ -120,21 +120,20 @@ export class Drawer {
     if (clear) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    for (let i = 0; i < this.vertexPositions.length; i++) {
-      this.drawCircle(this.vertexPositions[i], i.toString());
-    }
     for (const e of this.graph.edges) {
       this.drawEdge(e);
+    }
+    for (let i = 0; i < this.vertexPositions.length; i++) {
+      this.drawCircle(this.vertexPositions[i], i.toString());
     }
   }
 
   /** drawEdge(i,j) connects vertex i with vertex j*/
   private drawEdge(e: Edge): void {
+    // this.ctx.reset();
+    this.ctx.resetTransform()
     let p1 = this.vertexPositions[e.i]
     let p2 = this.vertexPositions[e.j]
-    let offset = polarToPoint(angleBetween(p1, p2), this.radius);
-    p1 = addPoint(p1, offset);
-    p2 = subPoint(p2, offset);
     this.ctx.moveTo(p1.x, p1.y);
     this.ctx.lineTo(p2.x, p2.y);
     this.ctx.stroke();
@@ -143,6 +142,7 @@ export class Drawer {
   /** draws a labeled circle, centered at a point, with a label */
   drawCircle(p: Point, label: string, r: number = this.radius, color = "grey"): void {
     // circle
+    this.ctx.resetTransform()
     this.ctx.beginPath();
     this.ctx.arc(p.x, p.y, r, 0, 2 * Math.PI);
     this.ctx.fillStyle = color;
