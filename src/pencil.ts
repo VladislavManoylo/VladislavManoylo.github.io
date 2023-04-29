@@ -10,12 +10,12 @@ export class Pencil {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
   line(a: v2, b: v2) {
+    this.ctx.beginPath()
     this.ctx.moveTo(a.x, a.y);
     this.ctx.lineTo(b.x, b.y);
     this.ctx.stroke();
   }
   circle(p: v2, r: number, color = "grey") {
-    this.ctx.resetTransform()
     this.ctx.beginPath();
     this.ctx.arc(p.x, p.y, r, 0, 2 * Math.PI);
     this.ctx.fillStyle = color;
