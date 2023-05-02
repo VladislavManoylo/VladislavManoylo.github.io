@@ -7,7 +7,7 @@ class KMeans {
   centroids: v2.v2[] = [];
   points: v2.v2[] = [];
   centroidAssignment: number[] = [];
-  drawer: Drawer = new Drawer(radius);
+  drawer: Drawer = new Drawer("kmeans-canvas", radius);
   constructor() {
     this.resetCentroids(3);
     document.getElementById("k")?.addEventListener("input", (event) => {

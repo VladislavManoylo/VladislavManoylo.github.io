@@ -31,7 +31,7 @@ class Controller {
     constructor() {
         this.buttons = undefined;
         this.lastButton = undefined;
-        this.drawer = new Drawer(50, true); // setting size of nodes here
+        this.drawer = new Drawer("graph-canvas", 50, true); // setting size of nodes here
         this.deletingEdge = false;
         this.addingEdge = false;
         this.drawer.canvas.addEventListener("click", (event) => {

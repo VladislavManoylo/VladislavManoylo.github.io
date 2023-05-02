@@ -47,10 +47,10 @@ export class Graph {
     }
 }
 export class Drawer {
-    constructor(radius, labeled = false) {
+    constructor(canvasId, radius, labeled = false) {
         this.vertexPositions = [];
         this.graph = new Graph();
-        this.canvas = document.getElementById("graph-canvas");
+        this.canvas = document.getElementById(canvasId);
         this.pencil = new Pencil(this.canvas);
         this.radius = radius;
         this.labeled = labeled;

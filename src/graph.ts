@@ -60,8 +60,8 @@ export class Drawer {
   radius: number;
   private graph: Graph = new Graph();
   private labeled: Boolean;
-  constructor(radius: number, labeled: Boolean = false) {
-    this.canvas = document.getElementById("graph-canvas") as HTMLCanvasElement;
+  constructor(canvasId: string, radius: number, labeled: Boolean = false) {
+    this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
     this.pencil = new Pencil(this.canvas);
     this.radius = radius;
     this.labeled = labeled;
