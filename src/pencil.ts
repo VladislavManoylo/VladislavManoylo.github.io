@@ -28,4 +28,12 @@ export class Pencil {
     this.ctx.textAlign = "center";
     this.ctx.fillText(text, p.x, p.y);
   }
+  path(ps: v2[]) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(ps[0].x, ps[0].y);
+    for (let p of ps) {
+      this.ctx.lineTo(p.x, p.y);
+    }
+    this.ctx.stroke();
+  }
 }
