@@ -9,6 +9,15 @@ function tokenize(text: string): string[] {
     return tokens;
 }
 
-export function dothing(text: string) {
-    console.log(tokenize(text));
+export function coefToPolynomial(coefficients: number[]): (x: number) => number {
+    console.log(coefficients);
+    return (x: number) => {
+        let v = 1;
+        let sum = 0;
+        for (let i = 0; i < coefficients.length; i++) {
+            sum += coefficients[i] * v;
+            v *= x;
+        }
+        return sum;
+    }
 }

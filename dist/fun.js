@@ -8,6 +8,15 @@ function tokenize(text) {
     }
     return tokens;
 }
-export function dothing(text) {
-    console.log(tokenize(text));
+export function coefToPolynomial(coefficients) {
+    console.log(coefficients);
+    return (x) => {
+        let v = 1;
+        let sum = 0;
+        for (let i = 0; i < coefficients.length; i++) {
+            sum += coefficients[i] * v;
+            v *= x;
+        }
+        return sum;
+    };
 }

@@ -1,6 +1,6 @@
 import { Pencil } from "./pencil.js"
 import { v2 } from "./v2.js"
-import { dothing } from "./fun.js"
+import { coefToPolynomial } from "./fun.js"
 
 class Plot {
   canvas: HTMLCanvasElement;
@@ -27,14 +27,17 @@ class Plot {
     }
     this.paths.push(path);
   }
-  fun(f: (a: number) => number, x0: number, x1: number, samples: number) {
-    let dx = (x1 - x0) / samples;
+  fun(f: (a: number) => number, x0: number, width: number, samples: number) {
+    let dx = width / samples;
     let ys = [];
     for (let i = 0; i < samples; i++) {
       ys.push(f(x0));
       x0 += dx;
     }
     this.plot(ys);
+  }
+  clear() {
+      this.paths = [];
   }
   show() {
     this.pencil.clear();
@@ -44,14 +47,13 @@ class Plot {
   }
 }
 
-document.getElementById("fun")?.addEventListener("input", (event) => {
-    let text = (event.target as HTMLInputElement).value;
-    dothing(text);
-});
-
-
 let plot = new Plot("canvas");
-// plot.plot([0,1]);
-plot.plot([0, 1, 0, -1, 0]);
 plot.fun(Math.sin, 0, 2 * Math.PI, 100);
 plot.show();
+document.getElementById("fun")?.addEventListener("input", (event) => {
+    let text = (event.target as HTMLInputElement).value;
+    let f = coefToPolynomial(text.split(/\s+/).map(Number));
+    plot.clear();
+    plot.fun(f, -1, 2, 100);
+    plot.show();
+});
