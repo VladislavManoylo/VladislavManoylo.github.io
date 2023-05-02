@@ -1,4 +1,6 @@
+var _a;
 import { Pencil } from "./pencil.js";
+import { dothing } from "./fun.js";
 class Plot {
     constructor(canvas) {
         this.canvas = document.getElementById(canvas);
@@ -37,6 +39,10 @@ class Plot {
         }
     }
 }
+(_a = document.getElementById("fun")) === null || _a === void 0 ? void 0 : _a.addEventListener("input", (event) => {
+    let text = event.target.value;
+    dothing(text);
+});
 let plot = new Plot("canvas");
 // plot.plot([0,1]);
 plot.plot([0, 1, 0, -1, 0]);

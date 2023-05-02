@@ -1,5 +1,6 @@
 import { Pencil } from "./pencil.js"
 import { v2 } from "./v2.js"
+import { dothing } from "./fun.js"
 
 class Plot {
   canvas: HTMLCanvasElement;
@@ -42,6 +43,11 @@ class Plot {
     }
   }
 }
+
+document.getElementById("fun")?.addEventListener("input", (event) => {
+    let text = (event.target as HTMLInputElement).value;
+    dothing(text);
+});
 
 
 let plot = new Plot("canvas");
