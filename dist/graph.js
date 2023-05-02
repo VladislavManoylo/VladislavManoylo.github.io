@@ -51,8 +51,6 @@ export class Drawer {
         this.vertexPositions = [];
         this.graph = new Graph();
         this.canvas = document.getElementById("graph-canvas");
-        this.canvas.width = 1000;
-        this.canvas.height = 1000;
         this.pencil = new Pencil(this.canvas);
         this.radius = radius;
         this.labeled = labeled;
