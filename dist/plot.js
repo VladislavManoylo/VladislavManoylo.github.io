@@ -14,9 +14,14 @@ class Plot {
         return h - (a * h);
     }
     plot(ys) {
-        let dx = this.canvas.width / (ys.length - 1);
         let min = Math.min(...ys);
         let h = Math.max(...ys) - min;
+        if (h == 0) {
+            let y = this.canvas.height / 2;
+            this.paths.push([{ x: 0, y }, { x: this.canvas.width, y }]);
+            return;
+        }
+        let dx = this.canvas.width / (ys.length - 1);
         let path = [];
         for (let i = 0; i < ys.length; i++) {
             path.push({ x: dx * i, y: this.rescale(ys[i], min, h) });
