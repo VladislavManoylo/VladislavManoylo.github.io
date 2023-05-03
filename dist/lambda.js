@@ -29,14 +29,31 @@ function stringToSexpr(str) {
     }
     return s;
 }
-// console.log(stringToSexpr("a bc 123 4+5"));
-// console.log(stringToSexpr("(a (bc))"));
-// console.log(stringToSexpr("a (bc (+ 1 2) 4"));
-let output = document.getElementById("output");
-let input = document.getElementById("input");
+function toDebruijn(args, body) {
+    if (Array.isArray(body)) {
+        let newBody = [];
+        for (let it of body) {
+            newBody.push(toDebruijn(args, it).body);
+        }
+        return { args: args.length, body: newBody };
+    }
+    else {
+        body = body;
+        let id = args.indexOf(body);
+        if (id != -1) {
+            return { args: args.length, body: args.length - id };
+        }
+        return { args: args.length, body: body };
+    }
+}
+console.log(toDebruijn(['f', 'x'], ['succ', ['f', 'x']]));
+/*
+    let output = document.getElementById("output") as HTMLTextAreaElement;
+let input = document.getElementById("input") as HTMLTextAreaElement;
 input.addEventListener("input", (event) => {
-    let k = event.target.value;
-    let s = stringToSexpr(k);
+    let k: string = (event.target as HTMLInputElement).value;
+    let s: sexpr = stringToSexpr(k);
     console.log(s);
     output.textContent = s.toString();
 });
+*/
