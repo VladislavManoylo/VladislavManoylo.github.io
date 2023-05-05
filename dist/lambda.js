@@ -29,11 +29,11 @@ function stringToSexpr(str) {
     }
     return s;
 }
-function toDebruijn(args, body) {
+function toDebruijnHelp(args, body) {
     if (Array.isArray(body)) {
         let newBody = [];
         for (let it of body) {
-            newBody.push(toDebruijn(args, it).body);
+            newBody.push(toDebruijnHelp(args, it).body);
         }
         return { args: args.length, body: newBody };
     }
@@ -46,14 +46,37 @@ function toDebruijn(args, body) {
         return { args: args.length, body: body };
     }
 }
-console.log(toDebruijn(['f', 'x'], ['succ', ['f', 'x']]));
-/*
-    let output = document.getElementById("output") as HTMLTextAreaElement;
-let input = document.getElementById("input") as HTMLTextAreaElement;
+// console.log(toDebruijnHelp(['f', 'x'], ['succ', ['f', 'x']]));
+function toDebruijn(expr) {
+    if (Array.isArray(expr)) {
+        expr = expr;
+        let args = expr[1].map(x => x);
+        let body = expr[2];
+        return toDebruijnHelp(args, body);
+    }
+    else {
+        return { args: 0, body: expr };
+    }
+}
+// console.log(toDebruijn(["lambda", ['f', 'x'], ['succ', ['f', 'x']]]));
+class Console {
+    constructor(input) {
+        this.env = {};
+        let s = stringToSexpr(input);
+        // assert(s.length % 2 == 1);
+        for (let i = 0; i < s.length; i += 2) {
+            this.env[s[i]] = toDebruijn(s[i + 1]);
+        }
+        this.expr = toDebruijn(s[s.length - 1]);
+    }
+    toString() {
+        return `[${this.expr.args}] ${this.expr.body.toString()}`;
+    }
+}
+let output = document.getElementById("output");
+let input = document.getElementById("input");
 input.addEventListener("input", (event) => {
-    let k: string = (event.target as HTMLInputElement).value;
-    let s: sexpr = stringToSexpr(k);
-    console.log(s);
-    output.textContent = s.toString();
+    let k = event.target.value;
+    let c = new Console(k);
+    output.textContent = c.toString();
 });
-*/

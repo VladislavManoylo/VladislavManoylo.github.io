@@ -43,13 +43,11 @@ interface Debruijn {
     body: Lambda;
 }
 
-type Env = Record<string, Debruijn>;
-
-function toDebruijn(args: string[], body: sexpr): Debruijn {
+function toDebruijnHelp(args: string[], body: sexpr): Debruijn {
     if (Array.isArray(body)) {
         let newBody: Lambda[] = [];
         for (let it of body) {
-            newBody.push(toDebruijn(args, it).body);
+            newBody.push(toDebruijnHelp(args, it).body);
         }
         return {args: args.length, body: newBody};
     }
@@ -62,15 +60,41 @@ function toDebruijn(args: string[], body: sexpr): Debruijn {
         return {args: args.length, body: body};
     }
 }
-console.log(toDebruijn(['f', 'x'], ['succ', ['f', 'x']]));
+// console.log(toDebruijnHelp(['f', 'x'], ['succ', ['f', 'x']]));
 
-/*
-    let output = document.getElementById("output") as HTMLTextAreaElement;
+function toDebruijn(expr: sexpr): Debruijn {
+    if (Array.isArray(expr)) {
+        expr = expr as sexpr[];
+        let args = (expr[1] as sexpr[]).map(x => x as string);
+        let body = expr[2] as sexpr;
+        return toDebruijnHelp(args, body);
+    }
+    else {
+        return {args: 0, body: expr};
+    }
+}
+// console.log(toDebruijn(["lambda", ['f', 'x'], ['succ', ['f', 'x']]]));
+
+class Console {
+    env: Record<string, Debruijn> = {};
+    expr: Debruijn;
+    constructor(input: string) {
+        let s : sexpr[] = stringToSexpr(input) as sexpr[];
+        // assert(s.length % 2 == 1);
+        for (let i = 0; i < s.length; i += 2) {
+            this.env[s[i] as string] = toDebruijn(s[i+1]);
+        }
+        this.expr = toDebruijn(s[s.length-1]);
+    }
+    toString(): string {
+        return `[${this.expr.args}] ${this.expr.body.toString()}`;
+    }
+}
+
+let output = document.getElementById("output") as HTMLTextAreaElement;
 let input = document.getElementById("input") as HTMLTextAreaElement;
 input.addEventListener("input", (event) => {
     let k: string = (event.target as HTMLInputElement).value;
-    let s: sexpr = stringToSexpr(k);
-    console.log(s);
-    output.textContent = s.toString();
+    let c = new Console(k);
+    output.textContent = c.toString();
 });
-*/
