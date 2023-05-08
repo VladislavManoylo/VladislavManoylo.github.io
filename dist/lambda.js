@@ -32,7 +32,7 @@ function stringToSexpr(str) {
 class Debruijn {
     debruijn(body) {
         if (Array.isArray(body)) {
-            return body.map(x => this.debruijn(x));
+            return body.map((x) => this.debruijn(x));
         }
         let id = this.args.indexOf(body);
         return id == -1 ? body : this.args.length - id;
@@ -40,7 +40,7 @@ class Debruijn {
     constructor(expr) {
         if (Array.isArray(expr)) {
             expr = expr;
-            this.args = expr[1].map(x => x);
+            this.args = expr[1].map((x) => x);
             this.body = this.debruijn(expr[2]);
         }
         else {
@@ -51,7 +51,7 @@ class Debruijn {
     // console.log(toDebruijn(["lambda", ['f', 'x'], ['succ', ['f', 'x']]]));
     exprString(expr = this.body) {
         return Array.isArray(expr)
-            ? "(" + expr.map(x => this.exprString(x)).join(" ") + ")"
+            ? "(" + expr.map((x) => this.exprString(x)).join(" ") + ")"
             : expr.toString();
     }
     toString() {
