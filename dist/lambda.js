@@ -29,33 +29,44 @@ function stringToSexpr(str) {
     }
     return s;
 }
+function getType(e) {
+    if (e instanceof Lambda) {
+        return "lambda";
+    }
+    if (Array.isArray(e)) {
+        return "list";
+    }
+    return "id";
+}
 function exprString(expr) {
-    if (expr instanceof Lambda) {
-        return expr.toString();
+    switch (getType(expr)) {
+        case "id":
+            return expr;
+        case "lambda":
+            return expr.toString();
+        case "list":
+            return `(${expr.map((x) => exprString(x)).join(" ")})`;
     }
-    if (Array.isArray(expr)) {
-        return "(" + expr.map((x) => exprString(x)).join(" ") + ")";
-    }
-    return expr;
 }
 function sexprToExpr(s) {
     if (!Array.isArray(s)) {
         return s;
     }
     s = s;
-    if (s[0] == "lambda") {
-        return new Lambda(s[1].map((x) => x), sexprToExpr(s[2]));
+    if (s[0] != "lambda") {
+        return s.map((x) => sexprToExpr(x));
     }
-    return s.map((x) => sexprToExpr(x));
+    return new Lambda(s[1].map((x) => x), sexprToExpr(s[2]));
 }
 function apply(expr, param, arg) {
-    if (expr instanceof Lambda) {
-        return expr;
+    switch (getType(expr)) {
+        case "id":
+            return expr === param ? arg : expr;
+        case "lambda":
+            return expr;
+        case "list":
+            return expr.map((x) => apply(x, param, arg));
     }
-    if (Array.isArray(expr)) {
-        return expr.map((x) => apply(x, param, arg));
-    }
-    return expr === param ? arg : expr;
 }
 class Lambda {
     constructor(args, body) {
@@ -67,7 +78,6 @@ class Lambda {
         return `λ${args}.${exprString(this.body)}`;
     }
 }
-// type Env = new Map<string, LambdaExpr>();
 class Interpreter {
     constructor(input) {
         this.env = {};
@@ -84,33 +94,38 @@ class Interpreter {
         return exprString(this.expr);
     }
     step() {
-        if (this.expr instanceof Lambda) {
-            return;
-        }
-        if (!Array.isArray(this.expr)) {
-            if (this.expr in this.env) {
-                this.expr = this.env[this.expr];
+        switch (getType(this.expr)) {
+            case "id": {
+                let expr = this.expr;
+                if (expr in this.env) {
+                    this.expr = this.env[expr];
+                    return;
+                }
+                else {
+                    throw new Error("can't find " + this.expr);
+                }
+            }
+            case "lambda":
                 return;
-            }
-            else {
-                throw new Error("can't find " + this.expr);
+            case "list": {
+                let expr = this.expr;
+                let fun = expr[0];
+                if (!(fun instanceof Lambda)) {
+                    expr[0] = this.env[fun];
+                    return;
+                }
+                fun.args = fun.args.slice(1);
+                fun.body = apply(fun.body, fun.args[0], expr[1]);
+                if (fun.args.length == 0) {
+                    if (expr.length > 2) {
+                        throw new Error("Too many arguments");
+                    }
+                    this.expr = fun.body;
+                    return;
+                }
+                this.expr = expr.slice(2);
             }
         }
-        let fun = this.expr[0];
-        if (!(fun instanceof Lambda)) {
-            this.expr[0] = this.env[fun];
-            return;
-        }
-        fun.args = fun.args.slice(1);
-        fun.body = apply(fun.body, fun.args[0], this.expr[1]);
-        if (fun.args.length == 0) {
-            if (this.expr.length > 2) {
-                throw new Error("Too many arguments");
-            }
-            this.expr = fun.body;
-            return;
-        }
-        this.expr = this.expr.slice(2);
     }
 }
 let start = `id (lambda (x) x)

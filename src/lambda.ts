@@ -34,16 +34,26 @@ function stringToSexpr(str: string): sexpr {
 // console.log(stringToSexpr("(a (bc))"));
 // console.log(stringToSexpr("a (bc (+ 1 2) 4"));
 
-type LambdaExpr = LambdaExpr[] | Lambda | string;
+type LambdaExpr = string | Lambda | LambdaExpr[];
+function getType(e: LambdaExpr): "id" | "lambda" | "list" {
+  if (e instanceof Lambda) {
+    return "lambda";
+  }
+  if (Array.isArray(e)) {
+    return "list";
+  }
+  return "id";
+}
 
 function exprString(expr: LambdaExpr): string {
-  if (expr instanceof Lambda) {
-    return expr.toString();
+  switch (getType(expr)) {
+    case "id":
+      return expr as string;
+    case "lambda":
+      return (expr as Lambda).toString();
+    case "list":
+      return `(${(expr as LambdaExpr[]).map((x) => exprString(x)).join(" ")})`;
   }
-  if (Array.isArray(expr)) {
-    return "(" + expr.map((x) => exprString(x)).join(" ") + ")";
-  }
-  return expr;
 }
 
 function sexprToExpr(s: sexpr): LambdaExpr {
@@ -51,23 +61,24 @@ function sexprToExpr(s: sexpr): LambdaExpr {
     return s;
   }
   s = s as sexpr[];
-  if (s[0] == "lambda") {
-    return new Lambda(
-      (s[1] as sexpr[]).map((x) => x as string),
-      sexprToExpr(s[2])
-    );
+  if (s[0] != "lambda") {
+    return s.map((x) => sexprToExpr(x));
   }
-  return s.map((x) => sexprToExpr(x));
+  return new Lambda(
+    (s[1] as sexpr[]).map((x) => x as string),
+    sexprToExpr(s[2])
+  );
 }
 
 function apply(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
-  if (expr instanceof Lambda) {
-    return expr;
+  switch (getType(expr)) {
+    case "id":
+      return expr === param ? arg : expr;
+    case "lambda":
+      return expr;
+    case "list":
+      return (expr as LambdaExpr[]).map((x) => apply(x, param, arg));
   }
-  if (Array.isArray(expr)) {
-    return expr.map((x) => apply(x, param, arg));
-  }
-  return expr === param ? arg : expr;
 }
 
 class Lambda {
@@ -86,9 +97,7 @@ class Lambda {
   }
 }
 
-// type Env = Record<string, LambdaExpr>;
-type Env = { [key: string]: LambdaExpr };
-// type Env = new Map<string, LambdaExpr>();
+type Env = Record<string, LambdaExpr>;
 
 class Interpreter {
   env: Env = {};
@@ -107,32 +116,37 @@ class Interpreter {
     return exprString(this.expr);
   }
   step() {
-    if (this.expr instanceof Lambda) {
-      return;
-    }
-    if (!Array.isArray(this.expr)) {
-      if (this.expr in this.env) {
-        this.expr = this.env[this.expr];
+    switch (getType(this.expr)) {
+      case "id": {
+        let expr = this.expr as string;
+        if (expr in this.env) {
+          this.expr = this.env[expr];
+          return;
+        } else {
+          throw new Error("can't find " + this.expr);
+        }
+      }
+      case "lambda":
         return;
-      } else {
-        throw new Error("can't find " + this.expr);
+      case "list": {
+        let expr = this.expr as LambdaExpr[];
+        let fun = expr[0];
+        if (!(fun instanceof Lambda)) {
+          expr[0] = this.env[fun as string];
+          return;
+        }
+        fun.args = fun.args.slice(1);
+        fun.body = apply(fun.body, fun.args[0], expr[1]);
+        if (fun.args.length == 0) {
+          if (expr.length > 2) {
+            throw new Error("Too many arguments");
+          }
+          this.expr = fun.body;
+          return;
+        }
+        this.expr = expr.slice(2);
       }
     }
-    let fun = this.expr[0];
-    if (!(fun instanceof Lambda)) {
-      this.expr[0] = this.env[fun as string];
-      return;
-    }
-    fun.args = fun.args.slice(1);
-    fun.body = apply(fun.body, fun.args[0], this.expr[1]);
-    if (fun.args.length == 0) {
-      if (this.expr.length > 2) {
-        throw new Error("Too many arguments");
-      }
-      this.expr = fun.body;
-      return;
-    }
-    this.expr = this.expr.slice(2);
   }
 }
 
