@@ -52,12 +52,25 @@ function sexprToExpr(s: sexpr): LambdaExpr {
   }
   s = s as sexpr[];
   if (s[0] == "lambda") {
-    return new Lambda((s[1] as sexpr[]).map(x => x as string), sexprToExpr(s[2]));
+    return new Lambda(
+      (s[1] as sexpr[]).map((x) => x as string),
+      sexprToExpr(s[2])
+    );
   }
-  return s.map(x => sexprToExpr(x));
+  return s.map((x) => sexprToExpr(x));
 }
 
-class Lambda {
+function apply(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
+  if (expr instanceof Lambda) {
+    return expr;
+  }
+  if (Array.isArray(expr)) {
+    return expr.map((x) => apply(x, param, arg));
+  }
+  return expr === param ? arg : expr;
+}
+
+class Lambda { // TODO: change to unary only
   args: string[];
   body: LambdaExpr;
 
@@ -67,33 +80,75 @@ class Lambda {
   }
 
   toString(): string {
-    let args = this.args.length == 0 ? "" : `[${this.args}]`;
-    return `${args} ${exprString(this.body)}`;
+    let args = this.args.length == 0 ? "" : `${this.args.join(".")}`;
+    return `λ${args}.${exprString(this.body)}`;
   }
 }
 
-class Console {
-  env: Record<string, LambdaExpr> = {};
+// type Env = Record<string, LambdaExpr>;
+type Env = { [key: string]: LambdaExpr };
+// type Env = new Map<string, LambdaExpr>();
+
+class Interpreter {
+  env: Env = {};
   expr: LambdaExpr;
   constructor(input: string) {
     let s: sexpr[] = stringToSexpr(input) as sexpr[];
-    if (s.length % 2 != 1) {
-      throw new Error("need body expression");
+    if (s.length % 2 == 0) {
+      throw new Error("missing a body expression " + s.length);
     }
+    this.expr = sexprToExpr(s.pop()!);
+    console.log("adding", this.expr);
     for (let i = 0; i < s.length; i += 2) {
-      this.env[s[i] as string] = sexprToExpr(s[i+1]);
+      this.env[s[i] as string] = sexprToExpr(s[i + 1]);
     }
-    this.expr = sexprToExpr(s[s.length - 1]);
   }
   toString(): string {
     return exprString(this.expr);
+  }
+  step() {
+    if (this.expr instanceof Lambda) {
+      return;
+    }
+    if (!Array.isArray(this.expr)) {
+      if (this.expr in this.env) {
+        this.expr = this.env[this.expr];
+        return;
+      } else {
+        throw new Error("can't find " + this.expr);
+      }
+    }
+    let fun = this.expr[0];
+    if (!(fun instanceof Lambda)) {
+      this.expr[0] = this.env[fun as string];
+      return;
+    }
+    if (this.expr.length < 2) {
+      throw new Error("Not enough arguments");
+    }
+    fun.args = fun.args.slice(1);
+    fun.body = apply(fun.body, fun.args[0], this.expr[1]);
+    if (fun.args.length == 0) {
+      if (this.expr.length > 2) {
+        throw new Error("Too many arguments");
+      }
+      this.expr = fun.body;
+      return;
+    }
+    this.expr = this.expr.slice(2);
   }
 }
 
 let output = document.getElementById("output") as HTMLTextAreaElement;
 let input = document.getElementById("input") as HTMLTextAreaElement;
+let button = document.getElementById("step") as HTMLButtonElement;
+let interpreter: Interpreter = new Interpreter("x");
 input.addEventListener("input", (event) => {
   let k: string = (event.target as HTMLInputElement).value;
-  let c = new Console(k);
-  output.textContent = c.toString();
+  interpreter = new Interpreter(k);
+  output.textContent = interpreter.toString();
+});
+button.addEventListener("click", () => {
+  interpreter.step();
+  output.textContent += "\n" + interpreter.toString();
 });
