@@ -1,3 +1,6 @@
+const verbose = false;
+const web = true;
+
 //TODO: write tests
 type sexpr = sexpr[] | string;
 
@@ -38,31 +41,17 @@ function stringToSexpr(str: string): sexpr {
 type LambdaExpr =
   | { type: "id"; val: string }
   | { type: "lambda"; val: Lambda }
-  | { type: "list"; val: LambdaExpr[] };
+  | { type: "apply"; val: [LambdaExpr, LambdaExpr] };
 
 function exprString(expr: LambdaExpr): string {
   switch (expr.type) {
     case "id":
       return expr.val;
     case "lambda":
-      return lambdaToString(expr.val);
-    case "list":
-      return `(${expr.val.map((x) => exprString(x)).join(" ")})`;
+      return `λ${expr.val.arg}.${exprString(expr.val.body)}`;
+    case "apply":
+      return `(${exprString(expr.val[0])} ${exprString(expr.val[1])})`;
   }
-}
-
-function currify(args: string[], body: LambdaExpr): Lambda {
-  if (args.length == 0) {
-    throw new Error("nullary lambda disallowed");
-  }
-  let lambda: Lambda = { arg: args.pop() as string, body };
-  while (args.length > 0) {
-    lambda = {
-      arg: args.pop() as string,
-      body: { type: "lambda", val: lambda },
-    };
-  }
-  return lambda;
 }
 
 function sexprToExpr(s: sexpr): LambdaExpr {
@@ -70,30 +59,34 @@ function sexprToExpr(s: sexpr): LambdaExpr {
     return { type: "id", val: s };
   }
   s = s as sexpr[];
-  if (s[0] != "lambda") {
-    return { type: "list", val: s.map((x) => sexprToExpr(x)) };
-  }
-  return {
-    type: "lambda",
-    val: currify(
-      (s[1] as sexpr[]).map((x) => x as string),
-      sexprToExpr(s[2])
-    ),
-  };
-}
-
-function apply(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
-  switch (expr.type) {
-    case "id":
-      return expr.val === param ? arg : expr;
-    case "lambda":
-      if (expr.val.arg === param) {
-        return expr;
-      }
-      expr.val.body = apply(expr.val.body, param, arg);
-      return expr;
-    case "list":
-      return { type: "list", val: expr.val.map((x) => apply(x, param, arg)) };
+  if (s[0] == "lambda") {
+    // (lambda (params...) body)
+    let params = s[1];
+    if (!Array.isArray(params)) {
+      throw new Error("need parameters");
+    }
+    params = (params as sexpr[]).map((x) => x as string);
+    if (params.length == 0) {
+      throw new Error("nullary lambda disallowed");
+    }
+    let body: LambdaExpr = sexprToExpr(s[2]);
+    let lambda: Lambda = { arg: params.pop() as string, body };
+    while (params.length > 0) {
+      lambda = {
+        arg: params.pop() as string,
+        body: { type: "lambda", val: lambda },
+      };
+    }
+    return { type: "lambda", val: lambda };
+  } else {
+    // application
+    if (s.length < 2) {
+      throw new Error("not enough to apply " + s);
+    }
+    let l: LambdaExpr[] = s.map((x) => sexprToExpr(x));
+    return l.slice(1).reduce((prev, curr) => {
+      return { type: "apply", val: [prev, curr] };
+    }, l[0]);
   }
 }
 
@@ -102,37 +95,35 @@ interface Lambda {
   body: LambdaExpr;
 }
 
-function lambdaToString(val: Lambda): string {
-  // TODO: different printing formats
-  return `λ${val.arg}.${exprString(val.body)}`;
-}
-
-function evalStep(expr: LambdaExpr, env: Env): LambdaExpr {
+function evalLambda(expr: LambdaExpr, env: Env): LambdaExpr {
   // TODO: don't mutate expr
   // TODO: continuation instead of step-wise eval
   switch (expr.type) {
     case "id":
-      if (expr.val in env) {
-        return env[expr.val];
-      } else {
-        throw new Error("can't find " + expr);
-      }
+      if (verbose) console.log(expr.type, expr.val);
+      let f = env[expr.val];
+      if (f === undefined) return expr;
+      else if (f.type == expr.type && f.val == expr.val) return f;
+      else return evalLambda(f, env);
     case "lambda":
+      if (verbose) console.log(expr.type, expr.val);
+      expr.val.body = evalLambda(expr.val.body, env);
       return expr;
-    case "list":
-      let fun = expr.val[0];
+    case "apply":
+      if (verbose) console.log(expr.type, expr.val);
+      let fun: LambdaExpr = evalLambda(expr.val[0], env);
+      let arg: LambdaExpr = evalLambda(expr.val[1], env);
       switch (fun.type) {
-        case "id":
-          expr.val[0] = env[fun.val];
-          return expr;
         case "lambda":
-          return apply(fun.val.body, fun.val.arg, expr.val[1]);
-        case "list":
-          throw new Error("can't apply list");
+          return evalLambda(fun.val.body, { ...env, [fun.val.arg]: arg });
+        case "id":
+        case "apply":
+          return { type: "apply", val: [fun, arg] };
       }
   }
 }
-type Env = Record<string, LambdaExpr>;
+
+type Env = { [key: string]: LambdaExpr };
 
 class Interpreter {
   env: Env = {};
@@ -150,37 +141,43 @@ class Interpreter {
   toString(): string {
     return exprString(this.expr);
   }
-  step() {
-    this.expr = evalStep(this.expr, this.env);
+  eval() {
+    this.expr = evalLambda(this.expr, this.env);
     // TODO: keep history when evalStep doesn't mutate
   }
 }
 
 let start = `id (lambda (x) x)
-t (lambda (x y) x)
-f (lambda (x y) y)
+true (lambda (x y) x)
+false (lambda (x y) y)
 0 (lambda (f x) x)
 1 (lambda (f x) (f x))
 2 (lambda (f x) (f (f x)))
-++ (lambda (n) (lambda (f x) (f (n f x))))
+++ (lambda (n f x) (f (n f x)))
 3 (++ 2)
-(++ 3)
+3
 `;
 
-let output = document.getElementById("output") as HTMLTextAreaElement;
-let input = document.getElementById("input") as HTMLTextAreaElement;
-let button = document.getElementById("step") as HTMLButtonElement;
-
 let interpreter: Interpreter = new Interpreter(start);
-input.textContent = start;
-output.textContent = interpreter.toString();
 
-input.addEventListener("input", (event) => {
-  let k: string = (event.target as HTMLInputElement).value;
-  interpreter = new Interpreter(k);
+if (web) {
+  let output = document.getElementById("output") as HTMLTextAreaElement;
+  let input = document.getElementById("input") as HTMLTextAreaElement;
+  let button = document.getElementById("step") as HTMLButtonElement;
+
+  input.textContent = start;
   output.textContent = interpreter.toString();
-});
-button.addEventListener("click", () => {
-  interpreter.step();
-  output.textContent += "\n" + interpreter.toString();
-});
+
+  input.addEventListener("input", (event) => {
+    let k: string = (event.target as HTMLInputElement).value;
+    interpreter = new Interpreter(k);
+    output.textContent = interpreter.toString();
+  });
+  button.addEventListener("click", () => {
+    interpreter.eval();
+    output.textContent += "\n" + interpreter.toString();
+  });
+} else {
+  interpreter.eval();
+  console.log(interpreter.toString());
+}
