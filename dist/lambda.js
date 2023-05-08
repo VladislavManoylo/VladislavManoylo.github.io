@@ -73,8 +73,7 @@ function apply(expr, param, arg) {
             if (expr.val.arg === param) {
                 return expr;
             }
-            let body = apply(expr.val.body, param, arg);
-            expr.val.body = body;
+            expr.val.body = apply(expr.val.body, param, arg);
             return expr;
         case "list":
             return { type: "list", val: expr.val.map((x) => apply(x, param, arg)) };
@@ -83,6 +82,32 @@ function apply(expr, param, arg) {
 function lambdaToString(val) {
     // TODO: different printing formats
     return `λ${val.arg}.${exprString(val.body)}`;
+}
+function evalStep(expr, env) {
+    // TODO: don't mutate expr
+    // TODO: continuation instead of step-wise eval
+    switch (expr.type) {
+        case "id":
+            if (expr.val in env) {
+                return env[expr.val];
+            }
+            else {
+                throw new Error("can't find " + expr);
+            }
+        case "lambda":
+            return expr;
+        case "list":
+            let fun = expr.val[0];
+            switch (fun.type) {
+                case "id":
+                    expr.val[0] = env[fun.val];
+                    return expr;
+                case "lambda":
+                    return apply(fun.val.body, fun.val.arg, expr.val[1]);
+                case "list":
+                    throw new Error("can't apply list");
+            }
+    }
 }
 class Interpreter {
     constructor(input) {
@@ -100,32 +125,8 @@ class Interpreter {
         return exprString(this.expr);
     }
     step() {
-        // TODO: return next expr instead of mutating
-        switch (this.expr.type) {
-            case "id":
-                if (this.expr.val in this.env) {
-                    this.expr = this.env[this.expr.val];
-                    return;
-                }
-                else {
-                    throw new Error("can't find " + this.expr);
-                }
-            case "lambda":
-                return;
-            case "list":
-                let expr = this.expr.val;
-                let fun = expr[0];
-                switch (fun.type) {
-                    case "id":
-                        expr[0] = this.env[fun.val];
-                        return;
-                    case "lambda":
-                        this.expr = apply(fun.val.body, fun.val.arg, expr[1]);
-                        return;
-                    case "list":
-                        throw new Error("can't apply list");
-                }
-        }
+        this.expr = evalStep(this.expr, this.env);
+        // TODO: keep history when evalStep doesn't mutate
     }
 }
 let start = `id (lambda (x) x)
