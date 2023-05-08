@@ -39,6 +39,16 @@ function exprString(expr) {
             return `(${expr.val.map((x) => exprString(x)).join(" ")})`;
     }
 }
+function currify(args, body) {
+    if (args.length == 0) {
+        throw new Error("nullary lambda disallowed");
+    }
+    let lambda = new Lambda(args.pop(), body);
+    while (args.length > 0) {
+        lambda = new Lambda(args.pop(), { type: "lambda", val: lambda });
+    }
+    return lambda;
+}
 function sexprToExpr(s) {
     if (!Array.isArray(s)) {
         return { type: "id", val: s };
@@ -49,7 +59,7 @@ function sexprToExpr(s) {
     }
     return {
         type: "lambda",
-        val: new Lambda(s[1].map((x) => x), sexprToExpr(s[2])),
+        val: currify(s[1].map((x) => x), sexprToExpr(s[2])),
     };
 }
 function apply(expr, param, arg) {
@@ -63,13 +73,13 @@ function apply(expr, param, arg) {
     }
 }
 class Lambda {
-    constructor(args, body) {
-        this.args = args;
+    constructor(arg, body) {
+        this.arg = arg;
         this.body = body;
     }
     toString() {
-        let args = this.args.length == 0 ? "" : `${this.args.join(".")}`;
-        return `λ${args}.${exprString(this.body)}`;
+        // TODO: different printing formats
+        return `λ${this.arg}.${exprString(this.body)}`;
     }
 }
 class Interpreter {
@@ -88,6 +98,7 @@ class Interpreter {
         return exprString(this.expr);
     }
     step() {
+        // TODO: return next expr instead of mutating
         switch (this.expr.type) {
             case "id":
                 if (this.expr.val in this.env) {
@@ -107,16 +118,7 @@ class Interpreter {
                         expr[0] = this.env[fun.val];
                         return;
                     case "lambda":
-                        fun.val.args = fun.val.args.slice(1);
-                        fun.val.body = apply(fun.val.body, fun.val.args[0], expr[1]);
-                        if (fun.val.args.length == 0) {
-                            if (expr.length > 2) {
-                                throw new Error("Too many arguments");
-                            }
-                            this.expr = fun.val.body;
-                            return;
-                        }
-                        this.expr = { type: "list", val: expr.slice(2) };
+                        this.expr = apply(fun.val.body, fun.val.arg, expr[1]);
                         return;
                     case "list":
                         throw new Error("can't apply list");
