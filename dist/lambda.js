@@ -34,7 +34,7 @@ function exprString(expr) {
         case "id":
             return expr.val;
         case "lambda":
-            return expr.val.toString();
+            return lambdaToString(expr.val);
         case "list":
             return `(${expr.val.map((x) => exprString(x)).join(" ")})`;
     }
@@ -43,9 +43,12 @@ function currify(args, body) {
     if (args.length == 0) {
         throw new Error("nullary lambda disallowed");
     }
-    let lambda = new Lambda(args.pop(), body);
+    let lambda = { arg: args.pop(), body };
     while (args.length > 0) {
-        lambda = new Lambda(args.pop(), { type: "lambda", val: lambda });
+        lambda = {
+            arg: args.pop(),
+            body: { type: "lambda", val: lambda },
+        };
     }
     return lambda;
 }
@@ -72,15 +75,9 @@ function apply(expr, param, arg) {
             return { type: "list", val: expr.val.map((x) => apply(x, param, arg)) };
     }
 }
-class Lambda {
-    constructor(arg, body) {
-        this.arg = arg;
-        this.body = body;
-    }
-    toString() {
-        // TODO: different printing formats
-        return `λ${this.arg}.${exprString(this.body)}`;
-    }
+function lambdaToString(val) {
+    // TODO: different printing formats
+    return `λ${val.arg}.${exprString(val.body)}`;
 }
 class Interpreter {
     constructor(input) {

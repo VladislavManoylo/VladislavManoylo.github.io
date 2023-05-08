@@ -44,7 +44,7 @@ function exprString(expr: LambdaExpr): string {
     case "id":
       return expr.val;
     case "lambda":
-      return expr.val.toString();
+      return lambdaToString(expr.val);
     case "list":
       return `(${expr.val.map((x) => exprString(x)).join(" ")})`;
   }
@@ -54,9 +54,12 @@ function currify(args: string[], body: LambdaExpr): Lambda {
   if (args.length == 0) {
     throw new Error("nullary lambda disallowed");
   }
-  let lambda: Lambda = new Lambda(args.pop() as string, body);
+  let lambda: Lambda = { arg: args.pop() as string, body };
   while (args.length > 0) {
-    lambda = new Lambda(args.pop() as string, {type: "lambda", val: lambda});
+    lambda = {
+      arg: args.pop() as string,
+      body: { type: "lambda", val: lambda },
+    };
   }
   return lambda;
 }
@@ -89,20 +92,14 @@ function apply(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
   }
 }
 
-class Lambda {
-  //TODO: back to interface
+interface Lambda {
   arg: string;
   body: LambdaExpr;
+}
 
-  constructor(arg: string, body: LambdaExpr) {
-    this.arg = arg;
-    this.body = body;
-  }
-
-  toString(): string {
-    // TODO: different printing formats
-    return `λ${this.arg}.${exprString(this.body)}`;
-  }
+function lambdaToString(val: Lambda): string {
+  // TODO: different printing formats
+  return `λ${val.arg}.${exprString(val.body)}`;
 }
 
 type Env = Record<string, LambdaExpr>;
