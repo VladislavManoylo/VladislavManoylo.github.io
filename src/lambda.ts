@@ -70,7 +70,8 @@ function apply(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
   return expr === param ? arg : expr;
 }
 
-class Lambda { // TODO: change to unary only
+class Lambda {
+  // TODO: change to unary only
   args: string[];
   body: LambdaExpr;
 
@@ -98,7 +99,6 @@ class Interpreter {
       throw new Error("missing a body expression " + s.length);
     }
     this.expr = sexprToExpr(s.pop()!);
-    console.log("adding", this.expr);
     for (let i = 0; i < s.length; i += 2) {
       this.env[s[i] as string] = sexprToExpr(s[i + 1]);
     }
@@ -123,9 +123,6 @@ class Interpreter {
       this.expr[0] = this.env[fun as string];
       return;
     }
-    if (this.expr.length < 2) {
-      throw new Error("Not enough arguments");
-    }
     fun.args = fun.args.slice(1);
     fun.body = apply(fun.body, fun.args[0], this.expr[1]);
     if (fun.args.length == 0) {
@@ -139,10 +136,25 @@ class Interpreter {
   }
 }
 
+let start = `id (lambda (x) x)
+t (lambda (x y) x)
+f (lambda (x y) y)
+0 (lambda (f x) x)
+1 (lambda (f x) (f x))
+2 (lambda (f x) (f (f x)))
+++ (lambda (n) (lambda (f x) (f (n f x))))
+3 (++ 2)
+(++ 3)
+`;
+
 let output = document.getElementById("output") as HTMLTextAreaElement;
 let input = document.getElementById("input") as HTMLTextAreaElement;
 let button = document.getElementById("step") as HTMLButtonElement;
-let interpreter: Interpreter = new Interpreter("x");
+
+let interpreter: Interpreter = new Interpreter(start);
+input.textContent = start;
+output.textContent = interpreter.toString();
+
 input.addEventListener("input", (event) => {
   let k: string = (event.target as HTMLInputElement).value;
   interpreter = new Interpreter(k);

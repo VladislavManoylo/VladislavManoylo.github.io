@@ -76,7 +76,6 @@ class Interpreter {
             throw new Error("missing a body expression " + s.length);
         }
         this.expr = sexprToExpr(s.pop());
-        console.log("adding", this.expr);
         for (let i = 0; i < s.length; i += 2) {
             this.env[s[i]] = sexprToExpr(s[i + 1]);
         }
@@ -102,9 +101,6 @@ class Interpreter {
             this.expr[0] = this.env[fun];
             return;
         }
-        if (this.expr.length < 2) {
-            throw new Error("Not enough arguments");
-        }
         fun.args = fun.args.slice(1);
         fun.body = apply(fun.body, fun.args[0], this.expr[1]);
         if (fun.args.length == 0) {
@@ -117,10 +113,22 @@ class Interpreter {
         this.expr = this.expr.slice(2);
     }
 }
+let start = `id (lambda (x) x)
+t (lambda (x y) x)
+f (lambda (x y) y)
+0 (lambda (f x) x)
+1 (lambda (f x) (f x))
+2 (lambda (f x) (f (f x)))
+++ (lambda (n) (lambda (f x) (f (n f x))))
+3 (++ 2)
+(++ 3)
+`;
 let output = document.getElementById("output");
 let input = document.getElementById("input");
 let button = document.getElementById("step");
-let interpreter = new Interpreter("x");
+let interpreter = new Interpreter(start);
+input.textContent = start;
+output.textContent = interpreter.toString();
 input.addEventListener("input", (event) => {
     let k = event.target.value;
     interpreter = new Interpreter(k);
