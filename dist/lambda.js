@@ -3,12 +3,12 @@ function tokens(str) {
     let m = str.match(/[()]|[^()\s]+/g);
     return m === null ? [] : m;
 }
-function toSexpr(tokens) {
+function tokensToSexpr(tokens) {
     let ret = [];
     for (let i = 0; i < tokens.length; i++) {
         let t = tokens[i];
         if (t == "(") {
-            const [s, i2] = toSexpr(tokens.slice(i + 1));
+            const [s, i2] = tokensToSexpr(tokens.slice(i + 1));
             ret.push(s);
             i += i2;
         }
@@ -23,53 +23,55 @@ function toSexpr(tokens) {
 }
 function stringToSexpr(str) {
     const t = tokens(str);
-    const [s, i] = toSexpr(t);
+    const [s, i] = tokensToSexpr(t);
     if (i != t.length) {
         throw new Error(t.slice(i) + " not parsed");
     }
     return s;
 }
-class Debruijn {
-    debruijn(body) {
-        if (Array.isArray(body)) {
-            return body.map((x) => this.debruijn(x));
-        }
-        let id = this.args.indexOf(body);
-        return id == -1 ? body : this.args.length - id;
+function exprString(expr) {
+    if (expr instanceof Lambda) {
+        return expr.toString();
     }
-    constructor(expr) {
-        if (Array.isArray(expr) && expr[0] == "lambda") {
-            this.args = expr[1].map((x) => x);
-            this.body = this.debruijn(expr[2]);
-        }
-        else {
-            this.args = [];
-            this.body = expr;
-        }
+    if (Array.isArray(expr)) {
+        return "(" + expr.map((x) => exprString(x)).join(" ") + ")";
     }
-    // console.log(toDebruijn(["lambda", ['f', 'x'], ['succ', ['f', 'x']]]));
-    exprString(expr = this.body) {
-        return Array.isArray(expr)
-            ? "(" + expr.map((x) => this.exprString(x)).join(" ") + ")"
-            : expr.toString();
+    return expr;
+}
+function sexprToExpr(s) {
+    if (!Array.isArray(s)) {
+        return s;
+    }
+    s = s;
+    if (s[0] == "lambda") {
+        return new Lambda(s[1].map(x => x), sexprToExpr(s[2]));
+    }
+    return s.map(x => sexprToExpr(x));
+}
+class Lambda {
+    constructor(args, body) {
+        this.args = args;
+        this.body = body;
     }
     toString() {
         let args = this.args.length == 0 ? "" : `[${this.args}]`;
-        return `${args} ${this.exprString()}`;
+        return `${args} ${exprString(this.body)}`;
     }
 }
 class Console {
     constructor(input) {
         this.env = {};
         let s = stringToSexpr(input);
-        // assert(s.length % 2 == 1);
-        for (let i = 0; i < s.length; i += 2) {
-            this.env[s[i]] = new Debruijn(s[i + 1]);
+        if (s.length % 2 != 1) {
+            throw new Error("need body expression");
         }
-        this.expr = new Debruijn(s[s.length - 1]);
+        for (let i = 0; i < s.length; i += 2) {
+            this.env[s[i]] = sexprToExpr(s[i + 1]);
+        }
+        this.expr = sexprToExpr(s[s.length - 1]);
     }
     toString() {
-        return this.expr.toString();
+        return exprString(this.expr);
     }
 }
 let output = document.getElementById("output");
