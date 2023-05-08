@@ -29,48 +29,47 @@ function stringToSexpr(str) {
     }
     return s;
 }
-function toDebruijnHelp(args, body) {
-    if (Array.isArray(body)) {
-        let newBody = [];
-        for (let it of body) {
-            newBody.push(toDebruijnHelp(args, it).body);
+class Debruijn {
+    debruijn(body) {
+        if (Array.isArray(body)) {
+            return body.map(x => this.debruijn(x));
         }
-        return { args: args.length, body: newBody };
+        let id = this.args.indexOf(body);
+        return id == -1 ? body : this.args.length - id;
     }
-    else {
-        body = body;
-        let id = args.indexOf(body);
-        if (id != -1) {
-            return { args: args.length, body: args.length - id };
+    constructor(expr) {
+        if (Array.isArray(expr)) {
+            expr = expr;
+            this.args = expr[1].map(x => x);
+            this.body = this.debruijn(expr[2]);
         }
-        return { args: args.length, body: body };
+        else {
+            this.args = [];
+            this.body = expr;
+        }
+    }
+    // console.log(toDebruijn(["lambda", ['f', 'x'], ['succ', ['f', 'x']]]));
+    exprString(expr = this.body) {
+        return Array.isArray(expr)
+            ? "(" + expr.map(x => this.exprString(x)).join(" ") + ")"
+            : expr.toString();
+    }
+    toString() {
+        return `[${this.args}] ${this.exprString()}`;
     }
 }
-// console.log(toDebruijnHelp(['f', 'x'], ['succ', ['f', 'x']]));
-function toDebruijn(expr) {
-    if (Array.isArray(expr)) {
-        expr = expr;
-        let args = expr[1].map(x => x);
-        let body = expr[2];
-        return toDebruijnHelp(args, body);
-    }
-    else {
-        return { args: 0, body: expr };
-    }
-}
-// console.log(toDebruijn(["lambda", ['f', 'x'], ['succ', ['f', 'x']]]));
 class Console {
     constructor(input) {
         this.env = {};
         let s = stringToSexpr(input);
         // assert(s.length % 2 == 1);
         for (let i = 0; i < s.length; i += 2) {
-            this.env[s[i]] = toDebruijn(s[i + 1]);
+            this.env[s[i]] = new Debruijn(s[i + 1]);
         }
-        this.expr = toDebruijn(s[s.length - 1]);
+        this.expr = new Debruijn(s[s.length - 1]);
     }
     toString() {
-        return `[${this.expr.args}] ${this.expr.body.toString()}`;
+        return this.expr.toString();
     }
 }
 let output = document.getElementById("output");

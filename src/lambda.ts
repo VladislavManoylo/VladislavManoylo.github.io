@@ -38,42 +38,41 @@ function stringToSexpr(str: string): sexpr {
 
 type Lambda = Lambda[] | number | string;
 
-interface Debruijn {
-    args: number;
+class Debruijn {
+    args: string[];
     body: Lambda;
-}
 
-function toDebruijnHelp(args: string[], body: sexpr): Debruijn {
-    if (Array.isArray(body)) {
-        let newBody: Lambda[] = [];
-        for (let it of body) {
-            newBody.push(toDebruijnHelp(args, it).body);
+    debruijn(body: sexpr): Lambda {
+        if (Array.isArray(body)) {
+            return body.map(x => this.debruijn(x));
         }
-        return {args: args.length, body: newBody};
+        let id = this.args.indexOf(body as string);
+        return id == -1 ? body : this.args.length - id;
     }
-    else {
-        body = body as string;
-        let id = args.indexOf(body);
-        if (id != -1) {
-            return {args: args.length, body: args.length - id};
-        }
-        return {args: args.length, body: body};
-    }
-}
-// console.log(toDebruijnHelp(['f', 'x'], ['succ', ['f', 'x']]));
 
-function toDebruijn(expr: sexpr): Debruijn {
-    if (Array.isArray(expr)) {
-        expr = expr as sexpr[];
-        let args = (expr[1] as sexpr[]).map(x => x as string);
-        let body = expr[2] as sexpr;
-        return toDebruijnHelp(args, body);
+    constructor(expr: sexpr) {
+        if (Array.isArray(expr)) {
+            expr = expr as sexpr[];
+            this.args = (expr[1] as sexpr[]).map(x => x as string);
+            this.body = this.debruijn(expr[2] as sexpr);
+        }
+        else {
+            this.args = [];
+            this.body = expr;
+        }
     }
-    else {
-        return {args: 0, body: expr};
+    // console.log(toDebruijn(["lambda", ['f', 'x'], ['succ', ['f', 'x']]]));
+
+    exprString(expr: Lambda = this.body): string {
+        return Array.isArray(expr) 
+            ? "(" + expr.map(x => this.exprString(x)).join(" ") + ")"
+            : expr.toString();
+    }
+
+    toString(): string {
+        return `[${this.args}] ${this.exprString()}`;
     }
 }
-// console.log(toDebruijn(["lambda", ['f', 'x'], ['succ', ['f', 'x']]]));
 
 class Console {
     env: Record<string, Debruijn> = {};
@@ -82,12 +81,12 @@ class Console {
         let s : sexpr[] = stringToSexpr(input) as sexpr[];
         // assert(s.length % 2 == 1);
         for (let i = 0; i < s.length; i += 2) {
-            this.env[s[i] as string] = toDebruijn(s[i+1]);
+            this.env[s[i] as string] = new Debruijn(s[i+1]);
         }
-        this.expr = toDebruijn(s[s.length-1]);
+        this.expr = new Debruijn(s[s.length-1]);
     }
     toString(): string {
-        return `[${this.expr.args}] ${this.expr.body.toString()}`;
+        return this.expr.toString();
     }
 }
 
