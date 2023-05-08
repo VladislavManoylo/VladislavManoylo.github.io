@@ -49,8 +49,7 @@ class Debruijn {
   }
 
   constructor(expr: sexpr) {
-    if (Array.isArray(expr)) {
-      expr = expr as sexpr[];
+    if (Array.isArray(expr) && expr[0] == "lambda") {
       this.args = (expr[1] as sexpr[]).map((x) => x as string);
       this.body = this.debruijn(expr[2] as sexpr);
     } else {
@@ -67,7 +66,8 @@ class Debruijn {
   }
 
   toString(): string {
-    return `[${this.args}] ${this.exprString()}`;
+    let args = this.args.length == 0 ? "" : `[${this.args}]`;
+    return `${args} ${this.exprString()}`;
   }
 }
 

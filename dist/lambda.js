@@ -38,8 +38,7 @@ class Debruijn {
         return id == -1 ? body : this.args.length - id;
     }
     constructor(expr) {
-        if (Array.isArray(expr)) {
-            expr = expr;
+        if (Array.isArray(expr) && expr[0] == "lambda") {
             this.args = expr[1].map((x) => x);
             this.body = this.debruijn(expr[2]);
         }
@@ -55,7 +54,8 @@ class Debruijn {
             : expr.toString();
     }
     toString() {
-        return `[${this.args}] ${this.exprString()}`;
+        let args = this.args.length == 0 ? "" : `[${this.args}]`;
+        return `${args} ${this.exprString()}`;
     }
 }
 class Console {
