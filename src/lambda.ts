@@ -86,6 +86,11 @@ function apply(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
     case "id":
       return expr.val === param ? arg : expr;
     case "lambda":
+      if (expr.val.arg === param) {
+        return expr;
+      }
+      let body = apply(expr.val.body, param, arg);
+      expr.val.body = body;
       return expr;
     case "list":
       return { type: "list", val: expr.val.map((x) => apply(x, param, arg)) };
