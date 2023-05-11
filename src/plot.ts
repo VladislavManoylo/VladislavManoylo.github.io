@@ -1,6 +1,6 @@
-import { Pencil } from "./pencil.js"
-import { v2 } from "./v2.js"
-import { coefToPolynomial } from "./fun.js"
+import { Pencil } from "./pencil.js";
+import { v2 } from "./v2.js";
+import { coefToPolynomial } from "./fun.js";
 
 class Plot {
   canvas: HTMLCanvasElement;
@@ -15,14 +15,17 @@ class Plot {
     a -= min;
     a /= height;
     let h = this.canvas.height;
-    return h - (a * h);
+    return h - a * h;
   }
   plot(ys: number[]) {
     let min = Math.min(...ys);
     let h = Math.max(...ys) - min;
     if (h == 0) {
       let y = this.canvas.height / 2;
-      this.paths.push([{x:0, y},{x:this.canvas.width, y}]);
+      this.paths.push([
+        { x: 0, y },
+        { x: this.canvas.width, y },
+      ]);
       return;
     }
     let dx = this.canvas.width / (ys.length - 1);
@@ -42,7 +45,7 @@ class Plot {
     this.plot(ys);
   }
   clear() {
-      this.paths = [];
+    this.paths = [];
   }
   show() {
     this.pencil.clear();
@@ -56,9 +59,9 @@ let plot = new Plot("canvas");
 plot.fun(Math.sin, 0, 2 * Math.PI, 100);
 plot.show();
 document.getElementById("fun")?.addEventListener("input", (event) => {
-    let text = (event.target as HTMLInputElement).value;
-    let f = coefToPolynomial(text.split(/\s+/).map(Number));
-    plot.clear();
-    plot.fun(f, -1, 2, 100);
-    plot.show();
+  let text = (event.target as HTMLInputElement).value;
+  let f = coefToPolynomial(text.split(/\s+/).map(Number));
+  plot.clear();
+  plot.fun(f, -1, 2, 100);
+  plot.show();
 });

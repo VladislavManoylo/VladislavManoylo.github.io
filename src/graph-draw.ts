@@ -1,6 +1,6 @@
-import * as v2 from "./v2.js"
-import { Drawer } from "./graph.js"
-import { Pencil } from "./pencil.js"
+import * as v2 from "./v2.js";
+import { Drawer } from "./graph.js";
+import { Pencil } from "./pencil.js";
 
 enum ButtonChoice {
   MoveVertex,
@@ -18,11 +18,13 @@ class Buttons {
     this.selected = selected;
     this.buttons = [pos];
     for (const a of [-1 / 6, -1 / 2, -5 / 6]) {
-      this.buttons.push(v2.addPoint(pos, v2.polarToPoint(a * Math.PI, this.radius)))
+      this.buttons.push(
+        v2.addPoint(pos, v2.polarToPoint(a * Math.PI, this.radius))
+      );
     }
   }
   buttonAt(pos: v2.v2): ButtonChoice | undefined {
-    let i = this.buttons.findIndex(it => v2.overlap(it, pos, this.radius));
+    let i = this.buttons.findIndex((it) => v2.overlap(it, pos, this.radius));
     return i >= 0 ? i : undefined;
   }
   draw(): void {
@@ -48,9 +50,9 @@ class Controller {
     });
   }
   click(pos: v2.v2): void {
-    let button = this.buttons?.buttonAt(pos)
+    let button = this.buttons?.buttonAt(pos);
     if (button !== undefined) {
-      console.log('a');
+      console.log("a");
       this.lastButton = button;
       switch (button) {
         case ButtonChoice.DeleteVertex:
@@ -63,7 +65,7 @@ class Controller {
     }
     let i = this.drawer.vertexAt(pos);
     if (i !== undefined) {
-      console.log('b');
+      console.log("b");
       // console.log('b', ButtonChoice[this.lastButton])
       switch (this.lastButton) {
         case ButtonChoice.DeleteEdge:
@@ -74,15 +76,18 @@ class Controller {
           break;
         case undefined:
         default:
-          this.buttons = new Buttons(this.drawer.pencil, this.drawer.vertexPositions[i], i);
+          this.buttons = new Buttons(
+            this.drawer.pencil,
+            this.drawer.vertexPositions[i],
+            i
+          );
           this.lastButton = undefined;
           break;
       }
       this.drawer.draw();
       this.buttons?.draw();
       return;
-    }
-    else {
+    } else {
       if (this.lastButton == ButtonChoice.MoveVertex) {
         this.drawer.vertexPositions[this.buttons!.selected] = pos;
       } else if (this.buttons == undefined) {

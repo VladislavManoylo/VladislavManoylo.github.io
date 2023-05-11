@@ -1,5 +1,5 @@
-import * as v2 from "./v2.js"
-import { Pencil } from "./pencil.js"
+import * as v2 from "./v2.js";
+import { Pencil } from "./pencil.js";
 type Vertex = number;
 
 export class Graph {
@@ -17,7 +17,7 @@ export class Graph {
     if (connected) {
       let j = this.vertices - 1;
       for (let i = 0; i < j; i++) {
-        this.edges[i].push(j)
+        this.edges[i].push(j);
       }
       for (let i = 0; i < j; i++) {
         this.edges[j][i] = i;
@@ -29,7 +29,7 @@ export class Graph {
     this.vertices--;
     this.edges.splice(n, 1);
     for (let i = 0; i < this.vertices; i++) {
-      this.edges[i] = this.edges[i].filter(i => i == n);
+      this.edges[i] = this.edges[i].filter((i) => i == n);
     }
   }
 
@@ -79,12 +79,18 @@ export class Drawer {
     this.graph.deleteVertex(i);
     this.vertexPositions.splice(i, 1);
   }
-  deleteEdge(i: number, j: number): void { this.graph.deleteEdge(i, j); }
-  addEdge(i: number, j: number): void { this.graph.addEdge(i, j); }
+  deleteEdge(i: number, j: number): void {
+    this.graph.deleteEdge(i, j);
+  }
+  addEdge(i: number, j: number): void {
+    this.graph.addEdge(i, j);
+  }
 
   /** returns the highest index vertex that overlaps with the point */
   vertexAt(point: v2.v2): number | undefined {
-    let i = this.vertexPositions.findIndex(it => v2.overlap(point, it, this.radius));
+    let i = this.vertexPositions.findIndex((it) =>
+      v2.overlap(point, it, this.radius)
+    );
     return i >= 0 ? i : undefined;
   }
 
@@ -93,8 +99,8 @@ export class Drawer {
     this.pencil.clear();
     for (let i = 0; i < this.graph.vertices; i++) {
       for (let j of this.graph.edges[i]) {
-        let p1 = this.vertexPositions[i]
-        let p2 = this.vertexPositions[j]
+        let p1 = this.vertexPositions[i];
+        let p2 = this.vertexPositions[j];
         this.pencil.line(p1, p2);
       }
     }

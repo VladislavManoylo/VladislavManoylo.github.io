@@ -11,14 +11,17 @@ class Plot {
         a -= min;
         a /= height;
         let h = this.canvas.height;
-        return h - (a * h);
+        return h - a * h;
     }
     plot(ys) {
         let min = Math.min(...ys);
         let h = Math.max(...ys) - min;
         if (h == 0) {
             let y = this.canvas.height / 2;
-            this.paths.push([{ x: 0, y }, { x: this.canvas.width, y }]);
+            this.paths.push([
+                { x: 0, y },
+                { x: this.canvas.width, y },
+            ]);
             return;
         }
         let dx = this.canvas.width / (ys.length - 1);

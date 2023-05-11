@@ -1,4 +1,4 @@
-export type v2 = { x: number; y: number; };
+export type v2 = { x: number; y: number };
 export function overlap(p1: v2, p2: v2, r: number): Boolean {
   const dx = p1.x - p2.x;
   const dy = p1.y - p2.y;
@@ -22,4 +22,3 @@ export function distPoint(p1: v2, p2: v2): number {
   let y = p1.y - p2.y;
   return x * x + y * y;
 }
-

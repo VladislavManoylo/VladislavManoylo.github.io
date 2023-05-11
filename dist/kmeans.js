@@ -16,7 +16,9 @@ class KMeans {
             }
         });
         // document.getElementById("reset")?.addEventListener("click", this.reset);
-        (_b = document.getElementById("reset")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => { this.resetCentroids(this.centroids.length); });
+        (_b = document.getElementById("reset")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
+            this.resetCentroids(this.centroids.length);
+        });
         (_c = document.getElementById("assign")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => {
             this.centroidAssignment = [];
             for (let p of this.points) {
@@ -68,7 +70,6 @@ class KMeans {
         }
         this.draw();
     }
-    ;
     draw() {
         this.drawer.clear();
         for (let p of this.centroids) {
