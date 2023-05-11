@@ -1,4 +1,4 @@
-import { v2 } from "./v2.js"
+import { v2 } from "./v2.js";
 export class Pencil {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -10,7 +10,7 @@ export class Pencil {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
   line(a: v2, b: v2) {
-    this.ctx.beginPath()
+    this.ctx.beginPath();
     this.ctx.moveTo(a.x, a.y);
     this.ctx.lineTo(b.x, b.y);
     this.ctx.stroke();

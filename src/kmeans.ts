@@ -1,5 +1,5 @@
-import * as v2 from "./v2.js"
-import { Drawer } from "./graph.js"
+import * as v2 from "./v2.js";
+import { Drawer } from "./graph.js";
 
 const radius = 10;
 
@@ -17,7 +17,9 @@ class KMeans {
       }
     });
     // document.getElementById("reset")?.addEventListener("click", this.reset);
-    document.getElementById("reset")?.addEventListener("click", () => { this.resetCentroids(this.centroids.length) });
+    document.getElementById("reset")?.addEventListener("click", () => {
+      this.resetCentroids(this.centroids.length);
+    });
     document.getElementById("assign")?.addEventListener("click", () => {
       this.centroidAssignment = [];
       for (let p of this.points) {
@@ -68,7 +70,7 @@ class KMeans {
       this.centroids.push({ x, y });
     }
     this.draw();
-  };
+  }
   draw(): void {
     this.drawer.clear();
     for (let p of this.centroids) {
@@ -80,11 +82,11 @@ class KMeans {
     let lp = this.centroidAssignment.length;
     let k = this.centroids.length;
     for (let i = 0; i < lp; i++) {
-      this.drawer.addEdge(this.centroidAssignment[i], k + i)
+      this.drawer.addEdge(this.centroidAssignment[i], k + i);
     }
     this.drawer.draw();
     for (let p of this.centroids) {
-      this.drawer.pencil.circle(p, radius, "red")
+      this.drawer.pencil.circle(p, radius, "red");
     }
   }
 }

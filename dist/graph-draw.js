@@ -18,7 +18,7 @@ class Buttons {
         }
     }
     buttonAt(pos) {
-        let i = this.buttons.findIndex(it => v2.overlap(it, pos, this.radius));
+        let i = this.buttons.findIndex((it) => v2.overlap(it, pos, this.radius));
         return i >= 0 ? i : undefined;
     }
     draw() {
@@ -46,7 +46,7 @@ class Controller {
         var _a, _b;
         let button = (_a = this.buttons) === null || _a === void 0 ? void 0 : _a.buttonAt(pos);
         if (button !== undefined) {
-            console.log('a');
+            console.log("a");
             this.lastButton = button;
             switch (button) {
                 case ButtonChoice.DeleteVertex:
@@ -59,7 +59,7 @@ class Controller {
         }
         let i = this.drawer.vertexAt(pos);
         if (i !== undefined) {
-            console.log('b');
+            console.log("b");
             // console.log('b', ButtonChoice[this.lastButton])
             switch (this.lastButton) {
                 case ButtonChoice.DeleteEdge:
