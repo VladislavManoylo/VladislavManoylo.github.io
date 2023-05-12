@@ -1,5 +1,4 @@
 const verbose = false;
-const web = true;
 
 //TODO: write tests
 type sexpr = sexpr[] | string;
@@ -123,61 +122,61 @@ function evalLambda(expr: LambdaExpr, env: Env): LambdaExpr {
   }
 }
 
-type Env = { [key: string]: LambdaExpr };
-
-class Interpreter {
-  env: Env = {};
-  expr: LambdaExpr;
-  constructor(input: string) {
-    let s: sexpr[] = stringToSexpr(input) as sexpr[];
-    if (s.length % 2 == 0) {
-      throw new Error("missing a body expression " + s.length);
-    }
-    this.expr = sexprToExpr(s.pop()!);
-    for (let i = 0; i < s.length; i += 2) {
-      this.env[s[i] as string] = sexprToExpr(s[i + 1]);
-    }
-  }
-  toString(): string {
-    return exprString(this.expr);
-  }
-  eval() {
-    this.expr = evalLambda(this.expr, this.env);
-    // TODO: keep history when evalStep doesn't mutate
-  }
+function readExpr(str: string): LambdaExpr {
+  console.log("A", str);
+  console.log("B", stringToSexpr(str));
+  console.log("C", sexprToExpr(stringToSexpr(str)));
+  return sexprToExpr(stringToSexpr(str)[0]);
 }
 
-let start = `id (lambda (x) x)
-true (lambda (x y) x)
-false (lambda (x y) y)
+type Env = { [key: string]: LambdaExpr };
+function readEnv(str: string): Env {
+  let ret: Env = {};
+  let s: sexpr[] = stringToSexpr(str) as sexpr[];
+  for (let i = 0; i < s.length; i += 2) {
+    ret[s[i] as string] = sexprToExpr(s[i + 1]);
+  }
+  return ret;
+}
+
+let envStr = `ID (lambda (x) x)
+T (lambda (x y) x)
+F (lambda (x y) y)
+NOT (lambda (p) (p F T))
+AND (lambda (p q) (p q p))
+OR (lambda (p q) (p p q))
 0 (lambda (f x) x)
+SUCC (lambda (n f x) (f (n f x)))
+PLUS (lambda (m n) (m SUCC n))
+MULT (lambda (m n) (m (plus n) 0))
+POW (lambda (b e) (e b))
 1 (lambda (f x) (f x))
 2 (lambda (f x) (f (f x)))
-++ (lambda (n f x) (f (n f x)))
-3 (++ 2)
-3
+3 (SUCC 2)
+4 (SUCC 3)
 `;
+let exprStr = `SUCC 0`;
 
-let interpreter: Interpreter = new Interpreter(start);
+let env: Env = readEnv(envStr);
+let expr: LambdaExpr = readExpr(exprStr);
+let output: LambdaExpr = evalLambda(expr, env);
 
-if (web) {
-  let output = document.getElementById("output") as HTMLTextAreaElement;
-  let input = document.getElementById("input") as HTMLTextAreaElement;
-  let button = document.getElementById("step") as HTMLButtonElement;
+let envText = document.getElementById("env") as HTMLTextAreaElement;
+let outputText = document.getElementById("output") as HTMLTextAreaElement;
+let exprText = document.getElementById("input") as HTMLTextAreaElement;
 
-  input.textContent = start;
-  output.textContent = interpreter.toString();
+envText.textContent = envStr;
+exprText.textContent = exprStr;
+outputText.textContent = exprString(expr) + '\n' + exprString(output);
 
-  input.addEventListener("input", (event) => {
-    let k: string = (event.target as HTMLInputElement).value;
-    interpreter = new Interpreter(k);
-    output.textContent = interpreter.toString();
-  });
-  button.addEventListener("click", () => {
-    interpreter.eval();
-    output.textContent += "\n" + interpreter.toString();
-  });
-} else {
-  interpreter.eval();
-  console.log(interpreter.toString());
-}
+envText.addEventListener("input", (event) => {
+  let k: string = (event.target as HTMLInputElement).value;
+  env = readEnv(k);
+});
+exprText.addEventListener("input", (event) => {
+  let k: string = (event.target as HTMLInputElement).value;
+  expr = readExpr(k);
+  outputText.textContent += exprString(expr);
+  output = evalLambda(expr, env);
+  outputText.textContent += '\n' + exprString(output);
+});

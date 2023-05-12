@@ -1,6 +1,5 @@
 "use strict";
 const verbose = false;
-const web = true;
 function tokens(str) {
     let m = str.match(/[()]|[^()\s]+/g);
     return m === null ? [] : m;
@@ -110,54 +109,54 @@ function evalLambda(expr, env) {
             }
     }
 }
-class Interpreter {
-    constructor(input) {
-        this.env = {};
-        let s = stringToSexpr(input);
-        if (s.length % 2 == 0) {
-            throw new Error("missing a body expression " + s.length);
-        }
-        this.expr = sexprToExpr(s.pop());
-        for (let i = 0; i < s.length; i += 2) {
-            this.env[s[i]] = sexprToExpr(s[i + 1]);
-        }
-    }
-    toString() {
-        return exprString(this.expr);
-    }
-    eval() {
-        this.expr = evalLambda(this.expr, this.env);
-        // TODO: keep history when evalStep doesn't mutate
-    }
+function readExpr(str) {
+    console.log("A", str);
+    console.log("B", stringToSexpr(str));
+    console.log("C", sexprToExpr(stringToSexpr(str)));
+    return sexprToExpr(stringToSexpr(str)[0]);
 }
-let start = `id (lambda (x) x)
-true (lambda (x y) x)
-false (lambda (x y) y)
+function readEnv(str) {
+    let ret = {};
+    let s = stringToSexpr(str);
+    for (let i = 0; i < s.length; i += 2) {
+        ret[s[i]] = sexprToExpr(s[i + 1]);
+    }
+    return ret;
+}
+let envStr = `ID (lambda (x) x)
+T (lambda (x y) x)
+F (lambda (x y) y)
+NOT (lambda (p) (p F T))
+AND (lambda (p q) (p q p))
+OR (lambda (p q) (p p q))
 0 (lambda (f x) x)
+SUCC (lambda (n f x) (f (n f x)))
+PLUS (lambda (m n) (m SUCC n))
+MULT (lambda (m n) (m (plus n) 0))
+POW (lambda (b e) (e b))
 1 (lambda (f x) (f x))
 2 (lambda (f x) (f (f x)))
-++ (lambda (n f x) (f (n f x)))
-3 (++ 2)
-3
+3 (SUCC 2)
+4 (SUCC 3)
 `;
-let interpreter = new Interpreter(start);
-if (web) {
-    let output = document.getElementById("output");
-    let input = document.getElementById("input");
-    let button = document.getElementById("step");
-    input.textContent = start;
-    output.textContent = interpreter.toString();
-    input.addEventListener("input", (event) => {
-        let k = event.target.value;
-        interpreter = new Interpreter(k);
-        output.textContent = interpreter.toString();
-    });
-    button.addEventListener("click", () => {
-        interpreter.eval();
-        output.textContent += "\n" + interpreter.toString();
-    });
-}
-else {
-    interpreter.eval();
-    console.log(interpreter.toString());
-}
+let exprStr = `SUCC 0`;
+let env = readEnv(envStr);
+let expr = readExpr(exprStr);
+let output = evalLambda(expr, env);
+let envText = document.getElementById("env");
+let outputText = document.getElementById("output");
+let exprText = document.getElementById("input");
+envText.textContent = envStr;
+exprText.textContent = exprStr;
+outputText.textContent = exprString(expr) + '\n' + exprString(output);
+envText.addEventListener("input", (event) => {
+    let k = event.target.value;
+    env = readEnv(k);
+});
+exprText.addEventListener("input", (event) => {
+    let k = event.target.value;
+    expr = readExpr(k);
+    outputText.textContent += exprString(expr);
+    output = evalLambda(expr, env);
+    outputText.textContent += '\n' + exprString(output);
+});
