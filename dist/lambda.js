@@ -3,6 +3,12 @@ export function toLambdaExpr(s) {
         return { type: "id", val: s };
     }
     s = s;
+    if (s.length == 0) {
+        throw new Error("empty expr");
+    }
+    if (s.length == 1) { // unnesting
+        return toLambdaExpr(s[0]);
+    }
     if (s[0] == "lambda") {
         // (lambda (params...) body)
         let params = s[1];
@@ -13,7 +19,7 @@ export function toLambdaExpr(s) {
         if (params.length == 0) {
             throw new Error("nullary lambda disallowed");
         }
-        let body = toLambdaExpr(s[2]);
+        let body = toLambdaExpr(s.slice(2));
         let lambda = { arg: params.pop(), body };
         while (params.length > 0) {
             lambda = {
@@ -25,9 +31,6 @@ export function toLambdaExpr(s) {
     }
     else {
         // application
-        if (s.length < 2) {
-            throw new Error("not enough to apply " + s);
-        }
         let l = s.map((x) => toLambdaExpr(x));
         return l.slice(1).reduce((prev, curr) => {
             return { type: "apply", val: [prev, curr] };

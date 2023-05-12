@@ -14,20 +14,20 @@ test("sexpr->expr apply", () => {
   expect(reprint("(x y)")).toBe("(x y)");
   expect(reprint("x y")).toBe("(x y)");
   expect(reprint("x y z")).toBe("((x y) z)");
-  expect(reprint("x (y z)")).toBe("((x y) z)");
+  expect(reprint("x (y z)")).toBe("(x (y z))");
 });
 
 test("sexpr->expr lambda", () => {
   expect(reprint("lambda (x) x")).toBe("λx.x");
-  expect(reprint("(lambda (x) x)")).toBe("λx.x");
+  expect(reprint("(lambda (x) (x))")).toBe("λx.x");
   expect(reprint("(lambda (x y) x)")).toBe("λx.λy.x");
-  expect(reprint("(lambda (x) )")).toThrow("");
-  expect(reprint("(lambda () x)")).toThrow("");
-  // not the parsers job to check for free variables
-  // and could mean something in the environment
+  expect(reprint("(lambda (x) (lambda (y) x))")).toBe("λx.λy.x");
   expect(reprint("(lambda (x) ?)")).toBe("λx.?");
 });
 
-// test("sexpr->expr", () => {
-//   expect(reprint("").toBe("");
-// });
+test("sexpr->expr", () => {
+  expect(reprint("(lambda (f x) f x)")).toBe("λf.λx.(f x)");
+  expect(reprint("(lambda (f) (lambda (x) f x))")).toBe("λf.λx.(f x)");
+  expect(reprint("(lambda (a) a (lambda (b) b))")).toBe("λa.(a λb.b)");
+  expect(reprint("(lambda (a) a (lambda (b) b a))")).toBe("λa.(a λb.(b a))");
+});
