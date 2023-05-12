@@ -1,41 +1,5 @@
 const verbose = false;
-
-//TODO: write tests
-type sexpr = sexpr[] | string;
-
-function tokens(str: string): string[] {
-  let m = str.match(/[()]|[^()\s]+/g);
-  return m === null ? [] : m;
-}
-
-function tokensToSexpr(tokens: string[]): [sexpr, number] {
-  let ret: sexpr[] = [];
-  for (let i = 0; i < tokens.length; i++) {
-    let t = tokens[i];
-    if (t == "(") {
-      const [s, i2] = tokensToSexpr(tokens.slice(i + 1));
-      ret.push(s);
-      i += i2;
-    } else if (t == ")") {
-      return [ret, i + 1];
-    } else {
-      ret.push(t);
-    }
-  }
-  return [ret, tokens.length];
-}
-
-function stringToSexpr(str: string): sexpr {
-  const t = tokens(str);
-  const [s, i] = tokensToSexpr(t);
-  if (i != t.length) {
-    throw new Error(t.slice(i) + " not parsed");
-  }
-  return s;
-}
-// console.log(stringToSexpr("a bc 123 4+5"));
-// console.log(stringToSexpr("(a (bc))"));
-// console.log(stringToSexpr("a (bc (+ 1 2) 4"));
+import { sexpr, toSexpr } from "./sexpr";
 
 type LambdaExpr =
   | { type: "id"; val: string }
@@ -124,15 +88,15 @@ function evalLambda(expr: LambdaExpr, env: Env): LambdaExpr {
 
 function readExpr(str: string): LambdaExpr {
   console.log("A", str);
-  console.log("B", stringToSexpr(str));
-  console.log("C", sexprToExpr(stringToSexpr(str)));
-  return sexprToExpr(stringToSexpr(str)[0]);
+  console.log("B", toSexpr(str));
+  console.log("C", sexprToExpr(toSexpr(str)));
+  return sexprToExpr(toSexpr(str)[0]);
 }
 
 type Env = { [key: string]: LambdaExpr };
 function readEnv(str: string): Env {
   let ret: Env = {};
-  let s: sexpr[] = stringToSexpr(str) as sexpr[];
+  let s: sexpr[] = toSexpr(str) as sexpr[];
   for (let i = 0; i < s.length; i += 2) {
     ret[s[i] as string] = sexprToExpr(s[i + 1]);
   }

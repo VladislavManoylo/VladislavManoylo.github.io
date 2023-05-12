@@ -1,35 +1,5 @@
-"use strict";
 const verbose = false;
-function tokens(str) {
-    let m = str.match(/[()]|[^()\s]+/g);
-    return m === null ? [] : m;
-}
-function tokensToSexpr(tokens) {
-    let ret = [];
-    for (let i = 0; i < tokens.length; i++) {
-        let t = tokens[i];
-        if (t == "(") {
-            const [s, i2] = tokensToSexpr(tokens.slice(i + 1));
-            ret.push(s);
-            i += i2;
-        }
-        else if (t == ")") {
-            return [ret, i + 1];
-        }
-        else {
-            ret.push(t);
-        }
-    }
-    return [ret, tokens.length];
-}
-function stringToSexpr(str) {
-    const t = tokens(str);
-    const [s, i] = tokensToSexpr(t);
-    if (i != t.length) {
-        throw new Error(t.slice(i) + " not parsed");
-    }
-    return s;
-}
+import { toSexpr } from "./sexpr";
 function exprString(expr) {
     switch (expr.type) {
         case "id":
@@ -111,13 +81,13 @@ function evalLambda(expr, env) {
 }
 function readExpr(str) {
     console.log("A", str);
-    console.log("B", stringToSexpr(str));
-    console.log("C", sexprToExpr(stringToSexpr(str)));
-    return sexprToExpr(stringToSexpr(str)[0]);
+    console.log("B", toSexpr(str));
+    console.log("C", sexprToExpr(toSexpr(str)));
+    return sexprToExpr(toSexpr(str)[0]);
 }
 function readEnv(str) {
     let ret = {};
-    let s = stringToSexpr(str);
+    let s = toSexpr(str);
     for (let i = 0; i < s.length; i += 2) {
         ret[s[i]] = sexprToExpr(s[i + 1]);
     }
