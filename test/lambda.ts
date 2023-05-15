@@ -1,4 +1,4 @@
-import { exprString, toLambdaExpr } from "../src/lambda"
+import { exprString, toLambdaExpr } from "../src/lambda";
 import { toSexpr } from "../src/sexpr";
 
 function reprint(str: string): string {
@@ -27,7 +27,17 @@ test("sexpr->expr lambda", () => {
 
 test("sexpr->expr", () => {
   expect(reprint("(lambda (f x) f x)")).toBe("λf.λx.(f x)");
+  expect(reprint("(lambda (x) y)")).toBe("λx.y"); // has a free variable, but parser doesn't check
   expect(reprint("(lambda (f) (lambda (x) f x))")).toBe("λf.λx.(f x)");
   expect(reprint("(lambda (a) a (lambda (b) b))")).toBe("λa.(a λb.b)");
   expect(reprint("(lambda (a) a (lambda (b) b a))")).toBe("λa.(a λb.(b a))");
+});
+
+test("sexpr->expr errors", () => {
+  expect(() => {
+    reprint("(lambda (x) )");
+  }).toThrowError("empty expr");
+  expect(() => {
+    reprint("(lambda () x)");
+  }).toThrow("nullary lambda");
 });
