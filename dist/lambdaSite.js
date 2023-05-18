@@ -1,42 +1,5 @@
 import { toSexpr } from "./sexpr";
-import { toLambdaExpr, exprString } from "./lambda";
-const verbose = false;
-function evalLambda(expr, env) {
-    // TODO: don't mutate expr
-    // TODO: continuation instead of step-wise eval
-    switch (expr.type) {
-        case "id":
-            if (verbose)
-                console.log(expr.type, expr.val);
-            let f = env[expr.val];
-            if (f === undefined)
-                return expr;
-            else if (f.type == expr.type && f.val == expr.val)
-                return f;
-            else
-                return evalLambda(f, env);
-        case "lambda":
-            if (verbose)
-                console.log(expr.type, expr.val);
-            expr.val.body = evalLambda(expr.val.body, env);
-            return expr;
-        case "apply":
-            if (verbose)
-                console.log(expr.type, expr.val);
-            let fun = evalLambda(expr.val[0], env);
-            let arg = evalLambda(expr.val[1], env);
-            switch (fun.type) {
-                case "lambda":
-                    return evalLambda(fun.val.body, Object.assign(Object.assign({}, env), { [fun.val.arg]: arg }));
-                case "id":
-                case "apply":
-                    return { type: "apply", val: [fun, arg] };
-            }
-    }
-}
-function readExpr(str) {
-    return toLambdaExpr(toSexpr(str)[0]);
-}
+import { toLambdaExpr, exprString, evalLambda } from "./lambda";
 function readEnv(str) {
     let ret = {};
     let s = toSexpr(str);
@@ -44,6 +7,9 @@ function readEnv(str) {
         ret[s[i]] = toLambdaExpr(s[i + 1]);
     }
     return ret;
+}
+function readExpr(str) {
+    return toLambdaExpr(toSexpr(str)[0]);
 }
 let envStr = `ID (lambda (x) x)
 T (lambda (x y) x)

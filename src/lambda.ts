@@ -59,3 +59,30 @@ export function exprString(expr: LambdaExpr): string {
       return `(${exprString(expr.val[0])} ${exprString(expr.val[1])})`;
   }
 }
+
+export type Env = { [key: string]: LambdaExpr };
+
+export function evalLambda(expr: LambdaExpr, env: Env): LambdaExpr {
+  // TODO: don't mutate expr
+  // TODO: continuation instead of step-wise eval
+  switch (expr.type) {
+    case "id":
+      let f = env[expr.val];
+      if (f === undefined) return expr;
+      else if (f.type == expr.type && f.val == expr.val) return f;
+      else return evalLambda(f, env);
+    case "lambda":
+      expr.val.body = evalLambda(expr.val.body, env);
+      return expr;
+    case "apply":
+      let fun: LambdaExpr = evalLambda(expr.val[0], env);
+      let arg: LambdaExpr = evalLambda(expr.val[1], env);
+      switch (fun.type) {
+        case "lambda":
+          return evalLambda(fun.val.body, { ...env, [fun.val.arg]: arg });
+        case "id":
+        case "apply":
+          return { type: "apply", val: [fun, arg] };
+      }
+  }
+}
