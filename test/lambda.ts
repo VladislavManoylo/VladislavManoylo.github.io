@@ -46,12 +46,20 @@ function evaltest(str: string, env: Env = {}): string {
   return exprString(evalLambda(toLambdaExpr(toSexpr(str)), env));
 }
 
-test("eval scope", () => {
+test("eval simple", () => {
   // expect(evaltest("(lambda (x) x) (lambda (y) y) (lambda (z) z)")).toBe("λz.z");
+  expect(evaltest("a")).toBe("a");
+  expect(evaltest("(lambda (x) x)")).toBe("λx.x");
+  expect(evaltest("(lambda (x) y)")).toBe("λx.y");
+  expect(evaltest("(lambda (x) x) a")).toBe("a");
+  expect(evaltest("(lambda (x) y) a")).toBe("y");
   expect(evaltest("(lambda (x y) x) a b")).toBe("a");
   expect(evaltest("(lambda (x y) y) a b")).toBe("b");
+  expect(evaltest("(lambda (x y) x) a")).toBe("λy.a");
+});
+
+test("eval name collision", () => {
   expect(evaltest("(lambda (x x) x) a b")).toBe("b");
-  expect(evaltest("(lambda (x x) y) a b")).toBe("y");
 });
 
 test("eval num", () => {

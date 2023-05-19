@@ -6,7 +6,8 @@ export function toLambdaExpr(s) {
     if (s.length == 0) {
         throw new Error("empty expr");
     }
-    if (s.length == 1) { // unnesting
+    if (s.length == 1) {
+        // unnesting
         return toLambdaExpr(s[0]);
     }
     if (s[0] == "lambda") {
@@ -47,17 +48,52 @@ export function exprString(expr) {
             return `(${exprString(expr.val[0])} ${exprString(expr.val[1])})`;
     }
 }
+function varNames(expr) {
+    switch (expr.type) {
+        case "id":
+            return new Set();
+        case "lambda":
+            return varNames(expr.val.body).add(expr.val.arg);
+        case "apply":
+            return new Set(...varNames(expr.val[0]), ...varNames(expr.val[1]));
+    }
+}
+function nextName(expr, str) {
+    let names = varNames(expr);
+    while (names.has(str)) {
+        str += "'";
+    }
+    return str;
+}
+function rename(expr, from, to = nextName(expr, from)) {
+    switch (expr.type) {
+        case "id":
+            if (expr.val === from)
+                expr.val = to;
+            break;
+        case "lambda":
+            if (expr.val.arg === from)
+                expr.val.arg = to;
+            expr.val.body = rename(expr.val.body, from, to);
+            break;
+        case "apply":
+            expr.val = [rename(expr.val[0], from, to), rename(expr.val[1], from, to)];
+            break;
+    }
+    return expr;
+}
 export function evalLambda(expr, env) {
     // TODO: continuation instead of step-wise eval
     // console.log("call", exprString(expr), env);
     switch (expr.type) {
         case "id":
-            // console.log("lookup", expr.val);
-            let f = env[expr.val];
-            if (f === undefined)
-                return expr;
-            return f;
+            return env[expr.val] || expr;
         case "lambda":
+            if (expr.val.arg in env) {
+                expr = rename(expr, expr.val.arg);
+                if (expr.type != "lambda")
+                    throw new Error("rename changed the type somehow");
+            }
             expr.val.body = evalLambda(expr.val.body, env);
             return expr;
         case "apply":
@@ -65,9 +101,9 @@ export function evalLambda(expr, env) {
             let arg = evalLambda(expr.val[1], env);
             switch (fun.type) {
                 case "lambda":
-                    // let newEnv = { ...env, [fun.val.arg]: arg };
+                    let newEnv = Object.assign(Object.assign({}, env), { [fun.val.arg]: arg });
                     // console.log("env", env, "->", newEnv);
-                    return evalLambda(fun.val.body, Object.assign(Object.assign({}, env), { [fun.val.arg]: arg }));
+                    return evalLambda(fun.val.body, newEnv);
                 case "id":
                 case "apply":
                     return { type: "apply", val: [fun, arg] };
