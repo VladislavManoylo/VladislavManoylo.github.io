@@ -1,7 +1,7 @@
 import { toSexpr } from "./sexpr";
 function toLambdaExpr(s, e = []) {
     if (!Array.isArray(s)) {
-        return { type: "var", val: { i: e.indexOf(s), s } };
+        return { type: "var", val: { i: e.indexOf(s) + 1, s } };
     }
     s = s;
     if (s.length == 0) {
@@ -47,14 +47,14 @@ function formatSimple(expr) {
 function formatDebruijn(expr) {
     switch (expr.type) {
         case "var":
-            return expr.val.i === -1 ? expr.val.s : (expr.val.i + 1).toString();
+            return expr.val.i === 0 ? expr.val.s : expr.val.i.toString();
         case "lambda":
             return `λ ${formatDebruijn(expr.val.body)}`;
         case "apply":
             return `(${formatDebruijn(expr.val[0])} ${formatDebruijn(expr.val[1])})`;
     }
 }
-export function format(expr, fmt = "simple") {
+export function format(expr, fmt = "debruijn") {
     switch (fmt) {
         case "simple":
             return formatSimple(expr);
@@ -62,62 +62,22 @@ export function format(expr, fmt = "simple") {
             return formatDebruijn(expr);
     }
 }
-function varNames(expr) {
-    switch (expr.type) {
-        case "var":
-            return new Set();
-        case "lambda":
-            return varNames(expr.val.body).add(expr.val.param);
-        case "apply":
-            return new Set(...varNames(expr.val[0]), ...varNames(expr.val[1]));
-    }
-}
-function nextName(expr, str) {
-    let names = varNames(expr);
-    while (names.has(str)) {
-        str += "'";
-    }
-    return str;
-}
-function rename(expr, from, to = nextName(expr, from)) {
-    switch (expr.type) {
-        case "var":
-            if (expr.val.s === from)
-                expr.val.s = to;
-            break;
-        case "lambda":
-            if (expr.val.param === from)
-                expr.val.param = to;
-            expr.val.body = rename(expr.val.body, from, to);
-            break;
-        case "apply":
-            expr.val = [rename(expr.val[0], from, to), rename(expr.val[1], from, to)];
-            break;
-    }
-    return expr;
-}
-export function evalLambda(expr, env) {
+export function evalLambda(expr, env = []) {
     // TODO: continuation instead of step-wise eval
-    // console.log("call", exprString(expr), env);
+    // console.log( "call", expr.type, format(expr), env.map((x) => format(x)));
     switch (expr.type) {
         case "var":
-            return env[expr.val.s] || expr;
+            return env[env.length - expr.val.i] || expr;
         case "lambda":
-            if (expr.val.param in env) {
-                expr = rename(expr, expr.val.param);
-                if (expr.type != "lambda")
-                    throw new Error("rename changed the type somehow");
-            }
-            expr.val.body = evalLambda(expr.val.body, env);
+            expr.val.body = evalLambda(expr.val.body, env.concat(undefined));
             return expr;
         case "apply":
+            // let fun: LambdaExpr = expr.val[0];
             let fun = evalLambda(expr.val[0], env);
             let arg = evalLambda(expr.val[1], env);
             switch (fun.type) {
                 case "lambda":
-                    let newEnv = Object.assign(Object.assign({}, env), { [fun.val.param]: arg });
-                    // console.log("env", env, "->", newEnv);
-                    return evalLambda(fun.val.body, newEnv);
+                    return evalLambda(fun.val.body, env.concat(arg));
                 case "var":
                 case "apply":
                     return { type: "apply", val: [fun, arg] };

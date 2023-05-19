@@ -6,7 +6,7 @@ export type LambdaExpr =
   | { type: "apply"; val: [LambdaExpr, LambdaExpr] };
 
 interface variable {
-  i: number; // debruijn index, or -1 for free variables
+  i: number; // debruijn index, or 0 for free variables
   s: string;
 }
 
@@ -17,7 +17,7 @@ interface Lambda {
 
 function toLambdaExpr(s: sexpr, e: string[] = []): LambdaExpr {
   if (!Array.isArray(s)) {
-    return { type: "var", val: { i: e.indexOf(s), s } };
+    return { type: "var", val: { i: e.indexOf(s) + 1, s } };
   }
   s = s as sexpr[];
   if (s.length == 0) {
@@ -35,7 +35,7 @@ function toLambdaExpr(s: sexpr, e: string[] = []): LambdaExpr {
     let params: string[] = s[1].map((x) => x as string).reverse();
     let body: LambdaExpr = toLambdaExpr(s.slice(2), [...params, ...e]);
     let lambda: Lambda = { param: params[0] as string, body };
-    for (let i = 1; i < params.length; i++) 
+    for (let i = 1; i < params.length; i++)
       lambda = { param: params[i], body: { type: "lambda", val: lambda } };
     return { type: "lambda", val: lambda };
   } else {
@@ -65,7 +65,7 @@ function formatSimple(expr: LambdaExpr): string {
 function formatDebruijn(expr: LambdaExpr): string {
   switch (expr.type) {
     case "var":
-      return expr.val.i === -1 ? expr.val.s : (expr.val.i + 1).toString();
+      return expr.val.i === 0 ? expr.val.s : expr.val.i.toString();
     case "lambda":
       return `λ ${formatDebruijn(expr.val.body)}`;
     case "apply":
@@ -75,7 +75,7 @@ function formatDebruijn(expr: LambdaExpr): string {
 
 export function format(
   expr: LambdaExpr,
-  fmt: "simple" | "debruijn" = "simple"
+  fmt: "simple" | "debruijn" = "debruijn"
 ): string {
   switch (fmt) {
     case "simple":
@@ -87,70 +87,25 @@ export function format(
 
 export type Env = Record<string, LambdaExpr>;
 
-function varNames(expr: LambdaExpr): Set<string> {
-  switch (expr.type) {
-    case "var":
-      return new Set<string>();
-    case "lambda":
-      return varNames(expr.val.body).add(expr.val.param);
-    case "apply":
-      return new Set<string>(
-        ...varNames(expr.val[0]),
-        ...varNames(expr.val[1])
-      );
-  }
-}
-
-function nextName(expr: LambdaExpr, str: string): string {
-  let names = varNames(expr);
-  while (names.has(str)) {
-    str += "'";
-  }
-  return str;
-}
-
-function rename(
+export function evalLambda(
   expr: LambdaExpr,
-  from: string,
-  to: string = nextName(expr, from)
+  env: (LambdaExpr|undefined)[] = []
 ): LambdaExpr {
-  switch (expr.type) {
-    case "var":
-      if (expr.val.s === from) expr.val.s = to;
-      break;
-    case "lambda":
-      if (expr.val.param === from) expr.val.param = to;
-      expr.val.body = rename(expr.val.body, from, to);
-      break;
-    case "apply":
-      expr.val = [rename(expr.val[0], from, to), rename(expr.val[1], from, to)];
-      break;
-  }
-  return expr;
-}
-
-export function evalLambda(expr: LambdaExpr, env: Env): LambdaExpr {
   // TODO: continuation instead of step-wise eval
-  // console.log("call", exprString(expr), env);
+  // console.log( "call", expr.type, format(expr), env.map((x) => format(x)));
   switch (expr.type) {
     case "var":
-      return env[expr.val.s] || expr;
+      return env[env.length - expr.val.i] || expr;
     case "lambda":
-      if (expr.val.param in env) {
-        expr = rename(expr, expr.val.param);
-        if (expr.type != "lambda")
-          throw new Error("rename changed the type somehow");
-      }
-      expr.val.body = evalLambda(expr.val.body, env);
+      expr.val.body = evalLambda(expr.val.body, env.concat(undefined));
       return expr;
     case "apply":
+      // let fun: LambdaExpr = expr.val[0];
       let fun: LambdaExpr = evalLambda(expr.val[0], env);
       let arg: LambdaExpr = evalLambda(expr.val[1], env);
       switch (fun.type) {
         case "lambda":
-          let newEnv = { ...env, [fun.val.param]: arg };
-          // console.log("env", env, "->", newEnv);
-          return evalLambda(fun.val.body, newEnv);
+          return evalLambda(fun.val.body, env.concat(arg));
         case "var":
         case "apply":
           return { type: "apply", val: [fun, arg] };

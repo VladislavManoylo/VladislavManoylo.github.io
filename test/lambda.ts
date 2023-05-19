@@ -1,7 +1,7 @@
 import { evalLambda, format, read, Env } from "../src/lambda";
 
 function reformat(str: string): string {
-  return format(read(str));
+  return format(read(str), "simple");
 }
 
 test("format id", () => {
@@ -56,12 +56,12 @@ test("format debruijn", () => {
   expect(reformatD("lambda (x y) y")).toBe("λ λ 1");
 });
 
-function evaltest(str: string, env: Env = {}): string {
-  return format(evalLambda(read(str), env));
+function evaltest(str: string): string {
+  return format(evalLambda(read(str)), "simple");
 }
 
 test("eval simple", () => {
-  // expect(evaltest("(lambda (x) x) (lambda (y) y) (lambda (z) z)")).toBe("λz.z");
+  expect(evaltest("(lambda (x) x) (lambda (y) y) (lambda (z) z)")).toBe("λz.z");
   expect(evaltest("a")).toBe("a");
   expect(evaltest("(lambda (x) x)")).toBe("λx.x");
   expect(evaltest("(lambda (x) y)")).toBe("λx.y");
