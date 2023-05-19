@@ -1,52 +1,52 @@
-import { evalLambda, exprString, toLambdaExpr, Env } from "../src/lambda";
+import { evalLambda, format, toLambdaExpr, Env } from "../src/lambda";
 import { toSexpr } from "../src/sexpr";
 
-function reprint(str: string): string {
-  return exprString(toLambdaExpr(toSexpr(str)));
+function reformat(str: string): string {
+  return format(toLambdaExpr(toSexpr(str)));
 }
 
-test("sexpr->expr id", () => {
-  expect(reprint("x")).toBe("x");
-  expect(reprint("1")).toBe("1");
+test("format id", () => {
+  expect(reformat("x")).toBe("x");
+  expect(reformat("1")).toBe("1");
 });
 
-test("sexpr->expr apply", () => {
-  expect(reprint("(x y)")).toBe("(x y)");
-  expect(reprint("x y")).toBe("(x y)");
-  expect(reprint("x y z")).toBe("((x y) z)");
-  expect(reprint("x (y z)")).toBe("(x (y z))");
+test("format apply", () => {
+  expect(reformat("(x y)")).toBe("(x y)");
+  expect(reformat("x y")).toBe("(x y)");
+  expect(reformat("x y z")).toBe("((x y) z)");
+  expect(reformat("x (y z)")).toBe("(x (y z))");
 });
 
-test("sexpr->expr lambda", () => {
-  expect(reprint("lambda (x) x")).toBe("λx.x");
-  expect(reprint("(lambda (x) (x))")).toBe("λx.x");
-  expect(reprint("(lambda (x y) x)")).toBe("λx.λy.x");
-  expect(reprint("(lambda (x) (lambda (y) x))")).toBe("λx.λy.x");
-  expect(reprint("(lambda (x) ?)")).toBe("λx.?");
+test("format lambda", () => {
+  expect(reformat("lambda (x) x")).toBe("λx.x");
+  expect(reformat("(lambda (x) (x))")).toBe("λx.x");
+  expect(reformat("(lambda (x y) x)")).toBe("λx.λy.x");
+  expect(reformat("(lambda (x) (lambda (y) x))")).toBe("λx.λy.x");
+  expect(reformat("(lambda (x) ?)")).toBe("λx.?");
 });
 
-test("sexpr->expr", () => {
-  expect(reprint("(lambda (f x) f x)")).toBe("λf.λx.(f x)");
-  expect(reprint("(lambda (x) y)")).toBe("λx.y"); // has a free variable, but parser doesn't check
-  expect(reprint("(lambda (f) (lambda (x) f x))")).toBe("λf.λx.(f x)");
-  expect(reprint("(lambda (a) a (lambda (b) b))")).toBe("λa.(a λb.b)");
-  expect(reprint("(lambda (a) a (lambda (b) b a))")).toBe("λa.(a λb.(b a))");
+test("format", () => {
+  expect(reformat("(lambda (f x) f x)")).toBe("λf.λx.(f x)");
+  expect(reformat("(lambda (x) y)")).toBe("λx.y"); // has a free variable, but parser doesn't check
+  expect(reformat("(lambda (f) (lambda (x) f x))")).toBe("λf.λx.(f x)");
+  expect(reformat("(lambda (a) a (lambda (b) b))")).toBe("λa.(a λb.b)");
+  expect(reformat("(lambda (a) a (lambda (b) b a))")).toBe("λa.(a λb.(b a))");
 });
 
-test("sexpr->expr errors", () => {
+test("format errors", () => {
   expect(() => {
-    reprint("(lambda (x) )");
+    reformat("(lambda (x) )");
   }).toThrowError("empty expr");
   expect(() => {
-    reprint("(lambda () x)");
+    reformat("(lambda () x)");
   }).toThrow("need parameters");
   expect(() => {
-    reprint("(lambda x x)");
+    reformat("(lambda x x)");
   }).toThrow("need parameters");
 });
 
 function evaltest(str: string, env: Env = {}): string {
-  return exprString(evalLambda(toLambdaExpr(toSexpr(str)), env));
+  return format(evalLambda(toLambdaExpr(toSexpr(str)), env));
 }
 
 test("eval simple", () => {

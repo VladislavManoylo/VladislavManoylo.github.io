@@ -51,14 +51,14 @@ export function toLambdaExpr(s: sexpr, e: string[] = []): LambdaExpr {
   }
 }
 
-export function exprString(expr: LambdaExpr): string {
+export function format(expr: LambdaExpr): string {
   switch (expr.type) {
     case "var":
       return expr.val.s;
     case "lambda":
-      return `λ${expr.val.param}.${exprString(expr.val.body)}`;
+      return `λ${expr.val.param}.${format(expr.val.body)}`;
     case "apply":
-      return `(${exprString(expr.val[0])} ${exprString(expr.val[1])})`;
+      return `(${format(expr.val[0])} ${format(expr.val[1])})`;
   }
 }
 
