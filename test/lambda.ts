@@ -39,7 +39,10 @@ test("sexpr->expr errors", () => {
   }).toThrowError("empty expr");
   expect(() => {
     reprint("(lambda () x)");
-  }).toThrow("nullary lambda");
+  }).toThrow("need parameters");
+  expect(() => {
+    reprint("(lambda x x)");
+  }).toThrow("need parameters");
 });
 
 function evaltest(str: string, env: Env = {}): string {
