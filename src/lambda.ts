@@ -75,7 +75,7 @@ function formatDebruijn(expr: LambdaExpr): string {
 
 export function format(
   expr: LambdaExpr,
-  fmt: "simple" | "debruijn" = "debruijn"
+  fmt: "simple" | "debruijn" = "simple"
 ): string {
   switch (fmt) {
     case "simple":
@@ -85,22 +85,21 @@ export function format(
   }
 }
 
-export type Env = Record<string, LambdaExpr>;
-
 export function evalLambda(
   expr: LambdaExpr,
   env: (LambdaExpr|undefined)[] = []
 ): LambdaExpr {
   // TODO: continuation instead of step-wise eval
-  // console.log( "call", expr.type, format(expr), env.map((x) => format(x)));
+  // console.log( "call", expr.type, format(expr), env.map(
+  //   (x) => x ? format(x) : ""));
   switch (expr.type) {
     case "var":
       return env[env.length - expr.val.i] || expr;
     case "lambda":
+      // return expr;
       expr.val.body = evalLambda(expr.val.body, env.concat(undefined));
       return expr;
     case "apply":
-      // let fun: LambdaExpr = expr.val[0];
       let fun: LambdaExpr = evalLambda(expr.val[0], env);
       let arg: LambdaExpr = evalLambda(expr.val[1], env);
       switch (fun.type) {
@@ -108,7 +107,7 @@ export function evalLambda(
           return evalLambda(fun.val.body, env.concat(arg));
         case "var":
         case "apply":
-          return { type: "apply", val: [fun, arg] };
+          return { type: "apply", val: [evalLambda(fun, env), arg] };
       }
   }
 }

@@ -54,7 +54,7 @@ function formatDebruijn(expr) {
             return `(${formatDebruijn(expr.val[0])} ${formatDebruijn(expr.val[1])})`;
     }
 }
-export function format(expr, fmt = "debruijn") {
+export function format(expr, fmt = "simple") {
     switch (fmt) {
         case "simple":
             return formatSimple(expr);
@@ -64,15 +64,16 @@ export function format(expr, fmt = "debruijn") {
 }
 export function evalLambda(expr, env = []) {
     // TODO: continuation instead of step-wise eval
-    // console.log( "call", expr.type, format(expr), env.map((x) => format(x)));
+    // console.log( "call", expr.type, format(expr), env.map(
+    //   (x) => x ? format(x) : ""));
     switch (expr.type) {
         case "var":
             return env[env.length - expr.val.i] || expr;
         case "lambda":
+            // return expr;
             expr.val.body = evalLambda(expr.val.body, env.concat(undefined));
             return expr;
         case "apply":
-            // let fun: LambdaExpr = expr.val[0];
             let fun = evalLambda(expr.val[0], env);
             let arg = evalLambda(expr.val[1], env);
             switch (fun.type) {
@@ -80,7 +81,7 @@ export function evalLambda(expr, env = []) {
                     return evalLambda(fun.val.body, env.concat(arg));
                 case "var":
                 case "apply":
-                    return { type: "apply", val: [fun, arg] };
+                    return { type: "apply", val: [evalLambda(fun, env), arg] };
             }
     }
 }

@@ -1,4 +1,4 @@
-import { evalLambda, format, read, Env } from "../src/lambda";
+import { evalLambda, format, read } from "../src/lambda";
 
 function reformat(str: string): string {
   return format(read(str), "simple");
@@ -76,12 +76,23 @@ test("eval name collision", () => {
   expect(evaltest("(lambda (x x) x) a b")).toBe("b");
 });
 
+test("eval higher order fun", () => {
+  let id: string = "(lambda (i) i)";
+  let id2: string = "(lambda (f x) f x)";
+  expect(evaltest(`${id2} ${id} (lambda (b) b)`)).toBe("λb.b");
+  expect(evaltest(`${id2} ${id2} ${id} (lambda (b) b)`)).toBe("λb.b");
+  let apply: string = "(lambda (a b) b (a b))"
+  expect(evaltest(`${apply} ${id}`)).toBe("λb.(b b)");
+  expect(evaltest(`${id} ${apply} ${id}`)).toBe("λb.(b b)");
+  expect(evaltest(`${id2} ${apply} ${id}`)).toBe("λb.(b b)");
+});
+
 test("eval num", () => {
   let n: string[] = [
     "(lambda (f x) x)",
-    "(lambda (f x) (f x))",
-    "(lambda (f x) (f (f x)))",
-    "(lambda (f x) (f (f (f x))))",
+    "(lambda (f x) f x)",
+    "(lambda (f x) f (f x))",
+    "(lambda (f x) f (f (f x)))",
   ];
   let nf: string[] = [
     "λf.λx.x",
@@ -89,17 +100,18 @@ test("eval num", () => {
     "λf.λx.(f (f x))",
     "λf.λx.(f (f (f x)))",
   ];
-  let succ: string = "(lambda (n f x) (f (n f x)))";
-  let plus: string = `(lambda (m n) ((m ${succ}) n))`;
-  expect(evaltest(`(${succ} ${n[0]})`)).toBe(nf[1]);
-  expect(evaltest(`(${succ} ${n[1]})`)).toBe(nf[2]);
-  expect(evaltest(`(${succ} ${n[2]})`)).toBe(nf[3]);
-  expect(evaltest(`(${succ} (${succ} ${n[0]}))`)).toBe(nf[2]);
-  expect(evaltest(`(${succ} (${succ} ${n[1]}))`)).toBe(nf[3]);
-  expect(evaltest(`(${succ} (${succ} (${succ} ${n[0]})))`)).toBe(nf[3]);
-  expect(evaltest(`(${plus} ${n[0]} ${n[0]})`)).toBe(nf[0]);
-  expect(evaltest(`(${plus} ${n[0]} ${n[1]})`)).toBe(nf[1]);
-  // expect(evaltest(`(${plus} ${n[1]} ${n[0]})`)).toBe(nf[1]);
+  let succ: string = "(lambda (n f x) f (n f x))";
+  let plus: string = `(lambda (m n) m ${succ} n)`;
+  expect(evaltest(`${succ} ${n[0]}`)).toBe(nf[1]);
+  expect(evaltest(`${succ} ${n[1]}`)).toBe(nf[2]);
+  expect(evaltest(`${succ} ${n[2]}`)).toBe(nf[3]);
+  expect(evaltest(`${succ} (${succ} ${n[0]})`)).toBe(nf[2]);
+  expect(evaltest(`${succ} (${succ} ${n[1]})`)).toBe(nf[3]);
+  expect(evaltest(`${succ} (${succ} (${succ} ${n[0]}))`)).toBe(nf[3]);
+  expect(evaltest(`${plus} ${n[0]} ${n[0]}`)).toBe(nf[0]);
+  expect(evaltest(`${plus} ${n[0]} ${n[1]}`)).toBe(nf[1]);
+  expect(evaltest(`${n[1]} ${succ}`)).toBe("");
+  expect(evaltest(`(${plus} ${n[1]} ${n[0]})`)).toBe(nf[1]);
   // for (let i = 0; i < 4; i++) {
   //   for (let j = 0; j < 4 - i; j++) {
   //     expect(evaltest(`(${plus} ${n[i]} ${n[j]})`)).toBe(nf[i + j]);
@@ -112,7 +124,6 @@ test("eval bool", () => {
   let bf = ["λx.λy.y", "λx.λy.x"];
   let not: string = `(lambda (b) (b ${b[0]} ${b[1]}))`;
   expect(evaltest(`${not} ${b[0]}`)).toBe(bf[1]);
-  // console.log("huh", `${not} ${b[1]}`);
-  // expect(evaltest(`${not} ${b[1]}`)).toBe(bf[0]);
+  expect(evaltest(`${not} ${b[1]}`)).toBe(bf[0]);
   // let and: string = `(lambda (a b) (a b ${b[0]}))`
 });
