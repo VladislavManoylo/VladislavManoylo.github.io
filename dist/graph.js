@@ -26,7 +26,7 @@ export class Graph {
         this.vertices--;
         this.edges.splice(n, 1);
         for (let i = 0; i < this.vertices; i++) {
-            this.edges[i] = this.edges[i].filter(i => i == n);
+            this.edges[i] = this.edges[i].filter((i) => i == n);
         }
     }
     addEdge(i, j) {
@@ -67,11 +67,15 @@ export class Drawer {
         this.graph.deleteVertex(i);
         this.vertexPositions.splice(i, 1);
     }
-    deleteEdge(i, j) { this.graph.deleteEdge(i, j); }
-    addEdge(i, j) { this.graph.addEdge(i, j); }
+    deleteEdge(i, j) {
+        this.graph.deleteEdge(i, j);
+    }
+    addEdge(i, j) {
+        this.graph.addEdge(i, j);
+    }
     /** returns the highest index vertex that overlaps with the point */
     vertexAt(point) {
-        let i = this.vertexPositions.findIndex(it => v2.overlap(point, it, this.radius));
+        let i = this.vertexPositions.findIndex((it) => v2.overlap(point, it, this.radius));
         return i >= 0 ? i : undefined;
     }
     /** clears the screen and draws all vertices and edges */

@@ -5,17 +5,18 @@
         <title>web page</title>
         <link rel="stylesheet" href="style.css">
         <style>
-canvas {
-    display: block;
+body {
+    display: flex;
+    flex-direction: column;
 }
         </style>
     </head>
 
     <body>
-        <textarea id="input" rows="20" cols="80"></textarea>
+        <textarea id="env" rows="20" cols="80"></textarea>
+        <textarea id="input" rows="1" cols="80"></textarea>
         <textarea id="output" rows="20" cols="80"></textarea>
-        <button id="step" type="button">step</button>
-        <script type="module" src="dist/lambda.js"></script>
+        <script type="module" src="dist/lambdaSite.js"></script>
     </body>
 
 </html>
