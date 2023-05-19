@@ -60,17 +60,15 @@ export function exprString(expr: LambdaExpr): string {
   }
 }
 
-export type Env = { [key: string]: LambdaExpr };
+export type Env = Record<string, LambdaExpr>;
 
 export function evalLambda(expr: LambdaExpr, env: Env): LambdaExpr {
-  // TODO: don't mutate expr
   // TODO: continuation instead of step-wise eval
   switch (expr.type) {
     case "id":
       let f = env[expr.val];
       if (f === undefined) return expr;
-      else if (f.type == expr.type && f.val == expr.val) return f;
-      else return evalLambda(f, env);
+      return f;
     case "lambda":
       expr.val.body = evalLambda(expr.val.body, env);
       return expr;

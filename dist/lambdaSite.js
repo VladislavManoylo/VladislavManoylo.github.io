@@ -1,5 +1,5 @@
-import { toSexpr } from "./sexpr";
-import { toLambdaExpr, exprString, evalLambda } from "./lambda";
+import { toSexpr } from "./sexpr.js";
+import { toLambdaExpr, exprString, evalLambda, } from "./lambda.js";
 function readEnv(str) {
     let ret = {};
     let s = toSexpr(str);
@@ -36,7 +36,7 @@ let outputText = document.getElementById("output");
 let exprText = document.getElementById("input");
 envText.textContent = envStr;
 exprText.textContent = exprStr;
-outputText.textContent = exprString(expr) + '\n' + exprString(output);
+outputText.textContent = exprString(expr) + "\n" + exprString(evalLambda(output));
 envText.addEventListener("input", (event) => {
     let k = event.target.value;
     env = readEnv(k);
@@ -46,5 +46,5 @@ exprText.addEventListener("input", (event) => {
     expr = readExpr(k);
     outputText.textContent += exprString(expr);
     output = evalLambda(expr, env);
-    outputText.textContent += '\n' + exprString(output);
+    outputText.textContent += "\n" + exprString(output);
 });

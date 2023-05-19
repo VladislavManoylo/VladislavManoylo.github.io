@@ -1,5 +1,11 @@
-import { sexpr, toSexpr } from "./sexpr";
-import { LambdaExpr, Env, toLambdaExpr, exprString, evalLambda } from "./lambda"
+import { sexpr, toSexpr } from "./sexpr.js";
+import {
+  LambdaExpr,
+  Env,
+  toLambdaExpr,
+  exprString,
+  evalLambda,
+} from "./lambda.js";
 
 function readEnv(str: string): Env {
   let ret: Env = {};
@@ -42,7 +48,7 @@ let exprText = document.getElementById("input") as HTMLTextAreaElement;
 
 envText.textContent = envStr;
 exprText.textContent = exprStr;
-outputText.textContent = exprString(expr) + '\n' + exprString(output);
+outputText.textContent = exprString(expr) + "\n" + exprString(evalLambda(output));
 
 envText.addEventListener("input", (event) => {
   let k: string = (event.target as HTMLInputElement).value;
@@ -53,6 +59,5 @@ exprText.addEventListener("input", (event) => {
   expr = readExpr(k);
   outputText.textContent += exprString(expr);
   output = evalLambda(expr, env);
-  outputText.textContent += '\n' + exprString(output);
+  outputText.textContent += "\n" + exprString(output);
 });
-

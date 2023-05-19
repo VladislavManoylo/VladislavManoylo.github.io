@@ -1,4 +1,4 @@
-import { exprString, toLambdaExpr } from "../src/lambda";
+import { evalLambda, exprString, toLambdaExpr, Env } from "../src/lambda";
 import { toSexpr } from "../src/sexpr";
 
 function reprint(str: string): string {
@@ -40,4 +40,49 @@ test("sexpr->expr errors", () => {
   expect(() => {
     reprint("(lambda () x)");
   }).toThrow("nullary lambda");
+});
+
+function evaltest(str: string, env: Env = {}): string {
+  return exprString(evalLambda(toLambdaExpr(toSexpr(str)), env));
+}
+
+test("eval choice", () => {
+  expect(evaltest("((lambda (x) x) (lambda (y) y))")).toBe("λy.y");
+  expect(evaltest("((lambda (x y) x) (lambda (a) a) (lambda (b) b))")).toBe(
+    "λa.a"
+  );
+  expect(evaltest("((lambda (x y) y) (lambda (a) a) (lambda (b) b))")).toBe(
+    "λb.b"
+  );
+});
+
+test("eval num", () => {
+  let n: string[] = [
+    "(lambda (f x) x)",
+    "(lambda (f x) (f x))",
+    "(lambda (f x) (f (f x)))",
+    "(lambda (f x) (f (f (f x))))",
+  ];
+  let nf: string[] = [
+    "λf.λx.x",
+    "λf.λx.(f x)",
+    "λf.λx.(f (f x))",
+    "λf.λx.(f (f (f x)))",
+  ];
+  let succ: string = "(lambda (n f x) (f (n f x)))";
+  let plus: string = `(lambda (m n) ((m ${succ}) n))`;
+  expect(evaltest(`(${succ} ${n[0]})`)).toBe(nf[1]);
+  expect(evaltest(`(${succ} ${n[1]})`)).toBe(nf[2]);
+  expect(evaltest(`(${succ} ${n[2]})`)).toBe(nf[3]);
+  expect(evaltest(`(${succ} (${succ} ${n[0]}))`)).toBe(nf[2]);
+  expect(evaltest(`(${succ} (${succ} ${n[1]}))`)).toBe(nf[3]);
+  expect(evaltest(`(${succ} (${succ} (${succ} ${n[0]})))`)).toBe(nf[3]);
+  expect(evaltest(`(${plus} ${n[0]} ${n[0]})`)).toBe(nf[0]);
+  expect(evaltest(`(${plus} ${n[0]} ${n[1]})`)).toBe(nf[1]);
+  // expect(evaltest(`(${plus} ${n[1]} ${n[0]})`)).toBe(nf[1]);
+  // for (let i = 0; i < 4; i++) {
+  //   for (let j = 0; j < 4 - i; j++) {
+  //     expect(evaltest(`(${plus} ${n[i]} ${n[j]})`)).toBe(nf[i + j]);
+  //   }
+  // }
 });
