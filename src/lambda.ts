@@ -64,8 +64,10 @@ export type Env = Record<string, LambdaExpr>;
 
 export function evalLambda(expr: LambdaExpr, env: Env): LambdaExpr {
   // TODO: continuation instead of step-wise eval
+  // console.log("call", exprString(expr), env);
   switch (expr.type) {
     case "id":
+      // console.log("lookup", expr.val);
       let f = env[expr.val];
       if (f === undefined) return expr;
       return f;
@@ -77,6 +79,8 @@ export function evalLambda(expr: LambdaExpr, env: Env): LambdaExpr {
       let arg: LambdaExpr = evalLambda(expr.val[1], env);
       switch (fun.type) {
         case "lambda":
+          // let newEnv = { ...env, [fun.val.arg]: arg };
+          // console.log("env", env, "->", newEnv);
           return evalLambda(fun.val.body, { ...env, [fun.val.arg]: arg });
         case "id":
         case "apply":

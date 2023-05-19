@@ -49,8 +49,10 @@ export function exprString(expr) {
 }
 export function evalLambda(expr, env) {
     // TODO: continuation instead of step-wise eval
+    // console.log("call", exprString(expr), env);
     switch (expr.type) {
         case "id":
+            // console.log("lookup", expr.val);
             let f = env[expr.val];
             if (f === undefined)
                 return expr;
@@ -63,6 +65,8 @@ export function evalLambda(expr, env) {
             let arg = evalLambda(expr.val[1], env);
             switch (fun.type) {
                 case "lambda":
+                    // let newEnv = { ...env, [fun.val.arg]: arg };
+                    // console.log("env", env, "->", newEnv);
                     return evalLambda(fun.val.body, Object.assign(Object.assign({}, env), { [fun.val.arg]: arg }));
                 case "id":
                 case "apply":

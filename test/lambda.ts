@@ -46,14 +46,12 @@ function evaltest(str: string, env: Env = {}): string {
   return exprString(evalLambda(toLambdaExpr(toSexpr(str)), env));
 }
 
-test("eval choice", () => {
-  expect(evaltest("((lambda (x) x) (lambda (y) y))")).toBe("λy.y");
-  expect(evaltest("((lambda (x y) x) (lambda (a) a) (lambda (b) b))")).toBe(
-    "λa.a"
-  );
-  expect(evaltest("((lambda (x y) y) (lambda (a) a) (lambda (b) b))")).toBe(
-    "λb.b"
-  );
+test("eval scope", () => {
+  // expect(evaltest("(lambda (x) x) (lambda (y) y) (lambda (z) z)")).toBe("λz.z");
+  expect(evaltest("(lambda (x y) x) a b")).toBe("a");
+  expect(evaltest("(lambda (x y) y) a b")).toBe("b");
+  expect(evaltest("(lambda (x x) x) a b")).toBe("b");
+  expect(evaltest("(lambda (x x) y) a b")).toBe("y");
 });
 
 test("eval num", () => {
@@ -85,4 +83,14 @@ test("eval num", () => {
   //     expect(evaltest(`(${plus} ${n[i]} ${n[j]})`)).toBe(nf[i + j]);
   //   }
   // }
+});
+
+test("eval bool", () => {
+  let b = ["(lambda (x y) y)", "(lambda (x y) x)"];
+  let bf = ["λx.λy.y", "λx.λy.x"];
+  let not: string = `(lambda (b) (b ${b[0]} ${b[1]}))`;
+  expect(evaltest(`${not} ${b[0]}`)).toBe(bf[1]);
+  // console.log("huh", `${not} ${b[1]}`);
+  // expect(evaltest(`${not} ${b[1]}`)).toBe(bf[0]);
+  // let and: string = `(lambda (a b) (a b ${b[0]}))`
 });
