@@ -44,6 +44,18 @@ test("format errors", () => {
   }).toThrow("need parameters");
 });
 
+function reformatD(str: string): string {
+  return format(read(str), "debruijn");
+}
+
+test("format debruijn", () => {
+  expect(reformatD("lambda (x) y")).toBe("λ y");
+  expect(reformatD("lambda (x) x")).toBe("λ 1");
+  expect(reformatD("lambda (x) (lambda (y) x y)")).toBe("λ λ (2 1)");
+  expect(reformatD("lambda (x y) x")).toBe("λ λ 2");
+  expect(reformatD("lambda (x y) y")).toBe("λ λ 1");
+});
+
 function evaltest(str: string, env: Env = {}): string {
   return format(evalLambda(read(str), env));
 }

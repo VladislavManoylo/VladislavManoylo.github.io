@@ -6,7 +6,7 @@ export type LambdaExpr =
   | { type: "apply"; val: [LambdaExpr, LambdaExpr] };
 
 interface variable {
-  i: number | null; // debruijn index, or null for free variables
+  i: number; // debruijn index, or -1 for free variables
   s: string;
 }
 
@@ -15,7 +15,7 @@ interface Lambda {
   body: LambdaExpr;
 }
 
-export function toLambdaExpr(s: sexpr, e: string[] = []): LambdaExpr {
+function toLambdaExpr(s: sexpr, e: string[] = []): LambdaExpr {
   if (!Array.isArray(s)) {
     return { type: "var", val: { i: e.indexOf(s), s } };
   }
@@ -32,19 +32,15 @@ export function toLambdaExpr(s: sexpr, e: string[] = []): LambdaExpr {
     if (!Array.isArray(s[1]) || s[1].length == 0) {
       throw new Error("need parameters");
     }
-    let params: string[] = s[1].map((x) => x as string);
+    let params: string[] = s[1].map((x) => x as string).reverse();
     let body: LambdaExpr = toLambdaExpr(s.slice(2), [...params, ...e]);
-    let lambda: Lambda = { param: params.pop() as string, body };
-    while (params.length > 0) {
-      lambda = {
-        param: params.pop() as string,
-        body: { type: "lambda", val: lambda },
-      };
-    }
+    let lambda: Lambda = { param: params[0] as string, body };
+    for (let i = 1; i < params.length; i++) 
+      lambda = { param: params[i], body: { type: "lambda", val: lambda } };
     return { type: "lambda", val: lambda };
   } else {
     // application
-    let l: LambdaExpr[] = s.map((x) => toLambdaExpr(x));
+    let l: LambdaExpr[] = s.map((x) => toLambdaExpr(x, e));
     return l.slice(1).reduce((prev, curr) => {
       return { type: "apply", val: [prev, curr] };
     }, l[0]);
@@ -69,7 +65,7 @@ function formatSimple(expr: LambdaExpr): string {
 function formatDebruijn(expr: LambdaExpr): string {
   switch (expr.type) {
     case "var":
-      return expr.val.i === null ? expr.val.s : expr.val.i.toString();
+      return expr.val.i === -1 ? expr.val.s : (expr.val.i + 1).toString();
     case "lambda":
       return `λ ${formatDebruijn(expr.val.body)}`;
     case "apply":
@@ -77,7 +73,10 @@ function formatDebruijn(expr: LambdaExpr): string {
   }
 }
 
-export function format(expr: LambdaExpr, fmt: "simple" | "debruijn" = "simple"): string {
+export function format(
+  expr: LambdaExpr,
+  fmt: "simple" | "debruijn" = "simple"
+): string {
   switch (fmt) {
     case "simple":
       return formatSimple(expr);

@@ -1,5 +1,5 @@
 import { toSexpr } from "./sexpr";
-export function toLambdaExpr(s, e = []) {
+function toLambdaExpr(s, e = []) {
     if (!Array.isArray(s)) {
         return { type: "var", val: { i: e.indexOf(s), s } };
     }
@@ -16,20 +16,16 @@ export function toLambdaExpr(s, e = []) {
         if (!Array.isArray(s[1]) || s[1].length == 0) {
             throw new Error("need parameters");
         }
-        let params = s[1].map((x) => x);
+        let params = s[1].map((x) => x).reverse();
         let body = toLambdaExpr(s.slice(2), [...params, ...e]);
-        let lambda = { param: params.pop(), body };
-        while (params.length > 0) {
-            lambda = {
-                param: params.pop(),
-                body: { type: "lambda", val: lambda },
-            };
-        }
+        let lambda = { param: params[0], body };
+        for (let i = 1; i < params.length; i++)
+            lambda = { param: params[i], body: { type: "lambda", val: lambda } };
         return { type: "lambda", val: lambda };
     }
     else {
         // application
-        let l = s.map((x) => toLambdaExpr(x));
+        let l = s.map((x) => toLambdaExpr(x, e));
         return l.slice(1).reduce((prev, curr) => {
             return { type: "apply", val: [prev, curr] };
         }, l[0]);
@@ -51,7 +47,7 @@ function formatSimple(expr) {
 function formatDebruijn(expr) {
     switch (expr.type) {
         case "var":
-            return expr.val.i === null ? expr.val.s : expr.val.i.toString();
+            return expr.val.i === -1 ? expr.val.s : (expr.val.i + 1).toString();
         case "lambda":
             return `λ ${formatDebruijn(expr.val.body)}`;
         case "apply":
