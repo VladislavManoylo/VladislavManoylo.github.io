@@ -1,4 +1,4 @@
-import { sexpr } from "./sexpr";
+import { sexpr, toSexpr } from "./sexpr";
 
 export type LambdaExpr =
   | { type: "var"; val: variable }
@@ -51,14 +51,38 @@ export function toLambdaExpr(s: sexpr, e: string[] = []): LambdaExpr {
   }
 }
 
-export function format(expr: LambdaExpr): string {
+export function read(str: string): LambdaExpr {
+  return toLambdaExpr(toSexpr(str));
+}
+
+function formatSimple(expr: LambdaExpr): string {
   switch (expr.type) {
     case "var":
       return expr.val.s;
     case "lambda":
-      return `λ${expr.val.param}.${format(expr.val.body)}`;
+      return `λ${expr.val.param}.${formatSimple(expr.val.body)}`;
     case "apply":
-      return `(${format(expr.val[0])} ${format(expr.val[1])})`;
+      return `(${formatSimple(expr.val[0])} ${formatSimple(expr.val[1])})`;
+  }
+}
+
+function formatDebruijn(expr: LambdaExpr): string {
+  switch (expr.type) {
+    case "var":
+      return expr.val.i === null ? expr.val.s : expr.val.i.toString();
+    case "lambda":
+      return `λ ${formatDebruijn(expr.val.body)}`;
+    case "apply":
+      return `(${formatDebruijn(expr.val[0])} ${formatDebruijn(expr.val[1])})`;
+  }
+}
+
+export function format(expr: LambdaExpr, fmt: "simple" | "debruijn" = "simple"): string {
+  switch (fmt) {
+    case "simple":
+      return formatSimple(expr);
+    case "debruijn":
+      return formatDebruijn(expr);
   }
 }
 

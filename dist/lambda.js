@@ -1,3 +1,4 @@
+import { toSexpr } from "./sexpr";
 export function toLambdaExpr(s, e = []) {
     if (!Array.isArray(s)) {
         return { type: "var", val: { i: e.indexOf(s), s } };
@@ -34,14 +35,35 @@ export function toLambdaExpr(s, e = []) {
         }, l[0]);
     }
 }
-export function format(expr) {
+export function read(str) {
+    return toLambdaExpr(toSexpr(str));
+}
+function formatSimple(expr) {
     switch (expr.type) {
         case "var":
             return expr.val.s;
         case "lambda":
-            return `λ${expr.val.param}.${format(expr.val.body)}`;
+            return `λ${expr.val.param}.${formatSimple(expr.val.body)}`;
         case "apply":
-            return `(${format(expr.val[0])} ${format(expr.val[1])})`;
+            return `(${formatSimple(expr.val[0])} ${formatSimple(expr.val[1])})`;
+    }
+}
+function formatDebruijn(expr) {
+    switch (expr.type) {
+        case "var":
+            return expr.val.i === null ? expr.val.s : expr.val.i.toString();
+        case "lambda":
+            return `λ ${formatDebruijn(expr.val.body)}`;
+        case "apply":
+            return `(${formatDebruijn(expr.val[0])} ${formatDebruijn(expr.val[1])})`;
+    }
+}
+export function format(expr, fmt = "simple") {
+    switch (fmt) {
+        case "simple":
+            return formatSimple(expr);
+        case "debruijn":
+            return formatDebruijn(expr);
     }
 }
 function varNames(expr) {

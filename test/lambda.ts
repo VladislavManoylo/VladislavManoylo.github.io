@@ -1,8 +1,7 @@
-import { evalLambda, format, toLambdaExpr, Env } from "../src/lambda";
-import { toSexpr } from "../src/sexpr";
+import { evalLambda, format, read, Env } from "../src/lambda";
 
 function reformat(str: string): string {
-  return format(toLambdaExpr(toSexpr(str)));
+  return format(read(str));
 }
 
 test("format id", () => {
@@ -46,7 +45,7 @@ test("format errors", () => {
 });
 
 function evaltest(str: string, env: Env = {}): string {
-  return format(evalLambda(toLambdaExpr(toSexpr(str)), env));
+  return format(evalLambda(read(str), env));
 }
 
 test("eval simple", () => {
