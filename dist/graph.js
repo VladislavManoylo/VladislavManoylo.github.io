@@ -1,4 +1,3 @@
-import * as v2 from "./v2.js";
 import { Pencil } from "./pencil.js";
 export class Graph {
     constructor() {
@@ -46,6 +45,11 @@ export class Graph {
         this.deleteEdgeIJ(j, i);
     }
 }
+function overlap(a, b, r) {
+    const dx = a[0] - b[0];
+    const dy = a[1] - b[1];
+    return dx * dx + dy * dy < r * r;
+}
 export class Drawer {
     constructor(canvasId, radius, labeled = false) {
         this.vertexPositions = [];
@@ -75,7 +79,7 @@ export class Drawer {
     }
     /** returns the highest index vertex that overlaps with the point */
     vertexAt(point) {
-        let i = this.vertexPositions.findIndex((it) => v2.overlap(point, it, this.radius));
+        let i = this.vertexPositions.findIndex((it) => overlap(point, it, this.radius));
         return i >= 0 ? i : undefined;
     }
     /** clears the screen and draws all vertices and edges */

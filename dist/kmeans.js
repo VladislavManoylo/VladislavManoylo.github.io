@@ -1,6 +1,10 @@
-import * as v2 from "./v2.js";
 import { Drawer } from "./graph.js";
 const radius = 10;
+function dist(a, b) {
+    let x = a[0] - b[0];
+    let y = a[1] - b[1];
+    return x * x + y * y;
+}
 class KMeans {
     constructor() {
         var _a, _b, _c, _d;
@@ -11,9 +15,8 @@ class KMeans {
         this.resetCentroids(3);
         (_a = document.getElementById("k")) === null || _a === void 0 ? void 0 : _a.addEventListener("input", (event) => {
             let k = +event.target.value;
-            if (Number.isFinite(k)) {
+            if (Number.isFinite(k))
                 this.resetCentroids(k);
-            }
         });
         // document.getElementById("reset")?.addEventListener("click", this.reset);
         (_b = document.getElementById("reset")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
@@ -25,7 +28,7 @@ class KMeans {
                 let bj = 0;
                 let bd = null;
                 for (let j = 0; j < this.centroids.length; j++) {
-                    let d = v2.distPoint(p, this.centroids[j]);
+                    let d = dist(p, this.centroids[j]);
                     if (bd === null || d < bd) {
                         bd = d;
                         bj = j;
@@ -38,16 +41,16 @@ class KMeans {
         (_d = document.getElementById("nudge")) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => {
             for (let i = 0; i < this.centroids.length; i++) {
                 let c = 0;
-                let p = { x: 0, y: 0 };
+                let p = [0, 0];
                 for (let j = 0; j < this.centroidAssignment.length; j++) {
                     if (this.centroidAssignment[j] == i) {
                         c++;
-                        p = v2.addPoint(p, this.points[j]);
+                        p[0] += this.points[j][0];
+                        p[1] += this.points[j][1];
                     }
                 }
-                if (c != 0) {
-                    this.centroids[i] = { x: p.x / c, y: p.y / c };
-                }
+                if (c != 0)
+                    this.centroids[i] = [p[0] / c, p[1] / c];
             }
             this.draw();
         });
@@ -56,7 +59,7 @@ class KMeans {
             const scrollY = window.scrollY || window.pageYOffset;
             const x = event.clientX - this.drawer.canvas.offsetLeft + scrollX;
             const y = event.clientY - this.drawer.canvas.offsetTop + scrollY;
-            this.points.push({ x, y });
+            this.points.push([x, y]);
             this.draw();
         });
     }
@@ -66,7 +69,7 @@ class KMeans {
         for (let i = 0; i < k; i++) {
             let x = Math.random() * this.drawer.canvas.width;
             let y = Math.random() * this.drawer.canvas.height;
-            this.centroids.push({ x, y });
+            this.centroids.push([x, y]);
         }
         this.draw();
     }

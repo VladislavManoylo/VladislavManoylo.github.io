@@ -1,5 +1,4 @@
-import * as v2 from "./v2.js";
-import { Pencil } from "./pencil.js";
+import { Pencil, v2 } from "./pencil.js";
 type Vertex = number;
 
 export class Graph {
@@ -53,10 +52,16 @@ export class Graph {
   }
 }
 
+function overlap(a: v2, b: v2, r: number) {
+  const dx = a[0] - b[0];
+  const dy = a[1] - b[1];
+  return dx * dx + dy * dy < r * r;
+}
+
 export class Drawer {
   canvas: HTMLCanvasElement;
   pencil: Pencil;
-  vertexPositions: v2.v2[] = [];
+  vertexPositions: v2[] = [];
   radius: number;
   private graph: Graph = new Graph();
   private labeled: Boolean;
@@ -71,7 +76,7 @@ export class Drawer {
     this.graph.clear();
   }
 
-  addVertex(point: v2.v2, connected: Boolean = false): void {
+  addVertex(point: v2, connected: Boolean = false): void {
     this.graph.addVertex(connected);
     this.vertexPositions.push(point);
   }
@@ -87,9 +92,9 @@ export class Drawer {
   }
 
   /** returns the highest index vertex that overlaps with the point */
-  vertexAt(point: v2.v2): number | undefined {
+  vertexAt(point: v2): number | undefined {
     let i = this.vertexPositions.findIndex((it) =>
-      v2.overlap(point, it, this.radius)
+      overlap(point, it, this.radius)
     );
     return i >= 0 ? i : undefined;
   }

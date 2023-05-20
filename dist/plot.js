@@ -19,15 +19,15 @@ class Plot {
         if (h == 0) {
             let y = this.canvas.height / 2;
             this.paths.push([
-                { x: 0, y },
-                { x: this.canvas.width, y },
+                [0, y],
+                [this.canvas.width, y],
             ]);
             return;
         }
         let dx = this.canvas.width / (ys.length - 1);
         let path = [];
         for (let i = 0; i < ys.length; i++) {
-            path.push({ x: dx * i, y: this.rescale(ys[i], min, h) });
+            path.push([dx * i, this.rescale(ys[i], min, h)]);
         }
         this.paths.push(path);
     }

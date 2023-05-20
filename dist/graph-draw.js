@@ -1,5 +1,5 @@
-import * as v2 from "./v2.js";
 import { Drawer } from "./graph.js";
+import { overlap } from "./pencil.js";
 var ButtonChoice;
 (function (ButtonChoice) {
     ButtonChoice[ButtonChoice["MoveVertex"] = 0] = "MoveVertex";
@@ -7,18 +7,25 @@ var ButtonChoice;
     ButtonChoice[ButtonChoice["DeleteEdge"] = 2] = "DeleteEdge";
     ButtonChoice[ButtonChoice["AddEdge"] = 3] = "AddEdge";
 })(ButtonChoice || (ButtonChoice = {}));
+function polarToPoint(a, r) {
+    return [r * Math.cos(a), r * Math.sin(a)];
+}
+function plus(a, b) {
+    return [a[0] + b[0], a[1] + b[1]];
+}
 class Buttons {
     constructor(pencil, pos, selected) {
         this.radius = 20;
         this.pencil = pencil;
         this.selected = selected;
         this.buttons = [pos];
-        for (const a of [-1 / 6, -1 / 2, -5 / 6]) {
-            this.buttons.push(v2.addPoint(pos, v2.polarToPoint(a * Math.PI, this.radius)));
+        let buttonOffsets = [-1 / 6, -1 / 2, -5 / 6].map((x) => polarToPoint(x, this.radius));
+        for (const a of buttonOffsets) {
+            this.buttons.push(plus(pos, a));
         }
     }
     buttonAt(pos) {
-        let i = this.buttons.findIndex((it) => v2.overlap(it, pos, this.radius));
+        let i = this.buttons.findIndex((it) => overlap(it, pos, this.radius));
         return i >= 0 ? i : undefined;
     }
     draw() {
@@ -39,7 +46,7 @@ class Controller {
             const scrollY = window.scrollY || window.pageYOffset;
             const x = event.clientX - this.drawer.canvas.offsetLeft + scrollX;
             const y = event.clientY - this.drawer.canvas.offsetTop + scrollY;
-            this.click({ x, y });
+            this.click([x, y]);
         });
     }
     click(pos) {

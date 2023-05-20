@@ -1,3 +1,8 @@
+export function overlap(a, b, r) {
+    const dx = a[0] - b[0];
+    const dy = a[1] - b[1];
+    return dx * dx + dy * dy < r * r;
+}
 export class Pencil {
     constructor(canvas) {
         this.canvas = canvas;
@@ -8,13 +13,13 @@ export class Pencil {
     }
     line(a, b) {
         this.ctx.beginPath();
-        this.ctx.moveTo(a.x, a.y);
-        this.ctx.lineTo(b.x, b.y);
+        this.ctx.moveTo(a[0], a[1]);
+        this.ctx.lineTo(b[0], b[1]);
         this.ctx.stroke();
     }
     circle(p, r, color = "grey") {
         this.ctx.beginPath();
-        this.ctx.arc(p.x, p.y, r, 0, 2 * Math.PI);
+        this.ctx.arc(p[0], p[1], r, 0, 2 * Math.PI);
         this.ctx.fillStyle = color;
         this.ctx.fill();
         this.ctx.stroke();
@@ -23,13 +28,13 @@ export class Pencil {
         this.ctx.font = "40px Arial";
         this.ctx.fillStyle = "white";
         this.ctx.textAlign = "center";
-        this.ctx.fillText(text, p.x, p.y);
+        this.ctx.fillText(text, p[0], p[1]);
     }
     path(ps) {
         this.ctx.beginPath();
-        this.ctx.moveTo(ps[0].x, ps[0].y);
+        this.ctx.moveTo(ps[0][0], ps[0][1]);
         for (let p of ps) {
-            this.ctx.lineTo(p.x, p.y);
+            this.ctx.lineTo(p[0], p[1]);
         }
         this.ctx.stroke();
     }
