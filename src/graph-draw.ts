@@ -1,5 +1,5 @@
 import { Drawer } from "./graph.js";
-import { Pencil, v2, overlap } from "./pencil.js";
+import { Pencil, v2, overlap, polarToPoint } from "./pencil.js";
 
 enum ButtonChoice {
   MoveVertex,
@@ -8,9 +8,6 @@ enum ButtonChoice {
   AddEdge,
 }
 
-function polarToPoint(a: number, r: number): v2 {
-  return [r * Math.cos(a), r * Math.sin(a)];
-}
 function plus(a: v2, b: v2): v2 {
   return [a[0] + b[0], a[1] + b[1]];
 }

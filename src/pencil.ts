@@ -6,6 +6,10 @@ export function overlap(a: v2, b: v2, r: number) {
   return dx * dx + dy * dy < r * r;
 }
 
+export function polarToPoint(a: number, r: number): v2 {
+  return [r * Math.cos(a), r * Math.sin(a)];
+}
+
 export class Pencil {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;

@@ -3,6 +3,9 @@ export function overlap(a, b, r) {
     const dy = a[1] - b[1];
     return dx * dx + dy * dy < r * r;
 }
+export function polarToPoint(a, r) {
+    return [r * Math.cos(a), r * Math.sin(a)];
+}
 export class Pencil {
     constructor(canvas) {
         this.canvas = canvas;
