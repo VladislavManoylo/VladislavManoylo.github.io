@@ -20,6 +20,10 @@ function times(a: v2, b: number): v2 {
   return [a[0] * b, a[1] * b];
 }
 
+function squeeze(x: number, low: number, high: number): number {
+  return Math.max(low, Math.min(high, x));
+}
+
 class Eye {
   pos: v2;
   look: v2;
@@ -47,6 +51,9 @@ class Eye {
     }
     this.pos[0] += this.look[0] * this.wander;
     this.pos[1] += this.look[1] * this.wander;
+    let pad = 200;
+    this.pos[0] = squeeze(this.pos[0], -pad, canvas.width + pad);
+    this.pos[1] = squeeze(this.pos[1], -pad, canvas.height + pad);
   }
   draw() {
     pencil.circle(this.pos, 50, "white");

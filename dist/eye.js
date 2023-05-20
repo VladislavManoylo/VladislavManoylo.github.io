@@ -13,6 +13,9 @@ function plus(a, b) {
 function times(a, b) {
     return [a[0] * b, a[1] * b];
 }
+function squeeze(x, low, high) {
+    return Math.max(low, Math.min(high, x));
+}
 class Eye {
     constructor(pos) {
         this.i = 0;
@@ -38,6 +41,9 @@ class Eye {
         }
         this.pos[0] += this.look[0] * this.wander;
         this.pos[1] += this.look[1] * this.wander;
+        let pad = 200;
+        this.pos[0] = squeeze(this.pos[0], -pad, canvas.width + pad);
+        this.pos[1] = squeeze(this.pos[1], -pad, canvas.height + pad);
     }
     draw() {
         pencil.circle(this.pos, 50, "white");
