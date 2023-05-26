@@ -15,6 +15,7 @@ import { format, read } from "./lambda.js";
 // 3 (SUCC 2)
 // 4 (SUCC 3)
 // `;
+/** each step of an expression being computed */
 let history = [];
 let input = document.getElementById("input");
 let output = document.getElementById("output");
@@ -22,34 +23,43 @@ let output = document.getElementById("output");
     // sample starting state
     let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
     input.textContent = exprStr;
-    pushRow(read(exprStr));
+    pushExpr(read(exprStr));
 }
-function pushRow(expr) {
+/** Add a new step to the expression being computed */
+function pushExpr(expr) {
     history.push(expr);
     let tr = document.createElement("tr");
-    let td1 = document.createElement("td");
-    td1.appendChild(toHtml(expr));
-    let td2 = document.createElement("td");
-    td2.innerHTML = format(expr);
-    let td3 = document.createElement("td");
-    td3.innerHTML = format(expr, "debruijn");
-    tr.append(td1, td2, td3);
+    let td = document.createElement("td");
+    td.appendChild(toHtml(expr));
+    tr.appendChild(td);
+    tr.insertAdjacentHTML("beforeend", `<td>${format(expr)}</td>`);
+    tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "debruijn")}</td>`);
     output.appendChild(tr);
 }
-function get(expr, id) {
-    switch (id[0]) {
+/**
+ * index into the lambda expresion
+ * e.g. in (lambda (f x) (f (f x)))
+ * "" -> the whole thing
+ * "L"   -> (f (f x))
+ * "L0"  -> outer f
+ * "L1"  -> (f x)
+ * "L10" -> inner f
+ * "L11" -> x
+ */
+function get(expr, index) {
+    switch (index[0]) {
         case "L":
             if (expr.type != "lambda")
                 throw new Error("bad index");
-            return get(expr.val.body, id.slice(1));
+            return get(expr.val.body, index.slice(1));
         case "0":
             if (expr.type != "apply")
                 throw new Error("bad index");
-            return get(expr.val[0], id.slice(1));
+            return get(expr.val[0], index.slice(1));
         case "1":
             if (expr.type != "apply")
                 throw new Error("bad index");
-            return get(expr.val[1], id.slice(1));
+            return get(expr.val[1], index.slice(1));
         default:
             return expr;
     }
@@ -69,7 +79,8 @@ function subst(expr, param, arg) {
             return expr;
     }
 }
-// returns a copy of the given expr, but with val at the id location
+/** returns a copy of the given expr, but with val at the id location
+ * TODO: if expressions could be modified with get(...), this function could be removed*/
 function swapout(expr, id, val) {
     switch (id[0]) {
         case "L":
@@ -100,14 +111,10 @@ function swapout(expr, id, val) {
             return val;
     }
 }
-// id is the index of each element
-// e.g. in (lambda (f x) (f (f x)))
-// _ -> the whole thing
-// L -> (f (f x))
-// L0 -> outer f
-// L1 -> (f x)
-// L10 -> inner f
-// L11 -> x
+/**
+ * converts a lambda into a structured div, with event listeners tied to divs that can compute parts of the expression.
+ * the id parameter is used for convenience in recursion, don't pass anything in.
+ */
 function toHtml(expr, id = "") {
     let ret = document.createElement("div");
     ret.classList.add("expr");
@@ -140,13 +147,11 @@ function toHtml(expr, id = "") {
                         throw new Error("unreachable");
                     let expr = history[length - 1];
                     let subexpr = get(expr, id);
-                    console.log("apply", id, format(subexpr));
                     if (subexpr.type != "apply" || subexpr.val[0].type != "lambda")
-                        throw new Error("can't apply");
+                        throw new Error("can't apply - unreachable");
                     let [l, r] = subexpr.val;
                     let result = subst(l.val.body, l.val.param, r);
-                    pushRow(swapout(expr, id, result));
-                    console.log("yep", id, format(result));
+                    pushExpr(swapout(expr, id, result));
                 });
             }
             return ret;
@@ -159,7 +164,7 @@ input.addEventListener("input", (event) => {
         expr = read(k);
         history = [];
         output.innerHTML = "";
-        pushRow(expr);
+        pushExpr(expr);
     }
     catch (err) {
         // console.log("invalid", k);
