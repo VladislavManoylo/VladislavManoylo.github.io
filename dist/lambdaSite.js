@@ -1,4 +1,4 @@
-import { read, } from "./lambda.js";
+import { format, read } from "./lambda.js";
 // let envStr = `ID (lambda (x) x)
 // T (lambda (x y) x)
 // F (lambda (x y) y)
@@ -15,11 +15,30 @@ import { read, } from "./lambda.js";
 // 3 (SUCC 2)
 // 4 (SUCC 3)
 // `;
-let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x free)`;
+let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
 let history = [read(exprStr)];
-// let envText = document.getElementById("env") as HTMLTextAreaElement;
 let input = document.getElementById("input");
 let output = document.getElementById("output");
+function get(expr, id) {
+    switch (id[0]) {
+        case "L":
+            if (expr.type != "lambda")
+                throw new Error("bad index");
+            return get(expr.val.body, id.slice(1));
+        case "0":
+            if (expr.type != "apply")
+                throw new Error("bad index");
+            return get(expr.val[0], id.slice(1));
+        case "1":
+            if (expr.type != "apply")
+                throw new Error("bad index");
+            return get(expr.val[1], id.slice(1));
+        default:
+            return expr;
+    }
+}
+console.log("look", format(history[0]));
+console.log("look", format(get(history[0], "")));
 // id is the index of each element
 // e.g. in (lambda (f x) (f (f x)))
 // _ -> the whole thing
@@ -46,19 +65,30 @@ function toHtml(expr, id = "") {
             return ret;
         case "apply":
             ret.classList.add("apply");
-            ret.append("(", toHtml(expr.val[0], id + "0"), toHtml(expr.val[1], id + "1"), ")");
+            let [l, r] = [
+                toHtml(expr.val[0], id + "0"),
+                toHtml(expr.val[1], id + "1"),
+            ];
+            ret.append("(", l, r, ")");
+            if (l.classList.contains("lambda")) {
+                ret.addEventListener("click", () => {
+                    console.log("apply", id, format(get(history[0], id)));
+                });
+            }
             return ret;
     }
 }
-// envText.textContent = envStr;
 input.textContent = exprStr;
 output.appendChild(toHtml(history[0]));
-// envText.addEventListener("input", (event) => {
-//   let k: string = (event.target as HTMLInputElement).value;
-//   env = readEnv(k);
-// });
 input.addEventListener("input", (event) => {
     let k = event.target.value;
-    history = [read(k)];
+    try {
+        let expr = read(k);
+        history = [expr];
+    }
+    catch (err) {
+        // console.log("invalid", k);
+    }
+    output.innerHTML = "";
     output.appendChild(toHtml(history[0]));
 });

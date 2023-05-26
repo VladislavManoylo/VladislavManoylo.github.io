@@ -87,7 +87,7 @@ export function format(
 
 export function evalLambda(
   expr: LambdaExpr,
-  env: (LambdaExpr|undefined)[] = []
+  env: (LambdaExpr | undefined)[] = []
 ): LambdaExpr {
   // TODO: continuation instead of step-wise eval
   // console.log( "call", expr.type, format(expr), env.map(

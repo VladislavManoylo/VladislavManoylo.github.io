@@ -1,7 +1,4 @@
-import {
-  LambdaExpr,
-  read,
-} from "./lambda.js";
+import { LambdaExpr, format, read } from "./lambda.js";
 
 // let envStr = `ID (lambda (x) x)
 // T (lambda (x y) x)
@@ -20,12 +17,30 @@ import {
 // 4 (SUCC 3)
 // `;
 
-let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x free)`;
+let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
 let history: [LambdaExpr] = [read(exprStr)];
 
-// let envText = document.getElementById("env") as HTMLTextAreaElement;
 let input = document.getElementById("input") as HTMLTextAreaElement;
 let output = document.getElementById("output") as HTMLDivElement;
+
+function get(expr: LambdaExpr, id: string): LambdaExpr {
+  switch (id[0]) {
+    case "L":
+      if (expr.type != "lambda") throw new Error("bad index");
+      return get(expr.val.body, id.slice(1));
+    case "0":
+      if (expr.type != "apply") throw new Error("bad index");
+      return get(expr.val[0], id.slice(1));
+    case "1":
+      if (expr.type != "apply") throw new Error("bad index");
+      return get(expr.val[1], id.slice(1));
+    default:
+      return expr;
+  }
+}
+
+console.log("look", format(history[0]));
+console.log("look", format(get(history[0], "")));
 
 // id is the index of each element
 // e.g. in (lambda (f x) (f (f x)))
@@ -35,7 +50,7 @@ let output = document.getElementById("output") as HTMLDivElement;
 // L1 -> (f x)
 // L10 -> inner f
 // L11 -> x
-function toHtml(expr: LambdaExpr, id: string = "") {
+function toHtml(expr: LambdaExpr, id: string = ""): HTMLSpanElement {
   let ret: HTMLSpanElement = document.createElement("span");
   ret.classList.add("expr");
   ret.id = id;
@@ -49,26 +64,35 @@ function toHtml(expr: LambdaExpr, id: string = "") {
       ret.classList.add("lambda");
       let param = document.createElement("span");
       param.innerHTML = `λ${expr.val.param}.`;
-      ret.append(param, toHtml(expr.val.body, id+"L"));
+      ret.append(param, toHtml(expr.val.body, id + "L"));
       return ret;
     case "apply":
       ret.classList.add("apply");
-      ret.append("(", toHtml(expr.val[0], id+"0"), toHtml(expr.val[1], id+"1"), ")");
+      let [l, r] = [
+        toHtml(expr.val[0], id + "0"),
+        toHtml(expr.val[1], id + "1"),
+      ];
+      ret.append("(", l, r, ")");
+      if (l.classList.contains("lambda")) {
+        ret.addEventListener("click", () => {
+          console.log("apply", id, format(get(history[0], id)));
+        });
+      }
       return ret;
   }
 }
 
-// envText.textContent = envStr;
 input.textContent = exprStr;
 output.appendChild(toHtml(history[0]));
 
-// envText.addEventListener("input", (event) => {
-//   let k: string = (event.target as HTMLInputElement).value;
-//   env = readEnv(k);
-// });
-
 input.addEventListener("input", (event) => {
   let k: string = (event.target as HTMLInputElement).value;
-  history = [read(k)];
+  try {
+    let expr = read(k);
+    history = [expr];
+  } catch (err) {
+    // console.log("invalid", k);
+  }
+  output.innerHTML = "";
   output.appendChild(toHtml(history[0]));
 });
