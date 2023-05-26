@@ -37,6 +37,21 @@ function get(expr, id) {
             return expr;
     }
 }
+function subst(expr, param, arg) {
+    switch (expr.type) {
+        case "var":
+            return expr.val.s === param ? arg : expr;
+        case "lambda":
+            if (expr.val.param === param)
+                return expr;
+            expr.val.body = subst(expr.val.body, param, arg);
+            return expr;
+        case "apply":
+            expr.val[0] = subst(expr.val[0], param, arg);
+            expr.val[1] = subst(expr.val[1], param, arg);
+            return expr;
+    }
+}
 console.log("look", format(history[0]));
 console.log("look", format(get(history[0], "")));
 // id is the index of each element
@@ -48,7 +63,7 @@ console.log("look", format(get(history[0], "")));
 // L10 -> inner f
 // L11 -> x
 function toHtml(expr, id = "") {
-    let ret = document.createElement("span");
+    let ret = document.createElement("div");
     ret.classList.add("expr");
     ret.id = id;
     switch (expr.type) {
@@ -59,7 +74,7 @@ function toHtml(expr, id = "") {
             return ret;
         case "lambda":
             ret.classList.add("lambda");
-            let param = document.createElement("span");
+            let param = document.createElement("div");
             param.innerHTML = `λ${expr.val.param}.`;
             ret.append(param, toHtml(expr.val.body, id + "L"));
             return ret;
@@ -72,7 +87,15 @@ function toHtml(expr, id = "") {
             ret.append("(", l, r, ")");
             if (l.classList.contains("lambda")) {
                 ret.addEventListener("click", () => {
-                    console.log("apply", id, format(get(history[0], id)));
+                    let expr = get(history[0], id);
+                    console.log("apply", id, format(expr));
+                    if (expr.type != "apply" || expr.val[0].type != "lambda")
+                        throw new Error("can't apply");
+                    let [l, r] = expr.val;
+                    let result = subst(l.val.body, l.val.param, r);
+                    history.push(result);
+                    output.append(document.createElement("br"), toHtml(result));
+                    console.log("yep", id, format(result));
                 });
             }
             return ret;
