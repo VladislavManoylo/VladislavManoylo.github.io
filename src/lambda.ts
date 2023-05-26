@@ -1,4 +1,4 @@
-import { sexpr, toSexpr } from "./sexpr";
+import { sexpr, toSexpr } from "./sexpr.js";
 
 export type LambdaExpr =
   | { type: "var"; val: variable }

@@ -1,9 +1,6 @@
-import { sexpr, toSexpr } from "./sexpr.js";
 import {
   LambdaExpr,
-  evalLambda,
   read,
-  format,
 } from "./lambda.js";
 
 // let envStr = `ID (lambda (x) x)
@@ -23,29 +20,55 @@ import {
 // 4 (SUCC 3)
 // `;
 
-let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
-
-// let env: Env = readEnv(envStr);
-let expr: LambdaExpr = read(exprStr);
-let output: LambdaExpr = evalLambda(expr);
+let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x free)`;
+let history: [LambdaExpr] = [read(exprStr)];
 
 // let envText = document.getElementById("env") as HTMLTextAreaElement;
-let outputText = document.getElementById("output") as HTMLTextAreaElement;
-let exprText = document.getElementById("input") as HTMLTextAreaElement;
+let input = document.getElementById("input") as HTMLTextAreaElement;
+let output = document.getElementById("output") as HTMLDivElement;
+
+// id is the index of each element
+// e.g. in (lambda (f x) (f (f x)))
+// _ -> the whole thing
+// L -> (f (f x))
+// L0 -> outer f
+// L1 -> (f x)
+// L10 -> inner f
+// L11 -> x
+function toHtml(expr: LambdaExpr, id: string = "") {
+  let ret: HTMLSpanElement = document.createElement("span");
+  ret.classList.add("expr");
+  ret.id = id;
+  switch (expr.type) {
+    case "var":
+      ret.classList.add("var");
+      ret.classList.add(expr.val.i == 0 ? "free" : "bound");
+      ret.innerHTML = expr.val.s;
+      return ret;
+    case "lambda":
+      ret.classList.add("lambda");
+      let param = document.createElement("span");
+      param.innerHTML = `λ${expr.val.param}.`;
+      ret.append(param, toHtml(expr.val.body, id+"L"));
+      return ret;
+    case "apply":
+      ret.classList.add("apply");
+      ret.append("(", toHtml(expr.val[0], id+"0"), toHtml(expr.val[1], id+"1"), ")");
+      return ret;
+  }
+}
 
 // envText.textContent = envStr;
-exprText.textContent = exprStr;
-outputText.textContent = format(expr) + "\n" + format(evalLambda(output));
+input.textContent = exprStr;
+output.appendChild(toHtml(history[0]));
 
 // envText.addEventListener("input", (event) => {
 //   let k: string = (event.target as HTMLInputElement).value;
 //   env = readEnv(k);
 // });
 
-exprText.addEventListener("input", (event) => {
+input.addEventListener("input", (event) => {
   let k: string = (event.target as HTMLInputElement).value;
-  expr = read(k);
-  outputText.textContent += format(expr);
-  output = evalLambda(expr);
-  outputText.textContent += "\n" + format(output);
+  history = [read(k)];
+  output.appendChild(toHtml(history[0]));
 });

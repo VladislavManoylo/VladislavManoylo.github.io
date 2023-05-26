@@ -1,4 +1,4 @@
-import { toSexpr } from "./sexpr";
+import { toSexpr } from "./sexpr.js";
 function toLambdaExpr(s, e = []) {
     if (!Array.isArray(s)) {
         return { type: "var", val: { i: e.indexOf(s) + 1, s } };
