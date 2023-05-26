@@ -73,6 +73,35 @@ function subst(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
   }
 }
 
+// returns a copy of the given expr, but with val at the id location
+function swapout(expr: LambdaExpr, id: string, val: LambdaExpr): LambdaExpr {
+  switch (id[0]) {
+    case "L":
+      if (expr.type != "lambda") throw new Error(`bad index ${format(expr)} ${id}`);
+      return {
+        type: expr.type,
+        val: {
+          param: expr.val.param,
+          body: swapout(expr.val.body, id.slice(1), val),
+        },
+      };
+    case "0":
+      if (expr.type != "apply") throw new Error(`bad index ${format(expr)} ${id}`);
+      return {
+        type: expr.type,
+        val: [swapout(expr.val[0], id.slice(1), val), expr.val[1]],
+      };
+    case "1":
+      if (expr.type != "apply") throw new Error(`bad index ${format(expr)} ${id}`);
+      return {
+        type: expr.type,
+        val: [expr.val[0], swapout(expr.val[1], id.slice(1), val)],
+      };
+    default:
+      return val;
+  }
+}
+
 // id is the index of each element
 // e.g. in (lambda (f x) (f (f x)))
 // _ -> the whole thing
@@ -104,15 +133,19 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
         toHtml(expr.val[1], id + "1"),
       ];
       ret.append(l, r);
+      let length = history.length;
       if (l.classList.contains("lambda")) {
         ret.addEventListener("click", () => {
-          let expr = get(history[0], id);
-          console.log("apply", id, format(expr));
-          if (expr.type != "apply" || expr.val[0].type != "lambda")
+          if (history.length > length) history = history.slice(0, length);
+          if (history.length < length) throw new Error("unreachable");
+          let expr = history[length - 1];
+          let subexpr = get(expr, id);
+          console.log("apply", id, format(subexpr));
+          if (subexpr.type != "apply" || subexpr.val[0].type != "lambda")
             throw new Error("can't apply");
-          let [l, r] = expr.val;
+          let [l, r] = subexpr.val;
           let result = subst(l.val.body, l.val.param, r);
-          pushRow(result);
+          pushRow(swapout(expr, id, result));
           console.log("yep", id, format(result));
         });
       }
