@@ -17,11 +17,30 @@ import { LambdaExpr, format, read } from "./lambda.js";
 // 4 (SUCC 3)
 // `;
 
-let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
-let history: [LambdaExpr] = [read(exprStr)];
-
+let history: LambdaExpr[] = [];
 let input = document.getElementById("input") as HTMLTextAreaElement;
-let output = document.getElementById("output") as HTMLDivElement;
+let output = document.getElementById("output") as HTMLTableElement;
+
+{
+  // sample starting state
+  let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
+  input.textContent = exprStr;
+  pushRow(read(exprStr));
+}
+
+function pushRow(expr: LambdaExpr) {
+  history.push(expr);
+  let tr = document.createElement("tr");
+  let td1 = document.createElement("td");
+  td1.appendChild(toHtml(expr));
+  let td2 = document.createElement("td");
+  td2.innerHTML = format(expr);
+  let td3 = document.createElement("td");
+  td3.innerHTML = format(expr, "debruijn");
+
+  tr.append(td1, td2, td3);
+  output.appendChild(tr);
+}
 
 function get(expr: LambdaExpr, id: string): LambdaExpr {
   switch (id[0]) {
@@ -53,9 +72,6 @@ function subst(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
       return expr;
   }
 }
-
-console.log("look", format(history[0]));
-console.log("look", format(get(history[0], "")));
 
 // id is the index of each element
 // e.g. in (lambda (f x) (f (f x)))
@@ -96,8 +112,7 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
             throw new Error("can't apply");
           let [l, r] = expr.val;
           let result = subst(l.val.body, l.val.param, r);
-          history.push(result);
-          output.append(document.createElement("br"), toHtml(result));
+          pushRow(result);
           console.log("yep", id, format(result));
         });
       }
@@ -105,17 +120,15 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
   }
 }
 
-input.textContent = exprStr;
-output.appendChild(toHtml(history[0]));
-
 input.addEventListener("input", (event) => {
   let k: string = (event.target as HTMLInputElement).value;
+  let expr: LambdaExpr;
   try {
-    let expr = read(k);
-    history = [expr];
+    expr = read(k);
+    history = [];
+    output.innerHTML = "";
+    pushRow(expr);
   } catch (err) {
     // console.log("invalid", k);
   }
-  output.innerHTML = "";
-  output.appendChild(toHtml(history[0]));
 });

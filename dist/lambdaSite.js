@@ -15,10 +15,27 @@ import { format, read } from "./lambda.js";
 // 3 (SUCC 2)
 // 4 (SUCC 3)
 // `;
-let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
-let history = [read(exprStr)];
+let history = [];
 let input = document.getElementById("input");
 let output = document.getElementById("output");
+{
+    // sample starting state
+    let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
+    input.textContent = exprStr;
+    pushRow(read(exprStr));
+}
+function pushRow(expr) {
+    history.push(expr);
+    let tr = document.createElement("tr");
+    let td1 = document.createElement("td");
+    td1.appendChild(toHtml(expr));
+    let td2 = document.createElement("td");
+    td2.innerHTML = format(expr);
+    let td3 = document.createElement("td");
+    td3.innerHTML = format(expr, "debruijn");
+    tr.append(td1, td2, td3);
+    output.appendChild(tr);
+}
 function get(expr, id) {
     switch (id[0]) {
         case "L":
@@ -52,8 +69,6 @@ function subst(expr, param, arg) {
             return expr;
     }
 }
-console.log("look", format(history[0]));
-console.log("look", format(get(history[0], "")));
 // id is the index of each element
 // e.g. in (lambda (f x) (f (f x)))
 // _ -> the whole thing
@@ -93,25 +108,23 @@ function toHtml(expr, id = "") {
                         throw new Error("can't apply");
                     let [l, r] = expr.val;
                     let result = subst(l.val.body, l.val.param, r);
-                    history.push(result);
-                    output.append(document.createElement("br"), toHtml(result));
+                    pushRow(result);
                     console.log("yep", id, format(result));
                 });
             }
             return ret;
     }
 }
-input.textContent = exprStr;
-output.appendChild(toHtml(history[0]));
 input.addEventListener("input", (event) => {
     let k = event.target.value;
+    let expr;
     try {
-        let expr = read(k);
-        history = [expr];
+        expr = read(k);
+        history = [];
+        output.innerHTML = "";
+        pushRow(expr);
     }
     catch (err) {
         // console.log("invalid", k);
     }
-    output.innerHTML = "";
-    output.appendChild(toHtml(history[0]));
 });
