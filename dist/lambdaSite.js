@@ -36,6 +36,13 @@ function pushExpr(expr) {
     tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "debruijn")}</td>`);
     output.appendChild(tr);
 }
+/** Rewind history to only have n expressions */
+function rewindExprs(n) {
+    while (history.length > n) {
+        history.pop();
+        output.removeChild(output.lastChild);
+    }
+}
 /**
  * index into the lambda expresion
  * e.g. in (lambda (f x) (f (f x)))
@@ -142,7 +149,7 @@ function toHtml(expr, id = "") {
             if (l.classList.contains("lambda")) {
                 ret.addEventListener("click", () => {
                     if (history.length > length)
-                        history = history.slice(0, length);
+                        rewindExprs(length);
                     if (history.length < length)
                         throw new Error("unreachable");
                     let expr = history[length - 1];

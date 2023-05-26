@@ -42,6 +42,14 @@ function pushExpr(expr: LambdaExpr) {
   output.appendChild(tr);
 }
 
+/** Rewind history to only have n expressions */
+function rewindExprs(n: number) {
+  while (history.length > n) {
+    history.pop();
+    output.removeChild(output.lastChild!);
+  }
+}
+
 /**
  * index into the lambda expresion
  * e.g. in (lambda (f x) (f (f x)))
@@ -146,7 +154,7 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
       let length = history.length;
       if (l.classList.contains("lambda")) {
         ret.addEventListener("click", () => {
-          if (history.length > length) history = history.slice(0, length);
+          if (history.length > length) rewindExprs(length);
           if (history.length < length) throw new Error("unreachable");
           let expr = history[length - 1];
           let subexpr = get(expr, id);
