@@ -99,7 +99,7 @@ function toHtml(expr, id = "") {
                 toHtml(expr.val[0], id + "0"),
                 toHtml(expr.val[1], id + "1"),
             ];
-            ret.append("(", l, r, ")");
+            ret.append(l, r);
             if (l.classList.contains("lambda")) {
                 ret.addEventListener("click", () => {
                     let expr = get(history[0], id);
