@@ -153,6 +153,7 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
       ret.append(l, r);
       let length = history.length;
       if (l.classList.contains("lambda")) {
+        ret.classList.add("clickable");
         ret.addEventListener("click", () => {
           if (history.length > length) rewindExprs(length);
           if (history.length < length) throw new Error("unreachable");

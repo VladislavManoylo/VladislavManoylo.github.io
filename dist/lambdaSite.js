@@ -147,6 +147,7 @@ function toHtml(expr, id = "") {
             ret.append(l, r);
             let length = history.length;
             if (l.classList.contains("lambda")) {
+                ret.classList.add("clickable");
                 ret.addEventListener("click", () => {
                     if (history.length > length)
                         rewindExprs(length);
