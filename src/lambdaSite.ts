@@ -145,7 +145,8 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
         ret.classList.add("free");
         ret.classList.add("clickable");
         let length = history.length;
-        ret.addEventListener("click", () => {
+        ret.addEventListener("click", (event) => {
+          event.stopPropagation();
           if (history.length > length) rewindExprs(length);
           if (history.length < length) throw new Error("unreachable");
           let expr = history[length - 1];
@@ -176,7 +177,8 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
       let length = history.length;
       if (l.classList.contains("lambda")) {
         ret.classList.add("clickable");
-        ret.addEventListener("click", () => {
+        ret.addEventListener("click", (event) => {
+          event.stopPropagation();
           if (history.length > length) rewindExprs(length);
           if (history.length < length) throw new Error("unreachable");
           let expr = history[length - 1];

@@ -140,7 +140,8 @@ function toHtml(expr, id = "") {
                 ret.classList.add("free");
                 ret.classList.add("clickable");
                 let length = history.length;
-                ret.addEventListener("click", () => {
+                ret.addEventListener("click", (event) => {
+                    event.stopPropagation();
                     if (history.length > length)
                         rewindExprs(length);
                     if (history.length < length)
@@ -173,7 +174,8 @@ function toHtml(expr, id = "") {
             let length = history.length;
             if (l.classList.contains("lambda")) {
                 ret.classList.add("clickable");
-                ret.addEventListener("click", () => {
+                ret.addEventListener("click", (event) => {
+                    event.stopPropagation();
                     if (history.length > length)
                         rewindExprs(length);
                     if (history.length < length)
