@@ -1,32 +1,38 @@
 import { LambdaExpr, format, read } from "./lambda.js";
 
-// let envStr = `ID (lambda (x) x)
-// T (lambda (x y) x)
-// F (lambda (x y) y)
-// NOT (lambda (p) (p F T))
-// AND (lambda (p q) (p q p))
-// OR (lambda (p q) (p p q))
-// 0 (lambda (f x) x)
-// SUCC (lambda (n f x) (f (n f x)))
-// PLUS (lambda (m n) (m SUCC n))
-// MULT (lambda (m n) (m (plus n) 0))
-// POW (lambda (b e) (e b))
-// 1 (lambda (f x) (f x))
-// 2 (lambda (f x) (f (f x)))
-// 3 (SUCC 2)
-// 4 (SUCC 3)
-// `;
-
 /** each step of an expression being computed */
 let history: LambdaExpr[] = [];
+let env: Record<string, LambdaExpr> = {};
 let input = document.getElementById("input") as HTMLTextAreaElement;
 let output = document.getElementById("output") as HTMLTableElement;
 
 {
   // sample starting state
-  let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
+  // let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
+  let exprStr = `SUCC 0`;
   input.textContent = exprStr;
   pushExpr(read(exprStr));
+}
+
+{
+  let sampleEnv = [
+    ["ID", "(lambda (x) x)"],
+    ["T", "(lambda (x y) x)"],
+    ["F", "(lambda (x y) y)"],
+    ["NOT", "(lambda (p) (p F T))"],
+    ["AND", "(lambda (p q) (p q p))"],
+    ["OR", "(lambda (p q) (p p q))"],
+    ["0", "(lambda (f x) x)"],
+    ["SUCC", "(lambda (n f x) (f (n f x)))"],
+    ["PLUS", "(lambda (m n) (m SUCC n))"],
+    ["MULT", "(lambda (m n) (m (plus n) 0))"],
+    ["POW", "(lambda (b e) (e b))"],
+    ["1", "(lambda (f x) (f x))"],
+    ["2", "(lambda (f x) (f (f x)))"],
+    ["3", "(SUCC 2)"],
+    ["4", "(SUCC 3)"],
+  ];
+  for (let it of sampleEnv) env[it[0]] = read(it[1]);
 }
 
 /** Add a new step to the expression being computed */
@@ -135,7 +141,23 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
   switch (expr.type) {
     case "var":
       ret.classList.add("var");
-      ret.classList.add(expr.val.i == 0 ? "free" : "bound");
+      if (expr.val.i == 0) {
+        ret.classList.add("free");
+        ret.classList.add("clickable");
+        let length = history.length;
+        ret.addEventListener("click", () => {
+          if (history.length > length) rewindExprs(length);
+          if (history.length < length) throw new Error("unreachable");
+          let expr = history[length - 1];
+          let subexpr = get(expr, id);
+          if (subexpr.type != "var" || subexpr.val.i != 0)
+            throw new Error("can't apply - unreachable");
+          let result = env[subexpr.val.s];
+          if (result !== undefined) {
+            pushExpr(swapout(expr, id, result));
+          }
+        });
+      }
       ret.innerHTML = expr.val.s;
       return ret;
     case "lambda":
