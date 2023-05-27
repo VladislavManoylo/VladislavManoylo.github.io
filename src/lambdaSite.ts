@@ -143,6 +143,26 @@ function lookup(s: string): LambdaExpr | undefined {
   return undefined;
 }
 
+/** returns an event handler for reducing the lambda expression at the index */
+function clickLambda(index: string) {
+  let length = history.length;
+  return (event: MouseEvent) => {
+    event.stopPropagation();
+    if (history.length > length) rewindExprs(length);
+    if (history.length < length) throw new Error("unreachable");
+    let expr = history[length - 1];
+    let subexpr = get(expr, index);
+    if (subexpr.type === "var" && subexpr.val.i === 0) {
+      let result = lookup(subexpr.val.s);
+      if (result !== undefined) pushExpr(swapout(expr, index, result));
+    } else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
+      let [l, r] = subexpr.val;
+      let result = subst(l.val.body, l.val.param, r);
+      pushExpr(swapout(expr, index, result));
+    }
+  };
+}
+
 /**
  * converts a lambda into a structured div, with event listeners tied to divs that can compute parts of the expression.
  * the id parameter is used for convenience in recursion, don't pass anything in.
@@ -157,20 +177,7 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
       if (expr.val.i == 0) {
         ret.classList.add("free");
         ret.classList.add("clickable");
-        let length = history.length;
-        ret.addEventListener("click", (event) => {
-          event.stopPropagation();
-          if (history.length > length) rewindExprs(length);
-          if (history.length < length) throw new Error("unreachable");
-          let expr = history[length - 1];
-          let subexpr = get(expr, id);
-          if (subexpr.type != "var" || subexpr.val.i != 0)
-            throw new Error("can't apply - unreachable");
-          let result = lookup(subexpr.val.s);
-          if (result !== undefined) {
-            pushExpr(swapout(expr, id, result));
-          }
-        });
+        ret.addEventListener("click", clickLambda(id));
       }
       ret.innerHTML = expr.val.s;
       return ret;
@@ -187,21 +194,9 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
         toHtml(expr.val[1], id + "1"),
       ];
       ret.append(l, r);
-      let length = history.length;
       if (l.classList.contains("lambda")) {
         ret.classList.add("clickable");
-        ret.addEventListener("click", (event) => {
-          event.stopPropagation();
-          if (history.length > length) rewindExprs(length);
-          if (history.length < length) throw new Error("unreachable");
-          let expr = history[length - 1];
-          let subexpr = get(expr, id);
-          if (subexpr.type != "apply" || subexpr.val[0].type != "lambda")
-            throw new Error("can't apply - unreachable");
-          let [l, r] = subexpr.val;
-          let result = subst(l.val.body, l.val.param, r);
-          pushExpr(swapout(expr, id, result));
-        });
+        ret.addEventListener("click", clickLambda(id));
       }
       return ret;
   }
