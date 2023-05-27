@@ -3,6 +3,7 @@ import { LambdaExpr, format, read } from "./lambda.js";
 /** each step of an expression being computed */
 let history: LambdaExpr[] = [];
 let env: Record<string, LambdaExpr> = {};
+let envTable = document.getElementById("env") as HTMLTableElement;
 let input = document.getElementById("input") as HTMLTextAreaElement;
 let output = document.getElementById("output") as HTMLTableElement;
 
@@ -32,7 +33,14 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["3", "(SUCC 2)"],
     ["4", "(SUCC 3)"],
   ];
-  for (let it of sampleEnv) env[it[0]] = read(it[1]);
+  for (let it of sampleEnv) {
+    let e = read(it[1]);
+    env[it[0]] = e;
+    envTable.insertAdjacentHTML(
+      "beforeend",
+      `<tr><td>${it[0]}</td><td>${format(e)}</td></tr>`
+    );
+  }
 }
 
 /** Add a new step to the expression being computed */

@@ -37,10 +37,17 @@ body {
 #output {
     margin: 1em;
 }
+#env {
+    border-collapse: collapse;
+}
+#env td {
+    border: 1px solid;
+}
         </style>
     </head>
 
     <body>
+        <table id="env"></table>
         <textarea id="input" rows="3" cols="80"></textarea>
         <table id="output"></table>
         <script type="module" src="dist/lambdaSite.js"></script>
