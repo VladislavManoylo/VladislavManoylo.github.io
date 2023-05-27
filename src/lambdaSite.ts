@@ -23,15 +23,10 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["NOT", "(lambda (p) (p F T))"],
     ["AND", "(lambda (p q) (p q p))"],
     ["OR", "(lambda (p q) (p p q))"],
-    ["0", "(lambda (f x) x)"],
     ["SUCC", "(lambda (n f x) (f (n f x)))"],
     ["PLUS", "(lambda (m n) (m SUCC n))"],
     ["MULT", "(lambda (m n) (m (plus n) 0))"],
     ["POW", "(lambda (b e) (e b))"],
-    ["1", "(lambda (f x) (f x))"],
-    ["2", "(lambda (f x) (f (f x)))"],
-    ["3", "(SUCC 2)"],
-    ["4", "(SUCC 3)"],
   ];
   for (let it of sampleEnv) {
     let e = read(it[1]);
@@ -138,6 +133,16 @@ function swapout(expr: LambdaExpr, id: string, val: LambdaExpr): LambdaExpr {
   }
 }
 
+/** looks for a symbol in the environment, and church numerals */
+function lookup(s: string): LambdaExpr | undefined {
+  if (s in env) return env[s];
+  if (/^\d+$/.test(s)) {
+    let n = +s;
+    return read(`lambda (f x) ${"(f".repeat(n)} x ${")".repeat(n)}`);
+  }
+  return undefined;
+}
+
 /**
  * converts a lambda into a structured div, with event listeners tied to divs that can compute parts of the expression.
  * the id parameter is used for convenience in recursion, don't pass anything in.
@@ -161,7 +166,7 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
           let subexpr = get(expr, id);
           if (subexpr.type != "var" || subexpr.val.i != 0)
             throw new Error("can't apply - unreachable");
-          let result = env[subexpr.val.s];
+          let result = lookup(subexpr.val.s);
           if (result !== undefined) {
             pushExpr(swapout(expr, id, result));
           }
