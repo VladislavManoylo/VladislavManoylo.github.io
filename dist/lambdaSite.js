@@ -127,7 +127,7 @@ function swapout(expr, id, val) {
 /** looks for a symbol in the environment, and church numerals */
 function lookup(s) {
     if (s in env)
-        return env[s];
+        return window.structuredClone(env[s]);
     if (/^\d+$/.test(s)) {
         let n = +s;
         return read(`lambda (f x) ${"(f".repeat(n)} x ${")".repeat(n)}`);

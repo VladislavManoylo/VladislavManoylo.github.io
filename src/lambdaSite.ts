@@ -135,7 +135,7 @@ function swapout(expr: LambdaExpr, id: string, val: LambdaExpr): LambdaExpr {
 
 /** looks for a symbol in the environment, and church numerals */
 function lookup(s: string): LambdaExpr | undefined {
-  if (s in env) return env[s];
+  if (s in env) return window.structuredClone(env[s]);
   if (/^\d+$/.test(s)) {
     let n = +s;
     return read(`lambda (f x) ${"(f".repeat(n)} x ${")".repeat(n)}`);
