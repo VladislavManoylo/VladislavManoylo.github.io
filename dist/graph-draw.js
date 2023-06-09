@@ -16,7 +16,7 @@ class Buttons {
         this.pencil = pencil;
         this.selected = selected;
         this.buttons = [pos];
-        let buttonOffsets = [-1 / 6, -1 / 2, -5 / 6].map((x) => polarToPoint(x, this.radius));
+        let buttonOffsets = [-1 / 6, -1 / 2, -5 / 6].map((x) => polarToPoint(x * Math.PI, 60));
         for (const a of buttonOffsets) {
             this.buttons.push(plus(pos, a));
         }

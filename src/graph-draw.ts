@@ -22,7 +22,7 @@ class Buttons {
     this.selected = selected;
     this.buttons = [pos];
     let buttonOffsets: v2[] = [-1 / 6, -1 / 2, -5 / 6].map((x) =>
-      polarToPoint(x, this.radius)
+      polarToPoint(x*Math.PI, 60)
     );
     for (const a of buttonOffsets) {
       this.buttons.push(plus(pos, a));
