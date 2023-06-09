@@ -42,7 +42,7 @@ class Buttons {
 class Controller {
   buttons: Buttons | undefined = undefined;
   lastButton: ButtonChoice | undefined = undefined;
-  drawer: Drawer = new Drawer("graph-canvas", 50, true); // setting size of nodes here
+  drawer: Drawer = new Drawer("canvas", 50, true); // setting size of nodes here
   deletingEdge: Boolean = false;
   addingEdge: Boolean = false;
   constructor() {

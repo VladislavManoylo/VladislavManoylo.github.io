@@ -55,6 +55,8 @@ export class Drawer {
         this.vertexPositions = [];
         this.graph = new Graph();
         this.canvas = document.getElementById(canvasId);
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
         this.pencil = new Pencil(this.canvas);
         this.radius = radius;
         this.labeled = labeled;
@@ -84,6 +86,11 @@ export class Drawer {
     }
     /** clears the screen and draws all vertices and edges */
     draw() {
+        if (this.canvas.width != window.innerWidth ||
+            this.canvas.height != window.innerHeight) {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+        }
         this.pencil.clear();
         for (let i = 0; i < this.graph.vertices; i++) {
             for (let j of this.graph.edges[i]) {
