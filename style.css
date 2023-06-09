@@ -1,5 +1,6 @@
 body {
-    background-color: rgb(99,99,99);
+    background-color: rgb(30,30,30);
+    color: white;
     font-size: 1em;
 }
 .header {
