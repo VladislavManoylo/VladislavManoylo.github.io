@@ -17,16 +17,21 @@ let output = document.getElementById("output") as HTMLTableElement;
 
 {
   let sampleEnv = [
-    ["ID", "(lambda (x) x)"],
-    ["T", "(lambda (x y) x)"],
-    ["F", "(lambda (x y) y)"],
-    ["NOT", "(lambda (p) (p F T))"],
+    ["S", "(lambda (a b c) a c (b c))"],
+    ["K", "(lambda (a b) a)"],
+    ["I", "(lambda (a) a)"],
+    ["KI", "(lambda (a b) (K I))"],
+    ["Ki", "(lambda (a b) b)"],
+    ["M", "(lambda (a) a a)"],
+    ["Omega", "(lambda (a) (a a)(a a))"],
+    ["Y", "(lambda (a) Y (lambda (b) a (b b)))"],
+    ["NOT", "(lambda (p) (p I))"],
     ["AND", "(lambda (p q) (p q p))"],
     ["OR", "(lambda (p q) (p p q))"],
     ["SUCC", "(lambda (n f x) (f (n f x)))"],
-    ["PLUS", "(lambda (m n) (m SUCC n))"],
-    ["MULT", "(lambda (m n) (m (plus n) 0))"],
-    ["POW", "(lambda (b e) (e b))"],
+    ["+", "(lambda (m n) (m SUCC n))"],
+    ["*", "(lambda (m n) (m (plus n) 0))"],
+    ["^", "(lambda (b e) (e b))"],
   ];
   for (let it of sampleEnv) {
     let e = read(it[1]);
