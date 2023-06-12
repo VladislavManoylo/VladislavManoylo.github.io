@@ -32,6 +32,11 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["+", "(lambda (m n) (m SUCC n))"],
     ["*", "(lambda (m n) (m (plus n) 0))"],
     ["^", "(lambda (b e) (e b))"],
+    ["cons", "(lambda (a b) (lambda (p) p a b))"],
+    ["car", "(lambda (l) (l K))"],
+    ["cdr", "(lambda (l) (l Ki))"],
+    ["nil", "(lambda (p) K)"],
+    ["nil?", "(lambda (l) (l (lambda (a b) Ki)))"],
   ];
   for (let it of sampleEnv) {
     let e = read(it[1]);
