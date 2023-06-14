@@ -67,32 +67,6 @@ function pushExpr(expr: LambdaExpr) {
   output.appendChild(tr);
 }
 
-/**
- * index into the lambda expresion
- * e.g. in (lambda (f x) (f (f x)))
- * "" -> the whole thing
- * "L"   -> (f (f x))
- * "L0"  -> outer f
- * "L1"  -> (f x)
- * "L10" -> inner f
- * "L11" -> x
- */
-function get(expr: LambdaExpr, index: string): LambdaExpr {
-  switch (index[0]) {
-    case "L":
-      if (expr.type != "lambda") throw new Error("bad index");
-      return get(expr.val.body, index.slice(1));
-    case "0":
-      if (expr.type != "apply") throw new Error("bad index");
-      return get(expr.val[0], index.slice(1));
-    case "1":
-      if (expr.type != "apply") throw new Error("bad index");
-      return get(expr.val[1], index.slice(1));
-    default:
-      return expr;
-  }
-}
-
 function subst(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
   switch (expr.type) {
     case "var":
@@ -108,36 +82,53 @@ function subst(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
   }
 }
 
-/** returns a copy of the given expr, but with val at the id location
- * TODO: if expressions could be modified with get(...), this function could be removed*/
-function swapout(expr: LambdaExpr, id: string, val: LambdaExpr): LambdaExpr {
-  switch (id[0]) {
+/**
+ * index into the lambda expresion
+ * e.g. in (lambda (f x) (f (f x)))
+ * "" -> the whole thing
+ * "L"   -> (f (f x))
+ * "L0"  -> outer f
+ * "L1"  -> (f x)
+ * "L10" -> inner f
+ * "L11" -> x
+ */
+function get(expr: LambdaExpr, index: string): LambdaExpr {
+  if (index.length === 0)
+    return expr;
+  let rest = index.slice(1);
+  switch (index[0]) {
     case "L":
-      if (expr.type != "lambda")
-        throw new Error(`bad index ${format(expr)} ${id}`);
-      return {
-        type: expr.type,
-        val: {
-          param: expr.val.param,
-          body: swapout(expr.val.body, id.slice(1), val),
-        },
-      };
+      if (expr.type != "lambda") throw new Error("bad index");
+      return get(expr.val.body, rest);
     case "0":
-      if (expr.type != "apply")
-        throw new Error(`bad index ${format(expr)} ${id}`);
-      return {
-        type: expr.type,
-        val: [swapout(expr.val[0], id.slice(1), val), expr.val[1]],
-      };
+      if (expr.type != "apply") throw new Error("bad index");
+      return get(expr.val[0], rest);
     case "1":
-      if (expr.type != "apply")
-        throw new Error(`bad index ${format(expr)} ${id}`);
-      return {
-        type: expr.type,
-        val: [expr.val[0], swapout(expr.val[1], id.slice(1), val)],
-      };
+      if (expr.type != "apply") throw new Error("bad index");
+      return get(expr.val[1], rest);
     default:
-      return val;
+      throw new Error("unknown index");
+  }
+}
+
+/** puts val at index, doesn't work for starting index because javascript */
+function swapout(expr: LambdaExpr, val: LambdaExpr, index: string) {
+  if (index.length === 0)
+    throw new Error("empty index");
+  let parent = get(expr, index.slice(0, index.length - 1));
+  switch (index[index.length - 1]) {
+    case "L":
+      if (parent.type != "lambda") throw new Error("bad index");
+      parent.val.body = val;
+      break;
+    case "0":
+      if (parent.type != "apply") throw new Error("bad index");
+      parent.val[0] = val;
+      break;
+    case "1":
+      if (parent.type != "apply") throw new Error("bad index");
+      parent.val[1] = val;
+      break;
   }
 }
 
@@ -161,15 +152,21 @@ function clickLambda(index: string) {
       output.removeChild(output.lastChild!);
     }
     if (history.length < length) throw new Error("unreachable");
-    let expr = history[length - 1];
+    let expr = structuredClone(history[length - 1]);
     let subexpr = get(expr, index);
+    let result;
     if (subexpr.type === "var" && subexpr.val.i === 0) {
-      let result = lookup(subexpr.val.s);
-      if (result !== undefined) pushExpr(swapout(expr, index, result));
+      result = lookup(subexpr.val.s);
     } else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
       let [l, r] = subexpr.val;
-      let result = subst(l.val.body, l.val.param, r);
-      pushExpr(swapout(expr, index, result));
+      result = subst(l.val.body, l.val.param, r);
+    }
+    if (result !== undefined) {
+      if (index === "") pushExpr(result);
+      else {
+        swapout(expr, result, index);
+        pushExpr(expr);
+      }
     }
   };
 }
