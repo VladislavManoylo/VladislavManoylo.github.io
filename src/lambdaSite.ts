@@ -67,14 +67,6 @@ function pushExpr(expr: LambdaExpr) {
   output.appendChild(tr);
 }
 
-/** Rewind history to only have n expressions */
-function rewindExprs(n: number) {
-  while (history.length > n) {
-    history.pop();
-    output.removeChild(output.lastChild!);
-  }
-}
-
 /**
  * index into the lambda expresion
  * e.g. in (lambda (f x) (f (f x)))
@@ -164,7 +156,10 @@ function clickLambda(index: string) {
   let length = history.length;
   return (event: MouseEvent) => {
     event.stopPropagation();
-    if (history.length > length) rewindExprs(length);
+    while (history.length > length) {
+      history.pop();
+      output.removeChild(output.lastChild!);
+    }
     if (history.length < length) throw new Error("unreachable");
     let expr = history[length - 1];
     let subexpr = get(expr, index);
