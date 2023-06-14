@@ -93,8 +93,7 @@ function subst(expr: LambdaExpr, param: string, arg: LambdaExpr): LambdaExpr {
  * "L11" -> x
  */
 function get(expr: LambdaExpr, index: string): LambdaExpr {
-  if (index.length === 0)
-    return expr;
+  if (index.length === 0) return expr;
   let rest = index.slice(1);
   switch (index[0]) {
     case "L":
@@ -113,8 +112,7 @@ function get(expr: LambdaExpr, index: string): LambdaExpr {
 
 /** puts val at index, doesn't work for starting index because javascript */
 function swapout(expr: LambdaExpr, val: LambdaExpr, index: string) {
-  if (index.length === 0)
-    throw new Error("empty index");
+  if (index.length === 0) throw new Error("empty index");
   let parent = get(expr, index.slice(0, index.length - 1));
   switch (index[index.length - 1]) {
     case "L":
@@ -132,22 +130,18 @@ function swapout(expr: LambdaExpr, val: LambdaExpr, index: string) {
   }
 }
 
-/** looks for a symbol in the environment, and church numerals */
-function lookup(s: string): LambdaExpr | undefined {
-  if (s in env) return window.structuredClone(env[s]);
-  if (/^\d+$/.test(s)) {
-    let n = +s;
-    return read(`lambda (f x) ${"(f".repeat(n)} x ${")".repeat(n)}`);
-  }
-  return undefined;
+/** converts whole number to church numeral */
+function church(n: number): LambdaExpr {
+  return read(`lambda (f x) ${"(f".repeat(n)} x`);
 }
 
 /** returns an event handler for reducing the lambda expression at the index */
 function clickLambda(index: string) {
   let length = history.length;
   return (event: MouseEvent) => {
-    event.stopPropagation();
+    event.stopPropagation(); // only reduce inner-most possible expression
     while (history.length > length) {
+      // rewind expressions past this point
       history.pop();
       output.removeChild(output.lastChild!);
     }
@@ -156,13 +150,16 @@ function clickLambda(index: string) {
     let subexpr = get(expr, index);
     let result;
     if (subexpr.type === "var" && subexpr.val.i === 0) {
-      result = lookup(subexpr.val.s);
+      // free variabe
+      let s = subexpr.val.s;
+      if (s in env) result = structuredClone(env[s]);
+      else if (/^\d+$/.test(s)) result = church(+s); // church numeral support
     } else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
       let [l, r] = subexpr.val;
       result = subst(l.val.body, l.val.param, r);
     }
     if (result !== undefined) {
-      if (index === "") pushExpr(result);
+      if (index === "") pushExpr(result); // swapout doesn't work at empty index
       else {
         swapout(expr, result, index);
         pushExpr(expr);

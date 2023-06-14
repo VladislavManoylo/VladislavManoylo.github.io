@@ -127,22 +127,17 @@ function swapout(expr, val, index) {
             break;
     }
 }
-/** looks for a symbol in the environment, and church numerals */
-function lookup(s) {
-    if (s in env)
-        return window.structuredClone(env[s]);
-    if (/^\d+$/.test(s)) {
-        let n = +s;
-        return read(`lambda (f x) ${"(f".repeat(n)} x ${")".repeat(n)}`);
-    }
-    return undefined;
+/** converts whole number to church numeral */
+function church(n) {
+    return read(`lambda (f x) ${"(f".repeat(n)} x`);
 }
 /** returns an event handler for reducing the lambda expression at the index */
 function clickLambda(index) {
     let length = history.length;
     return (event) => {
-        event.stopPropagation();
+        event.stopPropagation(); // only reduce inner-most possible expression
         while (history.length > length) {
+            // rewind expressions past this point
             history.pop();
             output.removeChild(output.lastChild);
         }
@@ -152,7 +147,12 @@ function clickLambda(index) {
         let subexpr = get(expr, index);
         let result;
         if (subexpr.type === "var" && subexpr.val.i === 0) {
-            result = lookup(subexpr.val.s);
+            // free variabe
+            let s = subexpr.val.s;
+            if (s in env)
+                result = structuredClone(env[s]);
+            else if (/^\d+$/.test(s))
+                result = church(+s); // church numeral support
         }
         else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
             let [l, r] = subexpr.val;
@@ -160,7 +160,7 @@ function clickLambda(index) {
         }
         if (result !== undefined) {
             if (index === "")
-                pushExpr(result);
+                pushExpr(result); // swapout doesn't work at empty index
             else {
                 swapout(expr, result, index);
                 pushExpr(expr);
