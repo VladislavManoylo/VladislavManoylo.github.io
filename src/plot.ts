@@ -10,16 +10,10 @@ class Plot {
     this.pencil = new Pencil(this.canvas);
     this.paths = [];
   }
-  private rescale(a: number, min: number, height: number) {
-    a -= min;
-    a /= height;
-    let h = this.canvas.height;
-    return h - a * h;
-  }
   plot(ys: number[]) {
     let min = Math.min(...ys);
-    let h = Math.max(...ys) - min;
-    if (h == 0) {
+    let height = Math.max(...ys) - min;
+    if (height == 0) {
       let y = this.canvas.height / 2;
       this.paths.push([
         [0, y],
@@ -30,7 +24,11 @@ class Plot {
     let dx = this.canvas.width / (ys.length - 1);
     let path: v2[] = [];
     for (let i = 0; i < ys.length; i++) {
-      path.push([dx * i, this.rescale(ys[i], min, h)]);
+      // y, scaled to canvas height
+      let y = (ys[i] - min) / height;
+      let h = this.canvas.height;
+      y = h - (y * h);
+      path.push([dx * i, y]);
     }
     this.paths.push(path);
   }
@@ -57,10 +55,20 @@ class Plot {
 let plot = new Plot("canvas");
 plot.fun(Math.sin, 0, 2 * Math.PI, 100);
 plot.show();
-document.getElementById("fun")?.addEventListener("input", (event) => {
-  let text = (event.target as HTMLInputElement).value;
-  let f = coefToPolynomial(text.split(/\s+/).map(Number));
+
+let x0Input = document.getElementById("x0") as HTMLInputElement;
+let x1Input = document.getElementById("x1") as HTMLInputElement;
+let funInput = document.getElementById("fun") as HTMLInputElement;
+
+function redraw() {
+  let x0 = +x0Input.value;
+  let x1 = +x1Input.value;
+  let f = coefToPolynomial(funInput.value.split(/\s+/).map(Number));
   plot.clear();
-  plot.fun(f, -1, 2, 100);
+  plot.fun(f, x0, x1 - x0, 100);
   plot.show();
-});
+}
+
+x0Input.addEventListener("input", () => { redraw() });
+x1Input.addEventListener("input", () => { redraw() });
+funInput.addEventListener("input", () => { redraw() });
