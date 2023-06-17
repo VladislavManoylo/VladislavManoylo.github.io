@@ -46,6 +46,13 @@ class Plot {
   }
   show() {
     this.pencil.clear();
+    // draw border
+    let [x,y] = [this.canvas.width, this.canvas.height];
+    this.pencil.path([[0,0], [x,0]]);
+    this.pencil.path([[0,y], [x,y]]);
+    this.pencil.path([[0,0], [0,y]]);
+    this.pencil.path([[x,0], [x,y]]);
+    // plot paths
     for (let it of this.paths) {
       this.pencil.path(it);
     }
