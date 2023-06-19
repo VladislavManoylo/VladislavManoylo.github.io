@@ -1,5 +1,5 @@
 import { Pencil } from "./pencil.js";
-import { coefToPolynomial } from "./fun.js";
+import { coefToPolynomial, tokenize } from "./fun.js";
 
 class Plot {
   canvas: HTMLCanvasElement;
@@ -79,6 +79,7 @@ function redraw() {
   plot.clear();
   for (let funInput of document.getElementsByClassName("fun")) {
     let str: string = (funInput as HTMLInputElement).value;
+    console.log(tokenize(str));
     if (str !== "") {
       let coef = str.split(/\s+/).map(Number);
       plot.fun(coefToPolynomial(coef), x0, x1 - x0, 100);

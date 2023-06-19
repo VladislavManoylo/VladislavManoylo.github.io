@@ -1,5 +1,5 @@
-function tokenize(text) {
-    const re = /([0-9]+)|([a-z]+)|\S/g;
+export function tokenize(text) {
+    const re = /([0-9.]+)|([a-z]+)|\S/g;
     let tokens = [];
     let m;
     while ((m = re.exec(text))) {
