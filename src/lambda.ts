@@ -51,6 +51,31 @@ function read(str: string): LambdaExpr {
   return toLambdaExpr(toSexpr(str));
 }
 
+function formatShort(expr: LambdaExpr, index: "L" | "0" | "1" = "0", space: boolean = false) {
+  let ret = "";
+  switch (expr.type) {
+    case "var":
+      if (index === "L") ret += ".";
+      ret += expr.val.s;
+      break;
+    case "lambda":
+      if (index !== "L") ret += "λ";
+      ret += expr.val.param;
+      if (space) ret += " ";
+      ret += formatShort(expr.val.body, "L", space);
+      break;
+    case "apply":
+      if (index === "L") ret += ".";
+      if (index === "1") ret += " (";
+      ret += formatShort(expr.val[0], "0", space);
+      if (space) ret += " ";
+      ret += formatShort(expr.val[1], "1", space);
+      if (index === "1") ret += ")";
+      break;
+  }
+    return ret;
+}
+
 function formatSimple(expr: LambdaExpr): string {
   switch (expr.type) {
     case "var":
@@ -75,13 +100,15 @@ function formatDebruijn(expr: LambdaExpr): string {
 
 function format(
   expr: LambdaExpr,
-  fmt: "simple" | "debruijn" = "simple"
+  fmt: "simple" | "debruijn" | "short" = "simple"
 ): string {
   switch (fmt) {
     case "simple":
       return formatSimple(expr);
     case "debruijn":
       return formatDebruijn(expr);
+    case "short":
+      return formatShort(expr);
   }
 }
 
@@ -165,7 +192,7 @@ let output = document.getElementById("output") as HTMLTableElement;
 {
   // sample starting state
   // let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
-  let exprStr = `SUCC 0`;
+  let exprStr = `Succ 0`;
   input.textContent = exprStr;
   pushExpr(read(exprStr));
 }
@@ -181,31 +208,28 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["M", "(lambda (a) a a)"],
     ["Omega", "M M"],
     ["Y", "(lambda (a) Y (lambda (b) a (b b)))"],
-    ["TRUE", "(lambda (a b) a)"],
-    ["FALSE", "(lambda (a b) b)"],
-    ["NOT", "(lambda (p) (p I))"],
-    ["AND", "(lambda (p q) (p q p))"],
-    ["OR", "(lambda (p q) (p p q))"],
-    ["zero", "(lambda (a b) b)"],
-    ["one", "(lambda (a b) a b)"],
-    ["two", "(lambda (a b) a (a b))"],
-    ["zero?", "(lambda (n) n (lambda (a) Ki) K)"],
-    ["SUCC", "(lambda (n f x) (f (n f x)))"],
-    ["+", "(lambda (m n) (m SUCC n))"],
-    ["*", "(lambda (m n) (m (plus n) 0))"],
+    ["True", "K"],
+    ["False", "Ki"],
+    ["Not", "(lambda (p) (p I))"],
+    ["And", "(lambda (p q) (p q p))"],
+    ["Or", "(lambda (p q) (p p q))"],
+    ["Zero?", "(lambda (n) n (lambda (a) Ki) K)"],
+    ["Succ", "(lambda (n f x) (f (n f x)))"],
+    ["+", "(lambda (m n) (m Succ n))"],
+    ["*", "(lambda (m n) (m (+ n) 0))"],
     ["^", "(lambda (b e) (e b))"],
-    ["cons", "(lambda (a b) (lambda (p) p a b))"],
-    ["car", "(lambda (l) (l K))"],
-    ["cdr", "(lambda (l) (l Ki))"],
-    ["nil", "(lambda (p) K)"],
-    ["nil?", "(lambda (l) (l (lambda (a b) Ki)))"],
+    ["Cons", "(lambda (a b) (lambda (p) p a b))"],
+    ["Car", "(lambda (l) (l K))"],
+    ["Cdr", "(lambda (l) (l Ki))"],
+    ["Nil", "(lambda (p) K)"],
+    ["Nil?", "(lambda (l) (l (lambda (a b) Ki)))"],
   ];
   for (let it of sampleEnv) {
     let e = read(it[1]);
     env[it[0]] = e;
     envTable.insertAdjacentHTML(
       "beforeend",
-      `<tr><td>${it[0]}</td><td>${format(e)}</td></tr>`
+      `<tr><td>${it[0]}</td><td>${format(e, "simple")}</td></tr>`
     );
   }
 }
@@ -218,7 +242,8 @@ function pushExpr(expr: LambdaExpr) {
   td.appendChild(toHtml(expr));
 
   tr.appendChild(td);
-  tr.insertAdjacentHTML("beforeend", `<td>${format(expr)}</td>`);
+  tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "simple")}</td>`);
+  tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "short")}</td>`);
   tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "debruijn")}</td>`);
   output.appendChild(tr);
 }
