@@ -96,3 +96,19 @@ x1Input.addEventListener("input", () => {
 funList.addEventListener("input", () => {
   redraw();
 });
+
+(document.getElementById("+") as HTMLButtonElement).addEventListener(
+  "click",
+  () => {
+    funList.insertAdjacentHTML(
+      "beforeend",
+      `<li><input type="text" class="fun"></input></li>`
+    );
+  }
+);
+(document.getElementById("-") as HTMLButtonElement).addEventListener(
+  "click",
+  () => {
+    if (funList.hasChildNodes()) funList.removeChild(funList.lastChild!);
+  }
+);

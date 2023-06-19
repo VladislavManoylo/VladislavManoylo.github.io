@@ -89,3 +89,10 @@ x1Input.addEventListener("input", () => {
 funList.addEventListener("input", () => {
     redraw();
 });
+document.getElementById("+").addEventListener("click", () => {
+    funList.insertAdjacentHTML("beforeend", `<li><input type="text" class="fun"></input></li>`);
+});
+document.getElementById("-").addEventListener("click", () => {
+    if (funList.hasChildNodes())
+        funList.removeChild(funList.lastChild);
+});
