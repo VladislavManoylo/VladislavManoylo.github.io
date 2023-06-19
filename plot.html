@@ -9,10 +9,13 @@
 
 <body>
   <canvas id="canvas" width=500 height=500></canvas>
-  <input type="number" id="x0" value="-1"></input>
-  <input type="number" id="x1" value="1"></input>
+  <input type="number" size=5 id="x0" value="-1"></input>
+  <input type="number" size=5 id="x1" value="1"></input>
   domain
-  <input type="text" id="fun">polynomial coefficients</input>
+  <ul id="funlist">
+    <li> <input type="text" class="fun"></input></li>
+    <li> <input type="text" class="fun"></input></li>
+  </ul>
   <script type="module" src="dist/plot.js"></script>
 </body>
 

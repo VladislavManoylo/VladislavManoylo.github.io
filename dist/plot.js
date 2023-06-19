@@ -23,7 +23,7 @@ class Plot {
             // y, scaled to canvas height
             let y = (ys[i] - min) / height;
             let h = this.canvas.height;
-            y = h - (y * h);
+            y = h - y * h;
             path.push([dx * i, y]);
         }
         this.paths.push(path);
@@ -44,10 +44,22 @@ class Plot {
         this.pencil.clear();
         // draw border
         let [x, y] = [this.canvas.width, this.canvas.height];
-        this.pencil.path([[0, 0], [x, 0]]);
-        this.pencil.path([[0, y], [x, y]]);
-        this.pencil.path([[0, 0], [0, y]]);
-        this.pencil.path([[x, 0], [x, y]]);
+        this.pencil.path([
+            [0, 0],
+            [x, 0],
+        ]);
+        this.pencil.path([
+            [0, y],
+            [x, y],
+        ]);
+        this.pencil.path([
+            [0, 0],
+            [0, y],
+        ]);
+        this.pencil.path([
+            [x, 0],
+            [x, y],
+        ]);
         // plot paths
         for (let it of this.paths) {
             this.pencil.path(it);
@@ -59,15 +71,24 @@ plot.fun(Math.sin, 0, 2 * Math.PI, 100);
 plot.show();
 let x0Input = document.getElementById("x0");
 let x1Input = document.getElementById("x1");
-let funInput = document.getElementById("fun");
+let funList = document.getElementById("funlist");
 function redraw() {
     let x0 = +x0Input.value;
     let x1 = +x1Input.value;
-    let f = coefToPolynomial(funInput.value.split(/\s+/).map(Number));
     plot.clear();
-    plot.fun(f, x0, x1 - x0, 100);
+    for (let funInput of document.getElementsByClassName("fun")) {
+        let fun = funInput;
+        let f = coefToPolynomial(fun.value.split(/\s+/).map(Number));
+        plot.fun(f, x0, x1 - x0, 100);
+    }
     plot.show();
 }
-x0Input.addEventListener("input", () => { redraw(); });
-x1Input.addEventListener("input", () => { redraw(); });
-funInput.addEventListener("input", () => { redraw(); });
+x0Input.addEventListener("input", () => {
+    redraw();
+});
+x1Input.addEventListener("input", () => {
+    redraw();
+});
+funList.addEventListener("input", () => {
+    redraw();
+});
