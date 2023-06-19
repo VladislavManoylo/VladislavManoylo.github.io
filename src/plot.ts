@@ -1,36 +1,16 @@
-import { Pencil, v2 } from "./pencil.js";
+import { Pencil } from "./pencil.js";
 import { coefToPolynomial } from "./fun.js";
 
 class Plot {
   canvas: HTMLCanvasElement;
   pencil: Pencil;
-  private paths: v2[][];
+  private paths: number[][] = [];
   constructor(canvas: string) {
     this.canvas = document.getElementById(canvas) as HTMLCanvasElement;
     this.pencil = new Pencil(this.canvas);
-    this.paths = [];
   }
   plot(ys: number[]) {
-    let min = Math.min(...ys);
-    let height = Math.max(...ys) - min;
-    if (height == 0) {
-      let y = this.canvas.height / 2;
-      this.paths.push([
-        [0, y],
-        [this.canvas.width, y],
-      ]);
-      return;
-    }
-    let dx = this.canvas.width / (ys.length - 1);
-    let path: v2[] = [];
-    for (let i = 0; i < ys.length; i++) {
-      // y, scaled to canvas height
-      let y = (ys[i] - min) / height;
-      let h = this.canvas.height;
-      y = h - y * h;
-      path.push([dx * i, y]);
-    }
-    this.paths.push(path);
+    this.paths.push(ys);
   }
   fun(f: (a: number) => number, x0: number, width: number, samples: number) {
     let dx = width / samples;
@@ -65,8 +45,22 @@ class Plot {
       [x, y],
     ]);
     // plot paths
-    for (let it of this.paths) {
-      this.pencil.path(it);
+    let ys = this.paths.flat();
+    let max = Math.max(...ys);
+    let height: number = max - Math.min(...ys);
+    if (height === 0) {
+      let y = this.canvas.height / 2;
+      this.pencil.path([
+        [0, y],
+        [this.canvas.width, y],
+      ]);
+      return;
+    }
+    let dy: number = this.canvas.height / height;
+    for (let ys of this.paths) {
+      let dx: number = this.canvas.width / (ys.length - 1);
+      // max - y, because y=0 is the top of the canvas
+      this.pencil.path(ys.map((y, x) => [dx * x, dy * (max - y)]));
     }
   }
 }
@@ -84,9 +78,11 @@ function redraw() {
   let x1 = +x1Input.value;
   plot.clear();
   for (let funInput of document.getElementsByClassName("fun")) {
-    let fun = funInput as HTMLInputElement;
-    let f = coefToPolynomial(fun.value.split(/\s+/).map(Number));
-    plot.fun(f, x0, x1 - x0, 100);
+    let str: string = (funInput as HTMLInputElement).value;
+    if (str !== "") {
+      let coef = str.split(/\s+/).map(Number);
+      plot.fun(coefToPolynomial(coef), x0, x1 - x0, 100);
+    }
   }
   plot.show();
 }

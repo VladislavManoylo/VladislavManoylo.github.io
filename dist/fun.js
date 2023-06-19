@@ -9,7 +9,6 @@ function tokenize(text) {
     return tokens;
 }
 export function coefToPolynomial(coefficients) {
-    console.log(coefficients);
     return (x) => {
         let v = 1;
         let sum = 0;

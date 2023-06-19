@@ -12,7 +12,6 @@ function tokenize(text: string): string[] {
 export function coefToPolynomial(
   coefficients: number[]
 ): (x: number) => number {
-  console.log(coefficients);
   return (x: number) => {
     let v = 1;
     let sum = 0;
