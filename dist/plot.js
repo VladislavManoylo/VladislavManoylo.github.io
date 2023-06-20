@@ -34,24 +34,7 @@ function fun(f, x0, width, samples) {
 }
 function show() {
     pencil.clear();
-    // draw border
-    let [x, y] = [canvas.width, canvas.height];
-    pencil.path([
-        [0, 0],
-        [x, 0],
-    ]);
-    pencil.path([
-        [0, y],
-        [x, y],
-    ]);
-    pencil.path([
-        [0, 0],
-        [0, y],
-    ]);
-    pencil.path([
-        [x, 0],
-        [x, y],
-    ]);
+    pencil.rect(0, 0, canvas.width, canvas.height);
     // plot paths
     let ys = paths.flat();
     let max = Math.max(...ys);

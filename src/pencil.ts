@@ -47,4 +47,13 @@ export class Pencil {
     }
     this.ctx.stroke();
   }
+  rect(x0: number, y0: number, x1: number, y1: number) {
+    this.path([
+      [x0, y0],
+      [x0, y1],
+      [x1, y1],
+      [x1, y0],
+      [x0, y0],
+    ]);
+  }
 }
