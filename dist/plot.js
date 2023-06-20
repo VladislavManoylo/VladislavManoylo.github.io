@@ -1,15 +1,49 @@
 import { Pencil } from "./pencil.js";
-function tokenize(text) {
-    const re = /([0-9.]+)|([a-z]+)|\S/g;
-    let tokens = [];
-    let m;
-    while ((m = re.exec(text))) {
-        const token = m[0];
-        tokens.push(token);
-    }
-    return tokens;
+/**
+ * EXPR ::= SUM
+ * SUM ::= SUM +/- PRODUCT
+ *       | PRODUCT
+ * PRODUCT ::= PRODUCT *|/ POWER
+ *           | POWER
+ * POWER ::= POWER ^ TERM
+ * TERM ::= number
+ *        | x
+ *        | pi | e
+ *        | ( EXPR )
+ *        | sin|cos|... EXPR
+ */
+/*
+type Expr = Sum;
+type Sum = Product | { op: "+" | "-"; lhs: Sum; rhs: Product };
+type Product = Power | { op: "*" | "/"; lhs: Product; rhs: Power };
+type Power = { lhs: Power; rhs: Term };
+type Term = number | string | Expr | Fun;
+type Fun = { fun: "sin" | "cos" | "tan" | "ln"; arg: Expr };
+*/
+/** given an input [1,0,2,3], returns "x^3 + 2x + 3" */
+function coefLabel(coefficients) {
+    return coefficients
+        .map((v, i) => {
+        let base = v;
+        let exp = coefficients.length - 1 - i;
+        if (base === 0)
+            return "";
+        if (exp === 0)
+            return base.toString();
+        let ret = "";
+        if (base !== 1)
+            ret += base.toString();
+        ret += "x";
+        if (exp !== 1)
+            ret += `^${exp}`;
+        return ret;
+    })
+        .filter((s) => s.length > 0)
+        .join(" + ");
 }
+/** given an input [1,2,3], returns the function (x) => (x^2 + 2x + 3) */
 function coefToPolynomial(coefficients) {
+    coefficients.reverse();
     return (x) => {
         let v = 1;
         let sum = 0;
@@ -20,6 +54,7 @@ function coefToPolynomial(coefficients) {
         return sum;
     };
 }
+//console.log("139=", coefToPolynomial([1,10,100])(3));
 let paths = [];
 let canvas = document.getElementById("canvas");
 let pencil = new Pencil(canvas);
@@ -69,11 +104,16 @@ function redraw() {
     let x1 = +x1Input.value;
     paths = [];
     for (let funInput of document.getElementsByClassName("fun")) {
-        let str = funInput.value;
+        let input = funInput;
+        let str = input.value;
         // console.log(tokenize(str));
         if (str !== "") {
             let coef = str.split(/\s+/).map(Number);
+            input.labels[0].innerHTML = coefLabel(coef);
             paths.push(sampleFunction(coefToPolynomial(coef), x0, x1, 100));
+        }
+        else {
+            input.labels[0].innerHTML = "";
         }
     }
     let y0 = +y0Input.value;
@@ -106,7 +146,11 @@ funList.addEventListener("input", () => {
     redraw();
 });
 document.getElementById("+").addEventListener("click", () => {
-    funList.insertAdjacentHTML("beforeend", `<li><input type="text" class="fun"></li>`);
+    let i = funList.childNodes.length;
+    funList.insertAdjacentHTML("beforeend", `<li>
+        <input type="text" class="fun" id="fun${i}">
+        <label for="fun${i}"></label>
+      </li>`);
 });
 document.getElementById("-").addEventListener("click", () => {
     if (funList.hasChildNodes())
