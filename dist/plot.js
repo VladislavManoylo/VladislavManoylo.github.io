@@ -91,8 +91,6 @@ function show(range) {
         pencil.path(ys.map((y, x) => [dx * x, dy * (range[1] - y)]));
     }
 }
-paths.push(sampleFunction(Math.sin, 0, 2 * Math.PI, 100));
-show([-2, 2]);
 let x0Input = document.getElementById("x0");
 let x1Input = document.getElementById("x1");
 let y0Input = document.getElementById("y0");
@@ -106,7 +104,6 @@ function redraw() {
     for (let funInput of document.getElementsByClassName("fun")) {
         let input = funInput;
         let str = input.value;
-        // console.log(tokenize(str));
         if (str !== "") {
             let coef = str.split(/\s+/).map(Number);
             input.labels[0].innerHTML = coefLabel(coef);
@@ -127,6 +124,7 @@ function redraw() {
     }
     show([y0, y1]);
 }
+redraw();
 x0Input.addEventListener("input", () => {
     redraw();
 });
