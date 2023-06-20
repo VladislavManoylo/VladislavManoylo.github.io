@@ -23,8 +23,12 @@ function coefToPolynomial(coefficients) {
 let paths = [];
 let canvas = document.getElementById("canvas");
 let pencil = new Pencil(canvas);
-function fun(f, x0, width, samples) {
-    let dx = width / samples;
+/** take samples of the function f between x0 and x1
+ * should have at least 2 samples to work as expected
+ */
+function sampleFunction(f, x0, x1, samples) {
+    // samples-1 to get start and end in plot
+    let dx = (x1 - x0) / (samples - 1);
     let ys = [];
     for (let i = 0; i < samples; i++) {
         ys.push(f(x0));
@@ -54,7 +58,7 @@ function show() {
         pencil.path(ys.map((y, x) => [dx * x, dy * (max - y)]));
     }
 }
-paths.push(fun(Math.sin, 0, 2 * Math.PI, 100));
+paths.push(sampleFunction(Math.sin, 0, 2 * Math.PI, 100));
 show();
 let x0Input = document.getElementById("x0");
 let x1Input = document.getElementById("x1");
@@ -68,7 +72,7 @@ function redraw() {
         console.log(tokenize(str));
         if (str !== "") {
             let coef = str.split(/\s+/).map(Number);
-            paths.push(fun(coefToPolynomial(coef), x0, x1 - x0, 100));
+            paths.push(sampleFunction(coefToPolynomial(coef), x0, x1, 100));
         }
     }
     show();
