@@ -145,7 +145,7 @@ funList.addEventListener("input", () => {
   () => {
     funList.insertAdjacentHTML(
       "beforeend",
-      `<li><input type="text" class="fun"></input></li>`
+      `<li><input type="text" class="fun"></li>`
     );
   }
 );

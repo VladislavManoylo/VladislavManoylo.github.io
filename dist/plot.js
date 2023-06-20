@@ -106,7 +106,7 @@ funList.addEventListener("input", () => {
     redraw();
 });
 document.getElementById("+").addEventListener("click", () => {
-    funList.insertAdjacentHTML("beforeend", `<li><input type="text" class="fun"></input></li>`);
+    funList.insertAdjacentHTML("beforeend", `<li><input type="text" class="fun"></li>`);
 });
 document.getElementById("-").addEventListener("click", () => {
     if (funList.hasChildNodes())
