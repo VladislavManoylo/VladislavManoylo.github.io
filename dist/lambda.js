@@ -266,6 +266,7 @@ function evalAt(i, index) {
             pushExpr(expr);
         }
     }
+    scrollTo(0, document.body.scrollHeight);
 }
 /**
  * converts a lambda into a structured div, with event listeners tied to divs that can compute parts of the expression.

@@ -287,6 +287,7 @@ function evalAt(i: number, index: string) {
       pushExpr(expr);
     }
   }
+  scrollTo(0, document.body.scrollHeight);
 }
 
 /**
