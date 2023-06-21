@@ -182,12 +182,6 @@ let envTable = document.getElementById("env");
 let input = document.getElementById("input");
 let output = document.getElementById("output");
 {
-    // sample starting state
-    let exprStr = "(λa.(λb.a)) (λa.a)";
-    input.textContent = exprStr;
-    pushExpr(parse(exprStr));
-}
-{
     let sampleEnv = [
         ["S", "(lambda (a b c) a c (b c))"],
         ["K", "(lambda (a b) a)"],
@@ -317,13 +311,12 @@ function toHtml(expr, id = "") {
     }
     return ret;
 }
-input.addEventListener("input", (event) => {
-    let k = event.target.value;
-    k = k.replace(/\\/g, "(λ");
-    input.value = k;
+function inputText(str) {
+    str = str.replace(/\\/g, "(λ");
+    input.value = str;
     let expr;
     try {
-        expr = parse(k);
+        expr = parse(str);
         history = [];
         clickableSubexprs = [];
         output.innerHTML = "";
@@ -332,7 +325,13 @@ input.addEventListener("input", (event) => {
     catch (err) {
         // console.log("invalid", k);
     }
+    input.focus();
+}
+input.addEventListener("input", (event) => {
+    inputText(event.target.value);
 });
+/** starting expr */
+inputText("(λa.(λb.a)) (λa.a)");
 document.addEventListener("keypress", (event) => {
     var _a;
     if ((_a = document.activeElement) === null || _a === void 0 ? void 0 : _a.matches("body")) {
@@ -345,5 +344,7 @@ document.addEventListener("keypress", (event) => {
             id = row[row.length - 1];
         if (id !== undefined)
             evalAt(i, id);
+        if (event.key === "`")
+            inputText("");
     }
 });

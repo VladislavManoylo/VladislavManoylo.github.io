@@ -201,13 +201,6 @@ let input = document.getElementById("input") as HTMLTextAreaElement;
 let output = document.getElementById("output") as HTMLTableElement;
 
 {
-  // sample starting state
-  let exprStr = "(λa.(λb.a)) (λa.a)";
-  input.textContent = exprStr;
-  pushExpr(parse(exprStr));
-}
-
-{
   let sampleEnv = [
     ["S", "(lambda (a b c) a c (b c))"],
     ["K", "(lambda (a b) a)"],
@@ -337,13 +330,12 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
   return ret;
 }
 
-input.addEventListener("input", (event) => {
-  let k: string = (event.target as HTMLInputElement).value;
-  k = k.replace(/\\/g, "(λ");
-  input.value = k;
+function inputText(str: string) {
+  str = str.replace(/\\/g, "(λ");
+  input.value = str;
   let expr: LambdaExpr;
   try {
-    expr = parse(k);
+    expr = parse(str);
     history = [];
     clickableSubexprs = [];
     output.innerHTML = "";
@@ -351,7 +343,14 @@ input.addEventListener("input", (event) => {
   } catch (err) {
     // console.log("invalid", k);
   }
+  input.focus();
+}
+
+input.addEventListener("input", (event) => {
+  inputText((event.target as HTMLInputElement).value);
 });
+/** starting expr */
+inputText("(λa.(λb.a)) (λa.a)");
 
 document.addEventListener("keypress", (event) => {
   if (document.activeElement?.matches("body")) {
@@ -361,5 +360,6 @@ document.addEventListener("keypress", (event) => {
     if (event.key === "1") id = row[0];
     else if (event.key === "0") id = row[row.length - 1];
     if (id !== undefined) evalAt(i, id);
+    if (event.key === "`") inputText("");
   }
 });
