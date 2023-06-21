@@ -286,32 +286,28 @@ function evalAt(i: number, index: string) {
 
 /**
  * converts a lambda into a structured div, with event listeners tied to divs that can compute parts of the expression.
- * the id parameter is used for convenience in recursion, don't pass anything in.
+ * only used by pushExpr, is a separate function for convenience and recursion
  */
 function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
   let ret: HTMLDivElement = document.createElement("div");
   ret.classList.add("expr");
   ret.id = id;
-  let i = history.length;
+  let click = false;
   switch (expr.type) {
     case "var":
       ret.classList.add("var");
       if (expr.val.i == 0) {
         ret.classList.add("free");
-        ret.classList.add("clickable");
-        ret.addEventListener("click", (event) => {
-          event.stopPropagation();
-          evalAt(i, id);
-        });
+        if (expr.val.s in env) click = true;
       }
       ret.innerHTML = expr.val.s;
-      return ret;
+      break;
     case "lambda":
       ret.classList.add("lambda");
       let param = document.createElement("div");
       param.innerHTML = `λ${expr.val.param}.`;
       ret.append(param, toHtml(expr.val.body, id + "L"));
-      return ret;
+      break;
     case "apply":
       ret.classList.add("apply");
       let [l, r] = [
@@ -319,15 +315,18 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
         toHtml(expr.val[1], id + "1"),
       ];
       ret.append(l, r);
-      if (l.classList.contains("lambda")) {
-        ret.classList.add("clickable");
-        ret.addEventListener("click", (event) => {
-          event.stopPropagation();
-          evalAt(i, id);
-        });
-      }
-      return ret;
+      if (l.classList.contains("lambda")) click = true;
+      break;
   }
+  let i = history.length;
+  if (click) {
+    ret.classList.add("clickable");
+    ret.addEventListener("click", (event) => {
+      event.stopPropagation();
+      evalAt(i, id);
+    });
+  }
+  return ret;
 }
 
 input.addEventListener("input", (event) => {
