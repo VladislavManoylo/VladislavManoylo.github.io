@@ -78,7 +78,11 @@ function formatDebruijn(expr: LambdaExpr): string {
   }
 }
 
-function formatShort(expr: LambdaExpr, index: "L" | "0" | "1" = "0", space: boolean = false) {
+function formatShort(
+  expr: LambdaExpr,
+  index: "L" | "0" | "1" = "0",
+  space: boolean = false
+) {
   let ret = "";
   switch (expr.type) {
     case "var":
@@ -332,7 +336,7 @@ input.addEventListener("input", (event) => {
   input.value = k;
   let expr: LambdaExpr;
   try {
-    expr = parse(k)
+    expr = parse(k);
     history = [];
     output.innerHTML = "";
     pushExpr(expr);
