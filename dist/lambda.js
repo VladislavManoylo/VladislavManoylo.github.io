@@ -175,6 +175,8 @@ function church(n) {
 // site start
 /** each step of an expression being computed */
 let history = [];
+/** each subexpression index that can be evaluated on each line */
+let clickableSubexprs = [];
 let env = {};
 let envTable = document.getElementById("env");
 let input = document.getElementById("input");
@@ -221,9 +223,11 @@ let output = document.getElementById("output");
 /** Add a new step to the expression being computed */
 function pushExpr(expr) {
     history.push(expr);
+    clickableSubexprs.push([]); // is filled by toHtml
     let tr = document.createElement("tr");
     let td = document.createElement("td");
     td.appendChild(toHtml(expr));
+    //console.log("filled", clickableSubexprs[clickableSubexprs.length-1]);
     tr.appendChild(td);
     tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "simple")}</td>`);
     tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "short")}</td>`);
@@ -234,6 +238,7 @@ function evalAt(i, index) {
     while (history.length > i) {
         // rewind expressions past this point
         history.pop();
+        clickableSubexprs.pop();
         output.removeChild(output.lastChild);
     }
     if (history.length < i)
@@ -299,8 +304,11 @@ function toHtml(expr, id = "") {
             break;
     }
     let i = history.length;
+    if (clickableSubexprs.length !== i)
+        throw new Error("unreachable");
     if (click) {
         ret.classList.add("clickable");
+        clickableSubexprs[i - 1].push(id);
         ret.addEventListener("click", (event) => {
             event.stopPropagation();
             evalAt(i, id);
@@ -316,10 +324,25 @@ input.addEventListener("input", (event) => {
     try {
         expr = parse(k);
         history = [];
+        clickableSubexprs = [];
         output.innerHTML = "";
         pushExpr(expr);
     }
     catch (err) {
         // console.log("invalid", k);
+    }
+});
+document.addEventListener("keypress", (event) => {
+    var _a;
+    if ((_a = document.activeElement) === null || _a === void 0 ? void 0 : _a.matches("body")) {
+        let i = history.length;
+        let row = clickableSubexprs[i - 1];
+        let id = undefined;
+        if (event.key === "1")
+            id = row[0];
+        else if (event.key === "0")
+            id = row[row.length - 1];
+        if (id !== undefined)
+            evalAt(i, id);
     }
 });
