@@ -332,21 +332,18 @@ input.addEventListener("input", (event) => {
     inputText(event.target.value);
 });
 inputText("(λa.(λb.a)) (λa.a)");
-function outerLeft(a, b) {
-    let end = Math.min(a.length, b.length);
-    for (let i = 0; i < end; i++) {
-        if (a[i] !== b[i])
-            return a[i] === "0";
-    }
-    return a.length < end;
-}
-function innerRight(a, b) {
-    let end = Math.min(a.length, b.length);
-    for (let i = 0; i < end; i++) {
-        if (a[i] !== b[i])
-            return a[i] === "1";
-    }
-    return a.length > end;
+/** returns a comparator to choose between 2 strings for an evaluation strategy
+* e.g. an inner left strategy will choose L00 over L01 because it's more left
+* an inner right strategy will choose 0100 010 because it's more inner*/
+function makeStrategy(inner, left) {
+    return (a, b) => {
+        let end = a.length < b.length ? a.length : b.length;
+        for (let i = 0; i < end; i++) {
+            if (a[i] !== b[i])
+                return left === (a[i] === "0");
+        }
+        return inner === a.length > end;
+    };
 }
 function best(l, cmp) {
     return l.reduce((found, current) => {
@@ -363,31 +360,22 @@ document.addEventListener("keypress", (event) => {
         }, 100);
         return;
     }
+    let strategies = {
+        "1": makeStrategy(true, true),
+        "2": makeStrategy(false, true),
+        "3": makeStrategy(true, false),
+        "4": makeStrategy(false, false), // outer left
+    };
     if ((_a = document.activeElement) === null || _a === void 0 ? void 0 : _a.matches("body")) {
         let i = history.length;
-        let row = clickableSubexprs[i - 1];
-        let id = undefined;
+        if (event.key in strategies) {
+            let row = clickableSubexprs[i - 1];
+            if (row.length === 0)
+                return;
+            evalAt(i, best(row, strategies[event.key]));
+            return;
+        }
         switch (event.key) {
-            case "1": // inner left
-                if (row.length === 0)
-                    break;
-                id = row[0];
-                break;
-            case "2": // outer left
-                if (row.length === 0)
-                    break;
-                id = best(row, outerLeft);
-                break;
-            case "3": // outer left
-                if (row.length === 0)
-                    break;
-                id = best(row, innerRight);
-                break;
-            case "4": // outer right
-                if (row.length === 0)
-                    break;
-                id = row[row.length - 1];
-                break;
             case "-":
                 if (i > 0)
                     popExpr();
@@ -398,7 +386,5 @@ document.addEventListener("keypress", (event) => {
                 input.focus();
                 break;
         }
-        if (id !== undefined)
-            evalAt(i, id);
     }
 });
