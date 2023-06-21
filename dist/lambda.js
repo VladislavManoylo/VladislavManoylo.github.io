@@ -230,42 +230,37 @@ function pushExpr(expr) {
     tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "debruijn")}</td>`);
     output.appendChild(tr);
 }
-/** returns an event handler for reducing the lambda expression at the index */
-function clickLambda(index) {
-    let length = history.length;
-    return (event) => {
-        event.stopPropagation(); // only reduce inner-most possible expression
-        while (history.length > length) {
-            // rewind expressions past this point
-            history.pop();
-            output.removeChild(output.lastChild);
+function evalAt(i, index) {
+    while (history.length > i) {
+        // rewind expressions past this point
+        history.pop();
+        output.removeChild(output.lastChild);
+    }
+    if (history.length < i)
+        throw new Error("unreachable");
+    let expr = structuredClone(history[i - 1]);
+    let subexpr = get(expr, index);
+    let result;
+    if (subexpr.type === "var" && subexpr.val.i === 0) {
+        // free variabe
+        let s = subexpr.val.s;
+        if (s in env)
+            result = structuredClone(env[s]);
+        else if (/^\d+$/.test(s))
+            result = church(+s); // church numeral support
+    }
+    else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
+        let [l, r] = subexpr.val;
+        result = subst(l.val.body, l.val.param, r);
+    }
+    if (result !== undefined) {
+        if (index === "")
+            pushExpr(result); // swapout doesn't work at empty index
+        else {
+            swapout(expr, result, index);
+            pushExpr(expr);
         }
-        if (history.length < length)
-            throw new Error("unreachable");
-        let expr = structuredClone(history[length - 1]);
-        let subexpr = get(expr, index);
-        let result;
-        if (subexpr.type === "var" && subexpr.val.i === 0) {
-            // free variabe
-            let s = subexpr.val.s;
-            if (s in env)
-                result = structuredClone(env[s]);
-            else if (/^\d+$/.test(s))
-                result = church(+s); // church numeral support
-        }
-        else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
-            let [l, r] = subexpr.val;
-            result = subst(l.val.body, l.val.param, r);
-        }
-        if (result !== undefined) {
-            if (index === "")
-                pushExpr(result); // swapout doesn't work at empty index
-            else {
-                swapout(expr, result, index);
-                pushExpr(expr);
-            }
-        }
-    };
+    }
 }
 /**
  * converts a lambda into a structured div, with event listeners tied to divs that can compute parts of the expression.
@@ -275,13 +270,17 @@ function toHtml(expr, id = "") {
     let ret = document.createElement("div");
     ret.classList.add("expr");
     ret.id = id;
+    let i = history.length;
     switch (expr.type) {
         case "var":
             ret.classList.add("var");
             if (expr.val.i == 0) {
                 ret.classList.add("free");
                 ret.classList.add("clickable");
-                ret.addEventListener("click", clickLambda(id));
+                ret.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    evalAt(i, id);
+                });
             }
             ret.innerHTML = expr.val.s;
             return ret;
@@ -300,7 +299,10 @@ function toHtml(expr, id = "") {
             ret.append(l, r);
             if (l.classList.contains("lambda")) {
                 ret.classList.add("clickable");
-                ret.addEventListener("click", clickLambda(id));
+                ret.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    evalAt(i, id);
+                });
             }
             return ret;
     }

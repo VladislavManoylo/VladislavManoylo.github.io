@@ -53,7 +53,7 @@ function parseSexpr(str: string): LambdaExpr {
 
 /** parses (λa.(λb.a)) as (lambda (a) (lambda (b) a)) */
 function parse(str: string): LambdaExpr {
-  return parseSexpr(str.replace(/λ([^.])+\./g, "lambda ($1) "));  
+  return parseSexpr(str.replace(/λ([^.])+\./g, "lambda ($1) "));
 }
 
 function formatSimple(expr: LambdaExpr): string {
@@ -100,7 +100,7 @@ function formatShort(expr: LambdaExpr, index: "L" | "0" | "1" = "0", space: bool
       if (index === "1") ret += ")";
       break;
   }
-    return ret;
+  return ret;
 }
 
 function format(
@@ -252,37 +252,32 @@ function pushExpr(expr: LambdaExpr) {
   output.appendChild(tr);
 }
 
-/** returns an event handler for reducing the lambda expression at the index */
-function clickLambda(index: string) {
-  let length = history.length;
-  return (event: MouseEvent) => {
-    event.stopPropagation(); // only reduce inner-most possible expression
-    while (history.length > length) {
-      // rewind expressions past this point
-      history.pop();
-      output.removeChild(output.lastChild!);
+function evalAt(i: number, index: string) {
+  while (history.length > i) {
+    // rewind expressions past this point
+    history.pop();
+    output.removeChild(output.lastChild!);
+  }
+  if (history.length < i) throw new Error("unreachable");
+  let expr = structuredClone(history[i - 1]);
+  let subexpr = get(expr, index);
+  let result;
+  if (subexpr.type === "var" && subexpr.val.i === 0) {
+    // free variabe
+    let s = subexpr.val.s;
+    if (s in env) result = structuredClone(env[s]);
+    else if (/^\d+$/.test(s)) result = church(+s); // church numeral support
+  } else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
+    let [l, r] = subexpr.val;
+    result = subst(l.val.body, l.val.param, r);
+  }
+  if (result !== undefined) {
+    if (index === "") pushExpr(result); // swapout doesn't work at empty index
+    else {
+      swapout(expr, result, index);
+      pushExpr(expr);
     }
-    if (history.length < length) throw new Error("unreachable");
-    let expr = structuredClone(history[length - 1]);
-    let subexpr = get(expr, index);
-    let result;
-    if (subexpr.type === "var" && subexpr.val.i === 0) {
-      // free variabe
-      let s = subexpr.val.s;
-      if (s in env) result = structuredClone(env[s]);
-      else if (/^\d+$/.test(s)) result = church(+s); // church numeral support
-    } else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
-      let [l, r] = subexpr.val;
-      result = subst(l.val.body, l.val.param, r);
-    }
-    if (result !== undefined) {
-      if (index === "") pushExpr(result); // swapout doesn't work at empty index
-      else {
-        swapout(expr, result, index);
-        pushExpr(expr);
-      }
-    }
-  };
+  }
 }
 
 /**
@@ -293,13 +288,17 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
   let ret: HTMLDivElement = document.createElement("div");
   ret.classList.add("expr");
   ret.id = id;
+  let i = history.length;
   switch (expr.type) {
     case "var":
       ret.classList.add("var");
       if (expr.val.i == 0) {
         ret.classList.add("free");
         ret.classList.add("clickable");
-        ret.addEventListener("click", clickLambda(id));
+        ret.addEventListener("click", (event) => {
+          event.stopPropagation();
+          evalAt(i, id);
+        });
       }
       ret.innerHTML = expr.val.s;
       return ret;
@@ -318,7 +317,10 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
       ret.append(l, r);
       if (l.classList.contains("lambda")) {
         ret.classList.add("clickable");
-        ret.addEventListener("click", clickLambda(id));
+        ret.addEventListener("click", (event) => {
+          event.stopPropagation();
+          evalAt(i, id);
+        });
       }
       return ret;
   }
