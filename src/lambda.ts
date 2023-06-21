@@ -47,33 +47,13 @@ function toLambdaExpr(s: sexpr, e: string[] = []): LambdaExpr {
   }
 }
 
-function read(str: string): LambdaExpr {
+function parseSexpr(str: string): LambdaExpr {
   return toLambdaExpr(toSexpr(str));
 }
 
-function formatShort(expr: LambdaExpr, index: "L" | "0" | "1" = "0", space: boolean = false) {
-  let ret = "";
-  switch (expr.type) {
-    case "var":
-      if (index === "L") ret += ".";
-      ret += expr.val.s;
-      break;
-    case "lambda":
-      if (index !== "L") ret += "λ";
-      ret += expr.val.param;
-      if (space) ret += " ";
-      ret += formatShort(expr.val.body, "L", space);
-      break;
-    case "apply":
-      if (index === "L") ret += ".";
-      if (index === "1") ret += " (";
-      ret += formatShort(expr.val[0], "0", space);
-      if (space) ret += " ";
-      ret += formatShort(expr.val[1], "1", space);
-      if (index === "1") ret += ")";
-      break;
-  }
-    return ret;
+/** parses (λa.(λb.a)) as (lambda (a) (lambda (b) a)) */
+function parse(str: string): LambdaExpr {
+  return parseSexpr(str.replace(/λ([^.])+\./g, "lambda ($1) "));  
 }
 
 function formatSimple(expr: LambdaExpr): string {
@@ -81,7 +61,7 @@ function formatSimple(expr: LambdaExpr): string {
     case "var":
       return expr.val.s;
     case "lambda":
-      return `λ${expr.val.param}.${formatSimple(expr.val.body)}`;
+      return `(λ${expr.val.param}.${formatSimple(expr.val.body)})`;
     case "apply":
       return `(${formatSimple(expr.val[0])} ${formatSimple(expr.val[1])})`;
   }
@@ -96,6 +76,31 @@ function formatDebruijn(expr: LambdaExpr): string {
     case "apply":
       return `(${formatDebruijn(expr.val[0])} ${formatDebruijn(expr.val[1])})`;
   }
+}
+
+function formatShort(expr: LambdaExpr, index: "L" | "0" | "1" = "0", space: boolean = false) {
+  let ret = "";
+  switch (expr.type) {
+    case "var":
+      if (index === "L") ret += ".";
+      ret += expr.val.s;
+      break;
+    case "lambda":
+      if (index !== "L") ret += " λ";
+      ret += expr.val.param;
+      if (space) ret += " ";
+      ret += formatShort(expr.val.body, "L", space);
+      break;
+    case "apply":
+      if (index === "L") ret += ".";
+      if (index === "1") ret += " (";
+      ret += formatShort(expr.val[0], "0", space);
+      if (space) ret += " ";
+      ret += formatShort(expr.val[1], "1", space);
+      if (index === "1") ret += ")";
+      break;
+  }
+    return ret;
 }
 
 function format(
@@ -177,7 +182,7 @@ function swapout(expr: LambdaExpr, val: LambdaExpr, index: string) {
 
 /** converts whole number to church numeral */
 function church(n: number): LambdaExpr {
-  return read(`lambda (f x) ${"(f".repeat(n)} x`);
+  return parseSexpr(`lambda (f x) ${"(f".repeat(n)} x`);
 }
 
 // site start
@@ -191,10 +196,9 @@ let output = document.getElementById("output") as HTMLTableElement;
 
 {
   // sample starting state
-  // let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
-  let exprStr = `Succ 0`;
+  let exprStr = "(λa.(λb.a)) (λa.a)";
   input.textContent = exprStr;
-  pushExpr(read(exprStr));
+  pushExpr(parse(exprStr));
 }
 
 {
@@ -225,7 +229,7 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["Nil?", "(lambda (l) (l (lambda (a b) Ki)))"],
   ];
   for (let it of sampleEnv) {
-    let e = read(it[1]);
+    let e = parseSexpr(it[1]);
     env[it[0]] = e;
     envTable.insertAdjacentHTML(
       "beforeend",
@@ -322,9 +326,11 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
 
 input.addEventListener("input", (event) => {
   let k: string = (event.target as HTMLInputElement).value;
+  k = k.replace(/\\/g, "(λ");
+  input.value = k;
   let expr: LambdaExpr;
   try {
-    expr = read(k);
+    expr = parse(k)
     history = [];
     output.innerHTML = "";
     pushExpr(expr);

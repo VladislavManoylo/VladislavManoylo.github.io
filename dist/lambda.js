@@ -31,8 +31,32 @@ function toLambdaExpr(s, e = []) {
         }, l[0]);
     }
 }
-function read(str) {
+function parseSexpr(str) {
     return toLambdaExpr(toSexpr(str));
+}
+/** parses (λa.(λb.a)) as (lambda (a) (lambda (b) a)) */
+function parse(str) {
+    return parseSexpr(str.replace(/λ([^.])+\./g, "lambda ($1) "));
+}
+function formatSimple(expr) {
+    switch (expr.type) {
+        case "var":
+            return expr.val.s;
+        case "lambda":
+            return `(λ${expr.val.param}.${formatSimple(expr.val.body)})`;
+        case "apply":
+            return `(${formatSimple(expr.val[0])} ${formatSimple(expr.val[1])})`;
+    }
+}
+function formatDebruijn(expr) {
+    switch (expr.type) {
+        case "var":
+            return expr.val.i === 0 ? expr.val.s : expr.val.i.toString();
+        case "lambda":
+            return `λ ${formatDebruijn(expr.val.body)}`;
+        case "apply":
+            return `(${formatDebruijn(expr.val[0])} ${formatDebruijn(expr.val[1])})`;
+    }
 }
 function formatShort(expr, index = "0", space = false) {
     let ret = "";
@@ -44,7 +68,7 @@ function formatShort(expr, index = "0", space = false) {
             break;
         case "lambda":
             if (index !== "L")
-                ret += "λ";
+                ret += " λ";
             ret += expr.val.param;
             if (space)
                 ret += " ";
@@ -64,26 +88,6 @@ function formatShort(expr, index = "0", space = false) {
             break;
     }
     return ret;
-}
-function formatSimple(expr) {
-    switch (expr.type) {
-        case "var":
-            return expr.val.s;
-        case "lambda":
-            return `λ${expr.val.param}.${formatSimple(expr.val.body)}`;
-        case "apply":
-            return `(${formatSimple(expr.val[0])} ${formatSimple(expr.val[1])})`;
-    }
-}
-function formatDebruijn(expr) {
-    switch (expr.type) {
-        case "var":
-            return expr.val.i === 0 ? expr.val.s : expr.val.i.toString();
-        case "lambda":
-            return `λ ${formatDebruijn(expr.val.body)}`;
-        case "apply":
-            return `(${formatDebruijn(expr.val[0])} ${formatDebruijn(expr.val[1])})`;
-    }
 }
 function format(expr, fmt = "simple") {
     switch (fmt) {
@@ -166,7 +170,7 @@ function swapout(expr, val, index) {
 }
 /** converts whole number to church numeral */
 function church(n) {
-    return read(`lambda (f x) ${"(f".repeat(n)} x`);
+    return parseSexpr(`lambda (f x) ${"(f".repeat(n)} x`);
 }
 // site start
 /** each step of an expression being computed */
@@ -177,10 +181,9 @@ let input = document.getElementById("input");
 let output = document.getElementById("output");
 {
     // sample starting state
-    // let exprStr = `(lambda (n f x) f (n f x)) (lambda (f x) f x)`;
-    let exprStr = `Succ 0`;
+    let exprStr = "(λa.(λb.a)) (λa.a)";
     input.textContent = exprStr;
-    pushExpr(read(exprStr));
+    pushExpr(parse(exprStr));
 }
 {
     let sampleEnv = [
@@ -210,7 +213,7 @@ let output = document.getElementById("output");
         ["Nil?", "(lambda (l) (l (lambda (a b) Ki)))"],
     ];
     for (let it of sampleEnv) {
-        let e = read(it[1]);
+        let e = parseSexpr(it[1]);
         env[it[0]] = e;
         envTable.insertAdjacentHTML("beforeend", `<tr><td>${it[0]}</td><td>${format(e, "simple")}</td></tr>`);
     }
@@ -304,9 +307,11 @@ function toHtml(expr, id = "") {
 }
 input.addEventListener("input", (event) => {
     let k = event.target.value;
+    k = k.replace(/\\/g, "(λ");
+    input.value = k;
     let expr;
     try {
-        expr = read(k);
+        expr = parse(k);
         history = [];
         output.innerHTML = "";
         pushExpr(expr);
