@@ -253,13 +253,14 @@ function pushExpr(expr: LambdaExpr) {
   output.appendChild(tr);
 }
 
+function popExpr() {
+  history.pop();
+  clickableSubexprs.pop();
+  output.removeChild(output.lastChild!);
+}
+
 function evalAt(i: number, index: string) {
-  while (history.length > i) {
-    // rewind expressions past this point
-    history.pop();
-    clickableSubexprs.pop();
-    output.removeChild(output.lastChild!);
-  }
+  while (history.length > i) popExpr();
   if (history.length < i) throw new Error("unreachable");
   let expr = structuredClone(history[i - 1]);
   let subexpr = get(expr, index);
@@ -349,17 +350,67 @@ function inputText(str: string) {
 input.addEventListener("input", (event) => {
   inputText((event.target as HTMLInputElement).value);
 });
-/** starting expr */
 inputText("(λa.(λb.a)) (λa.a)");
 
+function outerLeft(a: string, b: string) {
+  let end = Math.min(a.length, b.length);
+  for (let i = 0; i < end; i++) {
+    if (a[i] !== b[i]) return a[i] === "0";
+  }
+  return a.length < end;
+}
+
+function innerRight(a: string, b: string) {
+  let end = Math.min(a.length, b.length);
+  for (let i = 0; i < end; i++) {
+    if (a[i] !== b[i]) return a[i] === "1";
+  }
+  return a.length > end;
+}
+
+function best(l: string[], cmp: (a: string, b: string) => boolean): string {
+  return l.reduce((found, current) => {
+    if (cmp(found, current)) return found;
+    return current;
+  });
+}
+
 document.addEventListener("keypress", (event) => {
+  if (event.key === "Enter" && event.shiftKey) {
+    setTimeout(() => {
+      input.blur();
+    }, 100);
+    return;
+  }
   if (document.activeElement?.matches("body")) {
     let i = history.length;
     let row = clickableSubexprs[i - 1];
     let id = undefined;
-    if (event.key === "1") id = row[0];
-    else if (event.key === "0") id = row[row.length - 1];
+    switch (event.key) {
+      case "1": // inner left
+        if (row.length === 0) break;
+        id = row[0];
+        break;
+      case "2": // outer left
+        if (row.length === 0) break;
+        id = best(row, outerLeft);
+        break;
+      case "3": // outer left
+        if (row.length === 0) break;
+        id = best(row, innerRight);
+        break;
+      case "4": // outer right
+        if (row.length === 0) break;
+        id = row[row.length - 1];
+        break;
+      case "-":
+        if (i > 0) popExpr();
+        if (i == 1) inputText("");
+        break;
+      case "`":
+        input.focus();
+        break;
+    }
     if (id !== undefined) evalAt(i, id);
-    if (event.key === "`") inputText("");
   }
 });
