@@ -1,32 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>plot</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        max-width: 500px;
+        margin: 0 auto;
+        margin-top: 1em;
+      }
+      div {
+        margin: 1em;
+      }
+      ul {
+        list-style-type: none;
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <title>plot</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-  <canvas id="canvas" width=500 height=500></canvas>
-  <br>
-  <input type="number" size=5 id="x0" value="-1">
-  <input type="number" size=5 id="x1" value="1">
-  domain
-  <input type="number" size=5 id="y0" value="-1">
-  <input type="number" size=5 id="y1" value="1">
-  range
-  <input type="checkbox" size=5 id="autorange" checked="true">
-  <label for="autorange">auto range</label>
-  <ul id="funlist">
-    <li>
-      <input type="text" class="fun" id="fun0" value="1 2 0 3">
-      <label for="fun0"></label>
-    </li>
-  </ul>
-  <button type="button" id="+">+</button>
-  <button type="button" id="-">-</button>
-  <script type="module" src="dist/plot.js"></script>
-</body>
-
+  <body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <div id="domain">
+      <input type="number" size="8" id="x0" value="-1" />
+      <input type="number" size="8" id="x1" value="1" />
+      domain
+    </div>
+    <div id="range">
+      <input type="number" size="8" id="y0" value="-1" />
+      <input type="number" size="8" id="y1" value="1" />
+      range
+      <input type="checkbox" id="autorange" checked="true" />
+      <label for="autorange">auto range</label>
+    </div>
+    <div id="functions">
+      <ul id="funlist">
+        <li>
+          <input type="text" class="fun" id="fun0" value="1 2 0 3" />
+          <label for="fun0"></label>
+        </li>
+      </ul>
+      <button type="button" id="+">+</button>
+      <button type="button" id="-">-</button>
+    </div>
+    <script type="module" src="dist/plot.js"></script>
+  </body>
 </html>
