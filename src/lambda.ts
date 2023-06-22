@@ -298,7 +298,7 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
       ret.classList.add("var");
       if (expr.val.i == 0) {
         ret.classList.add("free");
-        if (expr.val.s in env) click = true;
+        if (expr.val.s in env || expr.val.s.match(/^\d+$/)) click = true;
       }
       ret.innerHTML = expr.val.s;
       break;
