@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html><head>
+<title>Alphabet</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+textarea, label {
+    display: block;
+    font-size: large;
+    color: white;
+    margin: 0.1em;
+}
+
+textarea {
+    width: 90%;
+    padding: 0.2em;
+    font-size: x-large;
+    background: DarkSlateBlue;
+}
+
+</style>
+
+</head><body>
+    <label> English: <textarea oninput="translateInput(this.id, this.value)" id="english" placeholder="cat 123                                            "></textarea></label>
+    <label> IRSA:    <textarea oninput="translateInput(this.id, this.value)" id="irsa" placeholder="charlie alfa tango space one two three             "></textarea></label>
+    <label> morse:   <textarea oninput="translateInput(this.id, this.value)" id="morse" placeholder="-.---.  .-   - .---- ..--- ...--                   "></textarea></label>
+    <label> braille: <textarea oninput="translateInput(this.id, this.value)" id="braille" placeholder="⠉ ⠁ ⠞ ⠼ ⠃ ⠉ ⠙                                      "></textarea></label>
+    <label> binary:  <textarea oninput="translateInput(this.id, this.value)" id="binary" placeholder="1100011 1100001 1110100 100000 110001 110010 110011"></textarea></label>
+    <label> hex:     <textarea oninput="translateInput(this.id, this.value)" id="hex" placeholder="63 61 74 20 31 32 33                               "></textarea></label>
+<script>
+
+const alphabets = {
+'irsa': {
+    'a': 'alfa',
+    'b': 'bravo',
+    'c': 'charlie',
+    'd': 'delta',
+    'e': 'echo',
+    'f': 'foxtrot',
+    'g': 'golf',
+    'h': 'hotel',
+    'i': 'india',
+    'j': 'juliett',
+    'k': 'kilo',
+    'l': 'lima',
+    'm': 'mike',
+    'n': 'november',
+    'o': 'oscar',
+    'p': 'papa',
+    'q': 'quebec',
+    'r': 'romeo',
+    's': 'sierra',
+    't': 'tango',
+    'u': 'uniform',
+    'v': 'victor',
+    'w': 'whiskey',
+    'x': 'x-ray',
+    'y': 'yankee',
+    'z': 'zulu',
+    '0': 'zero',
+    '1': 'one',
+    '2': 'two',
+    '3': 'three',
+    '4': 'four',
+    '5': 'five',
+    '6': 'six',
+    '7': 'seven',
+    '8': 'eight',
+    '9': 'nine',
+    ' ': 'space',
+},
+'braille': {
+    'a': '⠁',
+    'b': '⠃',
+    'c': '⠉',
+    'd': '⠙',
+    'e': '⠑',
+    'f': '⠋',
+    'g': '⠛',
+    'h': '⠣',
+    'i': '⠊',
+    'j': '⠚',
+    'k': '⠅',
+    'l': '⠇',
+    'm': '⠍',
+    'n': '⠝',
+    'o': '⠕',
+    'p': '⠏',
+    'q': '⠟',
+    'r': '⠗',
+    's': '⠎',
+    't': '⠞',
+    'u': '⠥',
+    'v': '⠧',
+    'w': '⠺',
+    'x': '⠭',
+    'y': '⠽',
+    'z': '⠵',
+    '0': '⠁',
+    '1': '⠃',
+    '2': '⠉',
+    '3': '⠙',
+    '4': '⠑',
+    '5': '⠋',
+    '6': '⠛',
+    '7': '⠣',
+    '8': '⠊',
+    '9': '⠚',
+    '#': '⠼ '
+},
+'morse': {
+    'a': '.-',
+    'b': '-...',
+    'c': '-.-.',
+    'd': '-..',
+    'e': '.',
+    'f': '..-.',
+    'g': '--.',
+    'h': '....',
+    'i': '..',
+    'j': '.---',
+    'k': '-.-',
+    'l': '.-..',
+    'm': '--',
+    'n': '-.',
+    'o': '---',
+    'p': '.--.',
+    'q': '--.-',
+    'r': '.-.',
+    's': '...',
+    't': '-',
+    'u': '..-',
+    'v': '...-',
+    'w': '.--',
+    'x': '-..-',
+    'y': '-.--',
+    'z': '--..',
+    '0': '-----',
+    '1': '.----',
+    '2': '..---',
+    '3': '...--',
+    '4': '....-',
+    '5': '.....',
+    '6': '-....',
+    '7': '--...',
+    '8': '---..',
+    '9': '----.',
+    '.': '.-.-.-',
+    ',': '--..--',
+    '?': '..--..',
+    ';': '-.-.-.',
+    ':': '---...',
+    '-': '-....-',
+    '/': '-..-.',
+    '`': '.----.',
+    '"': '.-..-.',
+    '_': '..--.-',
+    '+': '.-.-.',
+    '*': '-..-',
+    '=': '-...-',
+    ')': '-.--.-',
+    '(': '-.--.',
+},
+}
+
+const reverseAlphabets = {
+    'irsa'   : {...swapKeyValue(alphabets['irsa']), 'alpha': 'a'},
+    'braille': swapKeyValue(alphabets['braille']),
+    'morse'  : swapKeyValue(alphabets['morse']),
+}
+
+function swapKeyValue(a) {
+    ret = {}
+    for (let it of Object.keys(a)) {
+        ret[a[it]] = it
+    }
+    return ret
+}
+
+function translateToken(alphabet, token) {
+    switch (alphabet) {
+        case 'irsa':
+        case 'morse':
+        case 'braille':
+            return alphabets[alphabet][token]
+        case 'binary':
+            return token.charCodeAt(0).toString(2)
+        case 'hex':
+            return token.charCodeAt(0).toString(16)
+    }
+}
+
+function translateTokenFrom(alphabet, token) {
+    switch (alphabet) {
+        case 'irsa':
+        case 'morse':
+        case 'braille':
+            return reverseAlphabets[alphabet][token]
+        case 'binary':
+            return String.fromCharCode(parseInt(token, 2))
+        case 'hex':
+            return String.fromCharCode(parseInt(token, 16))
+    }
+}
+
+function translateTo(alphabet, text) {
+    text = text.trim()
+    if (['irsa', 'morse', 'braille'].includes(alphabet)) {
+        text = text.toLowerCase()
+    }
+    if (alphabet === 'braille') {
+        text = text.replaceAll(/[1234567890]+/g, '#$&') // numbers in braille are preceeded by a special number symbol
+    }
+    let ret = ''
+    for (let it of text) {
+        const t = translateToken(alphabet, it)
+        if (t)
+            ret += t + ' '
+        else
+            ret += it
+    }
+    return ret
+}
+
+function translateFrom(alphabet, text) {
+    text = text.trim()
+    if (['irsa', 'morse', 'binary', 'hex'].includes(alphabet)) {
+        text = text.split(' ')
+    }
+    ret = ''
+    for (let it of text) {
+        ret += translateTokenFrom(alphabet, it) ?? ''
+    }
+    return ret
+}
+
+function mapLines(text, f) {
+    a = text
+    b = a.split('\n')
+    c = b.map(line => f(line))
+    d = c.join('\n')
+    return text.split('\n').map(line => f(line)).join('\n')
+}
+
+function translateInput(from, text) {
+    // console.log('translating', {from, text})
+    if (from !== 'english') {
+        text = mapLines(text, x => translateFrom(from, x))
+        document.getElementById('english').value = text
+    }
+    for (const alphabet of ['irsa', 'morse', 'braille', 'binary', 'hex']) {
+        if (alphabet !== from) {
+            document.getElementById(alphabet).value = translateTo(alphabet, text)
+        }
+    }
+}
+
+</script>
+</body></html>
