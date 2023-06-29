@@ -107,9 +107,46 @@ function formatShort(
   return ret;
 }
 
+/** finds and swaps out church numerals in a debruijn expression
+ *
+ * e.g.
+ *   SUCC (2 (2 (2 1))) -> SUCC #3
+ * 	 ((+ λ λ (2 (2 1))) λ λ 1) -> ((+ #2) #0)
+ * */
+function swapNumerals(debruijn: string): string {
+  let found = [];
+  for (let it of debruijn.matchAll(/λ λ 1/g)) {
+    found.push([it.index!, 5, 0]);
+  }
+  for (let it of debruijn.matchAll(/λ λ \(/g)) {
+    let str = debruijn.substring(it.index! + 4);
+    let matchLeft = str.match(/^(\(2 )*1/);
+    if (!matchLeft) continue;
+    let matchLeftStr = matchLeft![0];
+    let n = (matchLeftStr.length - 1) / 3;
+    let matchRight =
+      str.substring(matchLeftStr.length, matchLeftStr.length + n) ==
+      ")".repeat(n);
+    if (!matchRight) continue;
+    // matched a number e.g. λ λ (2 (2 (2 1)))
+    // "λ λ " + "(2 "*n + "1" + ")"*n
+    found.push([it.index!, 4 + n * 3 + 1 + n, n]);
+  }
+  found.sort((a, b) => a[0] - b[0]);
+  let i = 0;
+  let ret = "";
+  for (let it of found) {
+    ret += debruijn.substring(i, it[0]);
+    ret += "#" + it[2].toString();
+    i = it[0] + it[1];
+  }
+  ret += debruijn.substring(i);
+  return ret;
+}
+
 function format(
   expr: LambdaExpr,
-  fmt: "simple" | "debruijn" | "short" = "simple"
+  fmt: "simple" | "debruijn" | "short" | "eta" = "simple"
 ): string {
   switch (fmt) {
     case "simple":
@@ -118,6 +155,8 @@ function format(
       return formatDebruijn(expr);
     case "short":
       return formatShort(expr);
+    case "eta":
+      return swapNumerals(formatDebruijn(expr));
   }
 }
 
@@ -251,6 +290,7 @@ function pushExpr(expr: LambdaExpr) {
   tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "simple")}</td>`);
   tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "short")}</td>`);
   tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "debruijn")}</td>`);
+  tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "eta")}</td>`);
   output.appendChild(tr);
 }
 
@@ -356,8 +396,8 @@ inputText("(λa.(λb.a)) (λa.a)");
 type cmp = (a: string, b: string) => boolean;
 
 /** returns a comparator to choose between 2 strings for an evaluation strategy
-* e.g. an inner left strategy will choose L00 over L01 because it's more left
-* an inner right strategy will choose 0100 010 because it's more inner*/
+ * e.g. an inner left strategy will choose L00 over L01 because it's more left
+ * an inner right strategy will choose 0100 010 because it's more inner*/
 function makeStrategy(inner: boolean, left: boolean): cmp {
   return (a: string, b: string) => {
     let end = a.length < b.length ? a.length : b.length;
