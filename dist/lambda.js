@@ -347,7 +347,7 @@ function toHtml(expr, id = "") {
         ret.classList.add("clickable");
         clickableSubexprs[i - 1].push(id);
         ret.addEventListener("click", (event) => {
-            event.stopPropagation();
+            event.stopPropagation(); // only click most-nested element
             evalAt(i, id);
         });
     }
@@ -386,6 +386,7 @@ function makeStrategy(inner, left) {
         return inner === a.length > end;
     };
 }
+/** given a comparison function, return the best item in list l */
 function best(l, cmp) {
     return l.reduce((found, current) => {
         if (cmp(found, current))
@@ -396,26 +397,20 @@ function best(l, cmp) {
 document.addEventListener("keypress", (event) => {
     var _a;
     if (event.key === "Enter" && event.shiftKey) {
+        // exit text box, without a timeout it immediately regains focus
         setTimeout(() => {
             input.blur();
-        }, 100);
+        }, 30);
         return;
     }
     let strategies = {
         "1": makeStrategy(true, true),
         "2": makeStrategy(false, true),
         "3": makeStrategy(true, false),
-        "4": makeStrategy(false, false), // outer left
+        "4": makeStrategy(false, false), // outer right
     };
     if ((_a = document.activeElement) === null || _a === void 0 ? void 0 : _a.matches("body")) {
         let i = history.length;
-        if (event.key in strategies) {
-            let row = clickableSubexprs[i - 1];
-            if (row.length === 0)
-                return;
-            evalAt(i, best(row, strategies[event.key]));
-            return;
-        }
         switch (event.key) {
             case "-":
                 if (i > 0)
@@ -424,7 +419,15 @@ document.addEventListener("keypress", (event) => {
                     inputText("");
                 break;
             case "`":
-                input.focus();
+                input.select();
+                break;
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+                let row = clickableSubexprs[i - 1];
+                if (row.length !== 0)
+                    evalAt(i, best(row, strategies[event.key]));
                 break;
         }
     }

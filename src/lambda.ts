@@ -365,7 +365,7 @@ function toHtml(expr: LambdaExpr, id: string = ""): HTMLDivElement {
     ret.classList.add("clickable");
     clickableSubexprs[i - 1].push(id);
     ret.addEventListener("click", (event) => {
-      event.stopPropagation();
+      event.stopPropagation(); // only click most-nested element
       evalAt(i, id);
     });
   }
@@ -408,6 +408,7 @@ function makeStrategy(inner: boolean, left: boolean): cmp {
   };
 }
 
+/** given a comparison function, return the best item in list l */
 function best(l: string[], cmp: cmp): string {
   return l.reduce((found, current) => {
     if (cmp(found, current)) return found;
@@ -417,32 +418,34 @@ function best(l: string[], cmp: cmp): string {
 
 document.addEventListener("keypress", (event) => {
   if (event.key === "Enter" && event.shiftKey) {
+    // exit text box, without a timeout it immediately regains focus
     setTimeout(() => {
       input.blur();
-    }, 100);
+    }, 30);
     return;
   }
   let strategies: Record<string, cmp> = {
     "1": makeStrategy(true, true), // inner left
     "2": makeStrategy(false, true), // outer left
     "3": makeStrategy(true, false), // inner right
-    "4": makeStrategy(false, false), // outer left
+    "4": makeStrategy(false, false), // outer right
   };
   if (document.activeElement?.matches("body")) {
     let i = history.length;
-    if (event.key in strategies) {
-      let row = clickableSubexprs[i - 1];
-      if (row.length === 0) return;
-      evalAt(i, best(row, strategies[event.key]));
-      return;
-    }
     switch (event.key) {
       case "-":
         if (i > 0) popExpr();
         if (i == 1) inputText("");
         break;
       case "`":
-        input.focus();
+        input.select();
+        break;
+      case "1":
+      case "2":
+      case "3":
+      case "4":
+        let row = clickableSubexprs[i - 1];
+        if (row.length !== 0) evalAt(i, best(row, strategies[event.key]));
         break;
     }
   }
