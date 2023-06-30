@@ -77,27 +77,6 @@ function sampleFunction(
   return ys;
 }
 
-function show(range: [number, number], paths: number[][]) {
-  pencil.clear();
-  pencil.rect(0, 0, canvas.width, canvas.height);
-  // plot paths
-  let height: number = range[1] - range[0];
-  if (height === 0) {
-    let y = canvas.height / 2;
-    pencil.path([
-      [0, y],
-      [canvas.width, y],
-    ]);
-    return;
-  }
-  let dy: number = canvas.height / height;
-  for (let ys of paths) {
-    let dx: number = canvas.width / (ys.length - 1);
-    // max - y, because y=0 is the top of the canvas
-    pencil.path(ys.map((y, x) => [dx * x, dy * (range[1] - y)]));
-  }
-}
-
 let x0Input = document.getElementById("x0") as HTMLInputElement;
 let x1Input = document.getElementById("x1") as HTMLInputElement;
 let y0Input = document.getElementById("y0") as HTMLInputElement;
@@ -129,7 +108,25 @@ function redraw() {
     y0Input.value = y0.toString();
     y1Input.value = y1.toString();
   }
-  show([y0, y1], paths);
+  let range = [y0, y1];
+  pencil.clear();
+  pencil.rect(0, 0, canvas.width, canvas.height);
+  // plot paths
+  let height: number = range[1] - range[0];
+  if (height === 0) {
+    let y = canvas.height / 2;
+    pencil.path([
+      [0, y],
+      [canvas.width, y],
+    ]);
+    return;
+  }
+  let dy: number = canvas.height / height;
+  for (let ys of paths) {
+    let dx: number = canvas.width / (ys.length - 1);
+    // max - y, because y=0 is the top of the canvas
+    pencil.path(ys.map((y, x) => [dx * x, dy * (range[1] - y)]));
+  }
 }
 redraw();
 
