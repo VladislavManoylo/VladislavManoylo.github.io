@@ -55,7 +55,6 @@ function coefToPolynomial(coefficients: number[]): (x: number) => number {
 }
 //console.log("139=", coefToPolynomial([1,10,100])(3));
 
-let paths: number[][] = [];
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 let pencil = new Pencil(canvas);
 
@@ -78,7 +77,7 @@ function sampleFunction(
   return ys;
 }
 
-function show(range: [number, number]) {
+function show(range: [number, number], paths: number[][]) {
   pencil.clear();
   pencil.rect(0, 0, canvas.width, canvas.height);
   // plot paths
@@ -109,7 +108,7 @@ let funList = document.getElementById("funlist") as HTMLUListElement;
 function redraw() {
   let x0 = +x0Input.value;
   let x1 = +x1Input.value;
-  paths = [];
+  let paths = [];
   for (let funInput of document.getElementsByClassName("fun")) {
     let input = funInput as HTMLInputElement;
     let str: string = input.value;
@@ -130,7 +129,7 @@ function redraw() {
     y0Input.value = y0.toString();
     y1Input.value = y1.toString();
   }
-  show([y0, y1]);
+  show([y0, y1], paths);
 }
 redraw();
 
