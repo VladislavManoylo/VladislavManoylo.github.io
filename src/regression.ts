@@ -11,6 +11,25 @@ let margin = 50;
 let plotSize = [canvas.width - margin, canvas.height - margin];
 let [xs, ys]: [number[], number[]] = [[], []];
 
+/** take samples of the function f between x0 and x1
+ * should have at least 2 samples to work as expected
+ */
+function sampleFunction(
+  f: (a: number) => number,
+  x0: number,
+  x1: number,
+  samples: number
+): number[] {
+  // samples-1 to get start and end in plot
+  let dx = (x1 - x0) / (samples - 1);
+  let ys = [];
+  for (let i = 0; i < samples; i++) {
+    ys.push(f(x0));
+    x0 += dx;
+  }
+  return ys;
+}
+
 function redraw() {
   pencil.clear();
   {
@@ -28,14 +47,23 @@ function redraw() {
   // points
   for (let i in xs) {
     let [x, y] = [xs[i], ys[i]];
-    console.log("point", x, y);
     pencil.ctx.fillRect(x * plotSize[0], y * plotSize[1], 1, 1);
   }
+  // linear regression
+  let xtx = 0;
+  for (let x of xs) xtx += x * x;
+  let xtxi = 1 / xtx;
+  let xty = 0;
+  for (let i in xs) xty += xs[i] * ys[i];
+  let w = xtxi * xty;
+  let plot = sampleFunction((x) => w * x, x0, x1, 100);
+  let dx = plotSize[0] / (plot.length - 1);
+  let dy = plotSize[1] / (y1 - y0);
+  pencil.path(plot.map((y, x) => [dx * x, dy * (y - y0)]));
 }
 redraw();
 
 canvas.addEventListener("click", (event) => {
-  console.log(event.x, event.y);
   let x = event.x - margin;
   let y = canvas.height - margin - event.y;
   if (x > 0 && y > 0) {
