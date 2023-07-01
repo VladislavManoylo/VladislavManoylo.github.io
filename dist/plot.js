@@ -109,11 +109,11 @@ function redraw() {
         // axes
         let left = margin - 5;
         let bottom = canvas.height - margin;
-        pencil.text([left, 20], y1.toFixed(0), "1em Arial", "right");
-        pencil.text([left, bottom], y0.toFixed(0), "1em Arial", "right");
+        pencil.text(y1.toFixed(0), [left, 20], "1em Arial", "right");
+        pencil.text(y0.toFixed(0), [left, bottom], "1em Arial", "right");
         bottom += 20;
-        pencil.text([left, bottom], x0.toFixed(0), "1em Arial", "left");
-        pencil.text([canvas.width, bottom], x1.toFixed(0), "1em Arial", "right");
+        pencil.text(x0.toFixed(0), [left, bottom], "1em Arial", "left");
+        pencil.text(x1.toFixed(0), [canvas.width, bottom], "1em Arial", "right");
     }
     pencil.ctx.translate(margin, canvas.height - margin);
     pencil.ctx.scale(1, -1);

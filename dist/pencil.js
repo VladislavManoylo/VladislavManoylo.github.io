@@ -27,7 +27,7 @@ export class Pencil {
         this.ctx.fill();
         this.ctx.stroke();
     }
-    text(p, text, font = "40px", align = "center") {
+    text(text, p, font = "40px", align = "center") {
         this.ctx.font = font;
         this.ctx.fillStyle = "white";
         this.ctx.textAlign = align;

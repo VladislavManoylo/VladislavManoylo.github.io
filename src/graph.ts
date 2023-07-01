@@ -121,7 +121,7 @@ export class Drawer {
     for (let i = 0; i < this.vertexPositions.length; i++) {
       this.pencil.circle(this.vertexPositions[i], this.radius);
       if (this.labeled) {
-        this.pencil.text(this.vertexPositions[i], i.toString());
+        this.pencil.text(i.toString(), this.vertexPositions[i]);
       }
     }
   }
