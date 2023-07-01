@@ -15,15 +15,14 @@ function coefToPolynomial(coefficients) {
 //console.log("139=", coefToPolynomial([1,10,100])(3));
 let canvas = document.getElementById("canvas");
 let pencil = new Pencil(canvas);
+let x0 = 0;
+let x1 = 1;
+let y0 = 0;
+let y1 = 1;
+let margin = 50;
+let points = [];
 function redraw() {
-    let x0 = 0;
-    let x1 = 1;
-    let y0 = 0;
-    let y1 = 1;
-    let range = [y0, y1];
-    // plot paths
     pencil.clear();
-    let margin = 50;
     {
         // axes
         let left = margin - 5;
@@ -37,14 +36,17 @@ function redraw() {
     pencil.ctx.translate(margin, canvas.height - margin);
     pencil.ctx.scale(1, -1);
     pencil.ctx.strokeRect(0, 0, canvas.width - margin, canvas.height - margin);
-    let height = range[1] - range[0];
-    if (height === 0) {
-        let y = canvas.height / 2;
-        pencil.path([
-            [0, y],
-            [canvas.width, y],
-        ]);
-        return;
-    }
+    // points
+    for (let it of points)
+        pencil.ctx.fillRect(it[0], it[1], 1, 1);
 }
 redraw();
+canvas.addEventListener("click", (event) => {
+    console.log(event.x, event.y);
+    let x = event.x - margin;
+    let y = canvas.height - margin - event.y;
+    if (x > 0 && y > 0) {
+        points.push([x, y]);
+    }
+    redraw();
+});

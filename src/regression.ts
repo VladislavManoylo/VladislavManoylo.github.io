@@ -1,4 +1,4 @@
-import { Pencil } from "./pencil.js";
+import { Pencil, v2 } from "./pencil.js";
 
 /** given an input [1,2,3], returns the function (x) => (x^2 + 2x + 3) */
 function coefToPolynomial(coefficients: number[]): (x: number) => number {
@@ -18,15 +18,16 @@ function coefToPolynomial(coefficients: number[]): (x: number) => number {
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 let pencil = new Pencil(canvas);
 
+let x0 = 0;
+let x1 = 1;
+let y0 = 0;
+let y1 = 1;
+let margin = 50;
+
+let points: v2[] = [];
+
 function redraw() {
-  let x0 = 0;
-  let x1 = 1;
-  let y0 = 0;
-  let y1 = 1;
-  let range = [y0, y1];
-  // plot paths
   pencil.clear();
-  let margin = 50;
   {
     // axes
     let left = margin - 5;
@@ -40,14 +41,17 @@ function redraw() {
   pencil.ctx.translate(margin, canvas.height - margin);
   pencil.ctx.scale(1, -1);
   pencil.ctx.strokeRect(0, 0, canvas.width - margin, canvas.height - margin);
-  let height: number = range[1] - range[0];
-  if (height === 0) {
-    let y = canvas.height / 2;
-    pencil.path([
-      [0, y],
-      [canvas.width, y],
-    ]);
-    return;
-  }
+  // points
+  for (let it of points) pencil.ctx.fillRect(it[0], it[1], 1, 1);
 }
 redraw();
+
+canvas.addEventListener("click", (event) => {
+  console.log(event.x, event.y);
+  let x = event.x - margin;
+  let y = canvas.height - margin - event.y;
+  if (x > 0 && y > 0) {
+    points.push([x, y]);
+  }
+  redraw();
+});
