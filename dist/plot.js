@@ -103,7 +103,7 @@ function redraw() {
     }
     let range = [y0, y1];
     pencil.clear();
-    pencil.rect(0, 0, canvas.width, canvas.height);
+    pencil.ctx.strokeRect(0, 0, canvas.width, canvas.height);
     // plot paths
     let height = range[1] - range[0];
     if (height === 0) {
