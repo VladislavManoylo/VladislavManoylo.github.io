@@ -27,10 +27,10 @@ export class Pencil {
         this.ctx.fill();
         this.ctx.stroke();
     }
-    text(p, text) {
-        this.ctx.font = "40px Arial";
+    text(p, text, font = "40px", align = "center") {
+        this.ctx.font = font;
         this.ctx.fillStyle = "white";
-        this.ctx.textAlign = "center";
+        this.ctx.textAlign = align;
         this.ctx.fillText(text, p[0], p[1]);
     }
     path(ps) {

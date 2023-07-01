@@ -112,6 +112,16 @@ function redraw() {
   // plot paths
   pencil.clear();
   let margin = 50;
+  {
+    // axes
+    let left = margin - 5;
+    let bottom = canvas.height - margin;
+    pencil.text([left, 20], y1.toFixed(0), "1em Arial", "right");
+    pencil.text([left, bottom], y0.toFixed(0), "1em Arial", "right");
+    bottom += 20;
+    pencil.text([left, bottom], x0.toFixed(0), "1em Arial", "left");
+    pencil.text([canvas.width, bottom], x1.toFixed(0), "1em Arial", "right");
+  }
   pencil.ctx.translate(margin, canvas.height - margin);
   pencil.ctx.scale(1, -1);
   pencil.ctx.strokeRect(0, 0, canvas.width - margin, canvas.height - margin);
