@@ -1,18 +1,4 @@
 import { Pencil } from "./pencil.js";
-/** given an input [1,2,3], returns the function (x) => (x^2 + 2x + 3) */
-function coefToPolynomial(coefficients) {
-    coefficients.reverse();
-    return (x) => {
-        let v = 1;
-        let sum = 0;
-        for (let i = 0; i < coefficients.length; i++) {
-            sum += coefficients[i] * v;
-            v *= x;
-        }
-        return sum;
-    };
-}
-//console.log("139=", coefToPolynomial([1,10,100])(3));
 let canvas = document.getElementById("canvas");
 let pencil = new Pencil(canvas);
 let x0 = 0;
