@@ -111,7 +111,10 @@ function redraw() {
   let range = [y0, y1];
   // plot paths
   pencil.clear();
-  pencil.ctx.strokeRect(0, 0, canvas.width, canvas.height);
+  let margin = 50;
+  pencil.ctx.translate(margin, canvas.height - margin);
+  pencil.ctx.scale(1, -1);
+  pencil.ctx.strokeRect(0, 0, canvas.width - margin, canvas.height - margin);
   let height: number = range[1] - range[0];
   if (height === 0) {
     let y = canvas.height / 2;
@@ -121,11 +124,9 @@ function redraw() {
     ]);
     return;
   }
-  pencil.ctx.translate(0, canvas.height);
-  pencil.ctx.scale(1, -1);
-  let dy: number = canvas.height / height;
+  let dy: number = (canvas.height - margin) / height;
   for (let ys of paths) {
-    let dx: number = canvas.width / (ys.length - 1);
+    let dx: number = (canvas.width - margin) / (ys.length - 1);
     // max - y, because y=0 is the top of the canvas
     pencil.path(ys.map((y, x) => [dx * x, dy * (y - range[0])]));
   }
