@@ -16,6 +16,7 @@ export class Pencil {
     this.ctx = canvas.getContext("2d")!;
   }
   clear() {
+    this.ctx.resetTransform();
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
   }
   line(a: v2, b: v2) {
