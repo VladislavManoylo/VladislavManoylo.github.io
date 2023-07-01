@@ -9,7 +9,7 @@ let y0 = 0;
 let y1 = 1;
 let margin = 50;
 let plotSize = [canvas.width - margin, canvas.height - margin];
-let points: v2[] = [];
+let [xs, ys]: [number[], number[]] = [[], []];
 
 function redraw() {
   pencil.clear();
@@ -26,9 +26,10 @@ function redraw() {
   pencil.ctx.scale(1, -1);
   pencil.ctx.strokeRect(0, 0, plotSize[0], plotSize[1]);
   // points
-  for (let it of points) {
-    console.log("point", it[0], it[1]);
-    pencil.ctx.fillRect(it[0] * plotSize[0], it[1] * plotSize[1], 1, 1);
+  for (let i in xs) {
+    let [x, y] = [xs[i], ys[i]];
+    console.log("point", x, y);
+    pencil.ctx.fillRect(x * plotSize[0], y * plotSize[1], 1, 1);
   }
 }
 redraw();
@@ -38,7 +39,8 @@ canvas.addEventListener("click", (event) => {
   let x = event.x - margin;
   let y = canvas.height - margin - event.y;
   if (x > 0 && y > 0) {
-    points.push([x / plotSize[0], y / plotSize[1]]);
+    xs.push(x / plotSize[0]);
+    ys.push(y / plotSize[1]);
     redraw();
   }
 });
