@@ -101,7 +101,6 @@ function redraw() {
         y0Input.value = y0.toString();
         y1Input.value = y1.toString();
     }
-    let range = [y0, y1];
     // plot paths
     pencil.clear();
     let margin = 50;
@@ -118,7 +117,7 @@ function redraw() {
     pencil.ctx.translate(margin, canvas.height - margin);
     pencil.ctx.scale(1, -1);
     pencil.ctx.strokeRect(0, 0, canvas.width - margin, canvas.height - margin);
-    let height = range[1] - range[0];
+    let height = y1 - y0;
     if (height === 0) {
         let y = canvas.height / 2;
         pencil.path([
@@ -131,7 +130,7 @@ function redraw() {
     for (let ys of paths) {
         let dx = (canvas.width - margin) / (ys.length - 1);
         // max - y, because y=0 is the top of the canvas
-        pencil.path(ys.map((y, x) => [dx * x, dy * (y - range[0])]));
+        pencil.path(ys.map((y, x) => [dx * x, dy * (y - y0)]));
     }
 }
 redraw();
