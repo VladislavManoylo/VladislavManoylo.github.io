@@ -1,6 +1,5 @@
 import { Pencil } from "./pencil.js";
 let canvas = document.getElementById("canvas");
-let weightsElement = document.getElementById("weights");
 let phiElement = document.getElementById("phi");
 let functionElement = document.getElementById("function");
 let pencil = new Pencil(canvas);
@@ -39,51 +38,51 @@ function redraw() {
     pencil.ctx.translate(margin, plotSize[1]);
     pencil.ctx.scale(1, -1);
     pencil.ctx.strokeRect(0, 0, plotSize[0], plotSize[1]);
-    let d = weightsElement.valueAsNumber;
     let plot = [];
     // linear regression
-    if (d === 1) {
-        phiElement.innerText = "phi(x) = x";
-        let xtx = 0;
-        for (let x of xs)
-            xtx += x * x;
-        let xtxi = 1 / xtx;
-        let xty = 0;
-        for (let i in xs)
-            xty += xs[i] * ys[i];
-        let w = xtxi * xty;
-        functionElement.innerText = `y = ${w.toFixed(2)}x`;
-        plot = sampleFunction((x) => w * x, x0, x1, 100);
-    }
-    else if (d === 2) {
-        phiElement.innerText = "phi(x) = x + 1";
-        let ptpi = [
-            [0, 0],
-            [0, 0],
-        ];
-        for (let x of xs) {
-            ptpi[0][0] += 1;
-            ptpi[0][1] += x;
-            ptpi[1][0] += x;
-            ptpi[1][1] += x * x;
+    switch (phiElement.selectedOptions[0].value) {
+        case "x": {
+            let xtx = 0;
+            for (let x of xs)
+                xtx += x * x;
+            let xtxi = 1 / xtx;
+            let xty = 0;
+            for (let i in xs)
+                xty += xs[i] * ys[i];
+            let w = xtxi * xty;
+            functionElement.innerText = `y = ${w.toFixed(2)}x`;
+            plot = sampleFunction((x) => w * x, x0, x1, 100);
+            break;
         }
-        {
-            let determinant = ptpi[0][0] * ptpi[1][1] - ptpi[1][0] * ptpi[0][1];
-            ptpi = [
-                [ptpi[1][1] / determinant, -ptpi[1][0] / determinant],
-                [-ptpi[0][1] / determinant, ptpi[0][0] / determinant],
+        case "x + 1": {
+            let ptpi = [
+                [0, 0],
+                [0, 0],
             ];
+            for (let x of xs) {
+                ptpi[0][0] += 1;
+                ptpi[0][1] += x;
+                ptpi[1][0] += x;
+                ptpi[1][1] += x * x;
+            }
+            {
+                let determinant = ptpi[0][0] * ptpi[1][1] - ptpi[1][0] * ptpi[0][1];
+                ptpi = [
+                    [ptpi[1][1] / determinant, -ptpi[1][0] / determinant],
+                    [-ptpi[0][1] / determinant, ptpi[0][0] / determinant],
+                ];
+            }
+            let w = [0, 0];
+            for (let i in xs) {
+                w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
+                w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
+            }
+            functionElement.innerText = `y = ${w[1].toFixed(2)}x + ${w[0].toFixed(2)}`;
+            plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
+            break;
         }
-        let w = [0, 0];
-        for (let i in xs) {
-            w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
-            w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
-        }
-        functionElement.innerText = `y = ${w[1].toFixed(2)}x + ${w[0].toFixed(2)}`;
-        plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
-    }
-    else {
-        throw new Error("unreachable");
+        default:
+            throw new Error("unreachable");
     }
     let dx = plotSize[0] / (plot.length - 1);
     let dy = plotSize[1] / (y1 - y0);
@@ -110,6 +109,6 @@ document.getElementById("clear").addEventListener("click", () => {
     ys = [];
     redraw();
 });
-weightsElement.addEventListener("input", () => {
+phiElement.addEventListener("change", () => {
     redraw();
 });
