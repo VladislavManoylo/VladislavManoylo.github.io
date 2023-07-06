@@ -85,8 +85,9 @@ function redraw() {
 }
 redraw();
 canvas.addEventListener("click", (event) => {
-    let x = event.x - margin;
-    let y = canvas.height - margin - event.y;
+    let bounds = canvas.getBoundingClientRect();
+    let x = event.x - bounds.left - margin;
+    let y = canvas.height - margin - (event.y - bounds.top);
     if (x > 0 && y > 0) {
         xs.push(x / plotSize[0]);
         ys.push(y / plotSize[1]);
