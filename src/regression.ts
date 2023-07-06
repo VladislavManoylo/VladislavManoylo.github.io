@@ -1,6 +1,9 @@
-import { Pencil, v2 } from "./pencil.js";
+import { Pencil } from "./pencil.js";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+let weightsElement = document.getElementById("weights") as HTMLInputElement;
+let phiElement = document.getElementById("phi") as HTMLSpanElement;
+let functionElement = document.getElementById("function") as HTMLSpanElement;
 let pencil = new Pencil(canvas);
 
 let x0 = 0;
@@ -45,54 +48,58 @@ function redraw() {
   pencil.ctx.translate(margin, plotSize[1]);
   pencil.ctx.scale(1, -1);
   pencil.ctx.strokeRect(0, 0, plotSize[0], plotSize[1]);
+
+  let d = weightsElement.valueAsNumber;
+  let plot: number[] = [];
+  // linear regression
+  if (d === 1) {
+    phiElement.innerText = "phi(x) = x";
+    let xtx = 0;
+    for (let x of xs) xtx += x * x;
+    let xtxi = 1 / xtx;
+    let xty = 0;
+    for (let i in xs) xty += xs[i] * ys[i];
+    let w = xtxi * xty;
+    functionElement.innerText = `y = ${w.toFixed(2)}x`;
+    plot = sampleFunction((x) => w * x, x0, x1, 100);
+  } else if (d === 2) {
+    phiElement.innerText = "phi(x) = x + 1";
+    let ptpi: number[][] = [
+      [0, 0],
+      [0, 0],
+    ];
+    for (let x of xs) {
+      ptpi[0][0] += 1;
+      ptpi[0][1] += x;
+      ptpi[1][0] += x;
+      ptpi[1][1] += x * x;
+    }
+    {
+      let determinant = ptpi[0][0] * ptpi[1][1] - ptpi[1][0] * ptpi[0][1];
+      ptpi = [
+        [ptpi[1][1] / determinant, -ptpi[1][0] / determinant],
+        [-ptpi[0][1] / determinant, ptpi[0][0] / determinant],
+      ];
+    }
+    let w = [0, 0];
+    for (let i in xs) {
+      w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
+      w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
+    }
+    functionElement.innerText = `y = ${w[1].toFixed(2)}x + ${w[0].toFixed(2)}`;
+    plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
+  } else {
+    throw new Error("unreachable");
+  }
+
+  let dx = plotSize[0] / (plot.length - 1);
+  let dy = plotSize[1] / (y1 - y0);
+  pencil.path(plot.map((y, x) => [dx * x, Math.max(0, dy * (y - y0))]));
   // points
   for (let i in xs) {
     let [x, y] = [xs[i], ys[i]];
     pencil.ctx.fillRect(x * plotSize[0], y * plotSize[1], 2, 2);
   }
-  // linear regression
-  // W = (phi^T phi)^-1 (phi^T Y)
-  // phi(x) = [1, x]
-  // ptpi = (phi^T phi) ^ -1
-  let ptpi: number[][] = [
-    [0, 0],
-    [0, 0],
-  ];
-  for (let x of xs) {
-    ptpi[0][0] += 1;
-    ptpi[0][1] += x;
-    ptpi[1][0] += x;
-    ptpi[1][1] += x * x;
-  }
-  // calculate the inverse
-  {
-    let determinant = ptpi[0][0] * ptpi[1][1] - ptpi[1][0] * ptpi[0][1];
-    ptpi = [
-      [ptpi[1][1] / determinant, -ptpi[1][0] / determinant],
-      [-ptpi[0][1] / determinant, ptpi[0][0] / determinant],
-    ];
-  }
-  let w = [0, 0];
-  for (let i in xs) {
-    w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
-    w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
-  }
-  let plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
-
-  /* solution for y = mx + 0 commented out
-  let xtx = 0;
-  for (let x of xs) xtx += x * x;
-  let xtxi = 1 / xtx;
-  let xty = 0;
-  for (let i in xs) xty += xs[i] * ys[i];
-  let w = xtxi * xty;
-  let plot = sampleFunction((x) => w * x, x0, x1, 100);
-  */
-
-  let dx = plotSize[0] / (plot.length - 1);
-  let dy = plotSize[1] / (y1 - y0);
-  pencil.path(plot.map((y, x) => [dx * x, Math.max(0, dy * (y - y0))]));
-  console.log(w);
 }
 redraw();
 
@@ -115,3 +122,7 @@ canvas.addEventListener("click", (event) => {
     redraw();
   }
 );
+
+weightsElement.addEventListener("input", () => {
+  redraw();
+});
