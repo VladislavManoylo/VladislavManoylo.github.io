@@ -72,3 +72,12 @@ canvas.addEventListener("click", (event) => {
     redraw();
   }
 });
+
+(document.getElementById("clear") as HTMLButtonElement).addEventListener(
+  "click",
+  () => { 
+    xs = [];
+    ys = [];
+    redraw();
+  }
+);
