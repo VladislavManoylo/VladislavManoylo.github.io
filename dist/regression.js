@@ -80,7 +80,7 @@ function redraw() {
     */
     let dx = plotSize[0] / (plot.length - 1);
     let dy = plotSize[1] / (y1 - y0);
-    pencil.path(plot.map((y, x) => [dx * x, dy * (y - y0)]));
+    pencil.path(plot.map((y, x) => [dx * x, Math.max(0, dy * (y - y0))]));
     console.log(w);
 }
 redraw();
