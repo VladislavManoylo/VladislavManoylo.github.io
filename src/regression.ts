@@ -12,7 +12,10 @@ let y1 = 1;
 let margin = 50;
 let plotSize = [canvas.width - margin, canvas.height - margin];
 // given arbitrary values to start with
-let [xs, ys]: [number[], number[]] = [[], []];
+let [xs, ys]: [number[], number[]] = [
+  [0.3, 0.6, 0.9],
+  [0.9, 0.6, 0.3],
+];
 
 /** take samples of the function f between x0 and x1
  * should have at least 2 samples to work as expected
