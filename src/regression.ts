@@ -76,13 +76,11 @@ function redraw() {
         ptpi[1][0] += x;
         ptpi[1][1] += x * x;
       }
-      {
-        let determinant = ptpi[0][0] * ptpi[1][1] - ptpi[1][0] * ptpi[0][1];
-        ptpi = [
-          [ptpi[1][1] / determinant, -ptpi[1][0] / determinant],
-          [-ptpi[0][1] / determinant, ptpi[0][0] / determinant],
-        ];
-      }
+      let det = ptpi[0][0] * ptpi[1][1] - ptpi[1][0] * ptpi[0][1];
+      ptpi = [
+        [ptpi[1][1] / det, -ptpi[1][0] / det],
+        [-ptpi[0][1] / det, ptpi[0][0] / det],
+      ];
       let w = [0, 0];
       for (let i in xs) {
         w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
@@ -92,6 +90,69 @@ function redraw() {
         2
       )}`;
       plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
+      break;
+    }
+    case "x^2 + x + 1": {
+      let ptpi: number[][] = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+      ];
+      for (let x of xs) {
+        let x2 = x * x;
+        let x3 = x2 * x;
+        let x4 = x3 * x;
+        ptpi[0][0] += 1;
+        ptpi[0][1] += x;
+        ptpi[1][0] += x;
+        ptpi[0][2] += x2;
+        ptpi[2][0] += x2;
+        ptpi[1][1] += x2;
+        ptpi[1][2] += x3;
+        ptpi[2][1] += x3;
+        ptpi[2][2] += x4;
+      }
+      let det =
+        ptpi[0][0] * ptpi[1][1] * ptpi[2][2] +
+        ptpi[0][1] * ptpi[1][2] * ptpi[2][0] +
+        ptpi[0][2] * ptpi[1][0] * ptpi[2][1] -
+        ptpi[0][0] * ptpi[1][2] * ptpi[2][1] -
+        ptpi[0][1] * ptpi[1][0] * ptpi[2][2] -
+        ptpi[0][2] * ptpi[1][1] * ptpi[2][0];
+      ptpi = [
+        [
+          ptpi[1][1] * ptpi[2][2] - ptpi[1][2] * ptpi[2][1],
+          ptpi[1][2] * ptpi[2][0] - ptpi[1][0] * ptpi[2][2],
+          ptpi[1][0] * ptpi[2][1] - ptpi[1][1] * ptpi[2][0],
+        ],
+        [
+          ptpi[2][1] * ptpi[0][2] - ptpi[2][2] * ptpi[0][1],
+          ptpi[2][2] * ptpi[0][0] - ptpi[2][0] * ptpi[0][2],
+          ptpi[2][0] * ptpi[0][1] - ptpi[2][1] * ptpi[0][0],
+        ],
+        [
+          ptpi[0][1] * ptpi[1][2] - ptpi[0][2] * ptpi[1][1],
+          ptpi[0][2] * ptpi[1][0] - ptpi[0][0] * ptpi[1][2],
+          ptpi[0][0] * ptpi[1][1] - ptpi[0][1] * ptpi[1][0],
+        ],
+      ];
+      ptpi = [
+        [ptpi[0][0] / det, ptpi[0][1] / det, ptpi[0][2] / det],
+        [ptpi[1][0] / det, ptpi[1][1] / det, ptpi[1][2] / det],
+        [ptpi[2][0] / det, ptpi[2][1] / det, ptpi[2][2] / det],
+      ];
+      let w = [0, 0, 0];
+      for (let i in xs) {
+        let x = xs[i];
+        let y = ys[i];
+        let x2 = x * x;
+        w[0] += (ptpi[0][0] + ptpi[0][1] * x + ptpi[0][2] * x2) * y;
+        w[1] += (ptpi[1][0] + ptpi[1][1] * x + ptpi[1][2] * x2) * y;
+        w[2] += (ptpi[2][0] + ptpi[2][1] * x + ptpi[2][2] * x2) * y;
+      }
+      let coef = w.map((x) => x.toFixed(2));
+      functionElement.innerText = `y = ${coef[2]}x^2 + ${coef[1]}x + ${coef[0]}`;
+      plot = sampleFunction((x) => w[0] + w[1] * x + w[2] * x * x, x0, x1, 100);
       break;
     }
     default:
