@@ -58,77 +58,67 @@ function redraw() {
             break;
         }
         case "x + 1": {
-            let ptpi = [
-                [0, 0],
-                [0, 0],
-            ];
+            let sums = [0, 0, 0];
             for (let x of xs) {
-                ptpi[0][0] += 1;
-                ptpi[0][1] += x;
-                ptpi[1][0] += x;
-                ptpi[1][1] += x * x;
+                sums[0] += 1;
+                sums[1] += x;
+                sums[2] += x * x;
             }
-            let det = ptpi[0][0] * ptpi[1][1] - ptpi[1][0] * ptpi[0][1];
-            ptpi = [
-                [ptpi[1][1] / det, -ptpi[1][0] / det],
-                [-ptpi[0][1] / det, ptpi[0][0] / det],
+            let det = sums[0] * sums[2] - sums[1] * sums[1];
+            sums = sums.map((x) => x / det);
+            let ptpi = [
+                [sums[2], -sums[1]],
+                [-sums[1], sums[0]],
             ];
             let w = [0, 0];
             for (let i in xs) {
                 w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
                 w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
             }
-            functionElement.innerText = `y = ${w[1].toFixed(2)}x + ${w[0].toFixed(2)}`;
+            let coef = w.map((x) => x.toFixed(2));
+            functionElement.innerText = `y = ${coef[1]}x + ${coef[0]}`;
             plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
             break;
         }
         case "x^2 + x + 1": {
-            let ptpi = [
-                [0, 0, 0],
-                [0, 0, 0],
-                [0, 0, 0],
-            ];
+            // closed form solution is W = (X^T X)^-1 X^T Y
+            // using X = [phi(x_1), phi(x_2), ..., phi(x_n)]
+            // the values in (X^T X) are the same across every diagonal
+            // e.g. [a b c]
+            //      [b c d]
+            //      [c d e]
+            // d is the values in that diagonal
+            let d = [0, 0, 0, 0, 0];
             for (let x of xs) {
                 let x2 = x * x;
                 let x3 = x2 * x;
                 let x4 = x3 * x;
-                ptpi[0][0] += 1;
-                ptpi[0][1] += x;
-                ptpi[1][0] += x;
-                ptpi[0][2] += x2;
-                ptpi[2][0] += x2;
-                ptpi[1][1] += x2;
-                ptpi[1][2] += x3;
-                ptpi[2][1] += x3;
-                ptpi[2][2] += x4;
+                d[0] += 1;
+                d[1] += x;
+                d[2] += x2;
+                d[3] += x3;
+                d[4] += x4;
             }
-            let det = ptpi[0][0] * ptpi[1][1] * ptpi[2][2] +
-                ptpi[0][1] * ptpi[1][2] * ptpi[2][0] +
-                ptpi[0][2] * ptpi[1][0] * ptpi[2][1] -
-                ptpi[0][0] * ptpi[1][2] * ptpi[2][1] -
-                ptpi[0][1] * ptpi[1][0] * ptpi[2][2] -
-                ptpi[0][2] * ptpi[1][1] * ptpi[2][0];
-            ptpi = [
-                [
-                    ptpi[1][1] * ptpi[2][2] - ptpi[1][2] * ptpi[2][1],
-                    ptpi[1][2] * ptpi[2][0] - ptpi[1][0] * ptpi[2][2],
-                    ptpi[1][0] * ptpi[2][1] - ptpi[1][1] * ptpi[2][0],
-                ],
-                [
-                    ptpi[2][1] * ptpi[0][2] - ptpi[2][2] * ptpi[0][1],
-                    ptpi[2][2] * ptpi[0][0] - ptpi[2][0] * ptpi[0][2],
-                    ptpi[2][0] * ptpi[0][1] - ptpi[2][1] * ptpi[0][0],
-                ],
-                [
-                    ptpi[0][1] * ptpi[1][2] - ptpi[0][2] * ptpi[1][1],
-                    ptpi[0][2] * ptpi[1][0] - ptpi[0][0] * ptpi[1][2],
-                    ptpi[0][0] * ptpi[1][1] - ptpi[0][1] * ptpi[1][0],
-                ],
+            // the inverse of (X^T X) is the adjoint matrix divided by the determinant
+            // adjoint is the transpose of the cofactor matrix, but because the (X^T X) is symmetric
+            // transpose is redundant, and we only need half the matrix
+            // u is the upper triangle of the cofactor matrix
+            let u = [
+                d[2] * d[4] - d[3] * d[3],
+                d[3] * d[2] - d[1] * d[4],
+                d[1] * d[3] - d[2] * d[2],
+                d[4] * d[0] - d[2] * d[2],
+                d[2] * d[1] - d[3] * d[0],
+                d[0] * d[2] - d[1] * d[1],
             ];
-            ptpi = [
-                [ptpi[0][0] / det, ptpi[0][1] / det, ptpi[0][2] / det],
-                [ptpi[1][0] / det, ptpi[1][1] / det, ptpi[1][2] / det],
-                [ptpi[2][0] / det, ptpi[2][1] / det, ptpi[2][2] / det],
+            // determinant reuses values in the cofactor matrix
+            let det = d[0] * u[0] + d[1] * u[1] + d[2] * u[2];
+            u = u.map((x) => x / det);
+            // ptpi is now (X^T X)^-1
+            let ptpi = [
+                [u[0], u[1], u[2]],
+                [u[1], u[3], u[4]],
+                [u[2], u[4], u[5]],
             ];
             let w = [0, 0, 0];
             for (let i in xs) {
