@@ -63,71 +63,37 @@ function redraw() {
   if (gd) {
     let lr = lrElement.valueAsNumber;
     let iterations = iterationsElement.valueAsNumber;
-
-    switch (phi) {
-      case "x": {
-        w = [0];
-        for (let i = 0; i < iterations; i++) {
-          let wi = [0];
-          for (let i in xs) {
-            let x = xs[i];
-            let y = ys[i];
-            wi[0] += (w[0] * x - y) * x;
-          }
-          w[0] -= lr * wi[0];
+    let n: number = { x: 0, "1": 1, "x + 1": 2, "x² + x + 1": 3 }[phi]!;
+    if (n === 0) {
+      w = [0];
+      for (let i = 0; i < iterations; i++) {
+        let wi = [0];
+        for (let i in xs) {
+          let x = xs[i];
+          let y = ys[i];
+          wi[0] += (w[0] * x - y) * x;
         }
-        break;
+        w[0] -= lr * wi[0];
       }
-      case "1": {
-        w = [0];
-        for (let i = 0; i < iterations; i++) {
-          let wi = [0];
-          for (let j in xs) {
-            let y = ys[j];
-            let c = w[0] - y;
-            wi[0] += c;
+    } else {
+      w = Array(n).fill(0);
+      for (let i = 0; i < iterations; i++) {
+        let wi = Array(n).fill(0);
+        for (let i in xs) {
+          let x = xs[i];
+          let y = ys[i];
+          let phiX = [1];
+          let a = 1;
+          for (let i = 1; i < n; i++) {
+            a *= x;
+            phiX[i] = a;
           }
-          w[0] -= lr * wi[0];
+          let c = -y;
+          for (let i in phiX) c += w[i] * phiX[i];
+          for (let i in phiX) wi[i] += c * phiX[i];
         }
-        break;
+        for (let i in w) w[i] -= lr * wi[i];
       }
-      case "x + 1": {
-        w = [0, 0];
-        for (let i = 0; i < iterations; i++) {
-          let wi = [0, 0];
-          for (let j in xs) {
-            let x = xs[j];
-            let y = ys[j];
-            let c = w[0] + w[1] * x - y;
-            wi[0] += c;
-            wi[1] += c * x;
-          }
-          w[0] -= lr * wi[0];
-          w[1] -= lr * wi[1];
-        }
-        break;
-      }
-      case "x² + x + 1": {
-        w = [0, 0, 0];
-        for (let i = 0; i < iterations; i++) {
-          let wi = [0, 0, 0];
-          for (let j in xs) {
-            let x = xs[j];
-            let x2 = x * x;
-            let y = ys[j];
-            let c = w[0] + w[1] * x + w[2] * x2 - y;
-            wi[0] += c;
-            wi[1] += c * x;
-            wi[2] += c * x2;
-          }
-          w[0] -= lr * wi[0];
-          w[1] -= lr * wi[1];
-          w[2] -= lr * wi[2];
-        }
-        break;
-      }
-      default:
-        throw new Error("unreachable");
     }
   } else {
     switch (phi) {
