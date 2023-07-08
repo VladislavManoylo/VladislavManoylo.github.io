@@ -44,28 +44,27 @@ function redraw() {
     pencil.ctx.translate(margin, plotSize[1]);
     pencil.ctx.scale(1, -1);
     pencil.ctx.strokeRect(0, 0, plotSize[0], plotSize[1]);
-    let plot = [];
     // linear regression
     let gd = solveElement.selectedOptions[0].value == "gd";
+    let phi = phiElement.selectedOptions[0].value;
+    let w = [];
     if (gd) {
         let lr = lrElement.valueAsNumber;
         let iterations = iterationsElement.valueAsNumber;
-        switch (phiElement.selectedOptions[0].value) {
+        switch (phi) {
             case "x": {
-                let w = 0;
+                w = [0];
                 for (let i = 0; i < iterations; i++) {
                     for (let i in xs) {
                         let x = xs[i];
                         let y = ys[i];
-                        w -= lr * (w * x - y) * x;
+                        w[0] -= lr * (w[0] * x - y) * x;
                     }
                 }
-                functionElement.innerText = `y = ${w.toFixed(2)}x`;
-                plot = sampleFunction((x) => w * x, x0, x1, 100);
                 break;
             }
             case "x + 1": {
-                let w = [0, 0];
+                w = [0, 0];
                 for (let i = 0; i < iterations; i++) {
                     let wi = [0, 0];
                     for (let j in xs) {
@@ -78,13 +77,10 @@ function redraw() {
                     w[0] -= lr * wi[0];
                     w[1] -= lr * wi[1];
                 }
-                let coef = w.map((x) => x.toFixed(2));
-                functionElement.innerText = `y = ${coef[1]}x + ${coef[0]}`;
-                plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
                 break;
             }
             case "x² + x + 1": {
-                let w = [0, 0, 0];
+                w = [0, 0, 0];
                 for (let i = 0; i < iterations; i++) {
                     let wi = [0, 0, 0];
                     for (let j in xs) {
@@ -100,9 +96,6 @@ function redraw() {
                     w[1] -= lr * wi[1];
                     w[2] -= lr * wi[2];
                 }
-                let coef = w.map((x) => x.toFixed(2));
-                functionElement.innerText = `y = ${coef[2]}x² + ${coef[1]}x + ${coef[0]}`;
-                plot = sampleFunction((x) => w[0] + w[1] * x + w[2] * x * x, x0, x1, 100);
                 break;
             }
             default:
@@ -110,7 +103,7 @@ function redraw() {
         }
     }
     else {
-        switch (phiElement.selectedOptions[0].value) {
+        switch (phi) {
             case "x": {
                 let xtx = 0;
                 for (let x of xs)
@@ -119,9 +112,7 @@ function redraw() {
                 let xty = 0;
                 for (let i in xs)
                     xty += xs[i] * ys[i];
-                let w = xtxi * xty;
-                functionElement.innerText = `y = ${w.toFixed(2)}x`;
-                plot = sampleFunction((x) => w * x, x0, x1, 100);
+                w = [xtxi * xty];
                 break;
             }
             case "x + 1": {
@@ -137,14 +128,11 @@ function redraw() {
                     [sums[2], -sums[1]],
                     [-sums[1], sums[0]],
                 ];
-                let w = [0, 0];
+                w = [0, 0];
                 for (let i in xs) {
                     w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
                     w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
                 }
-                let coef = w.map((x) => x.toFixed(2));
-                functionElement.innerText = `y = ${coef[1]}x + ${coef[0]}`;
-                plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
                 break;
             }
             case "x² + x + 1": {
@@ -187,7 +175,7 @@ function redraw() {
                     [u[1], u[3], u[4]],
                     [u[2], u[4], u[5]],
                 ];
-                let w = [0, 0, 0];
+                w = [0, 0, 0];
                 for (let i in xs) {
                     let x = xs[i];
                     let y = ys[i];
@@ -196,15 +184,23 @@ function redraw() {
                     w[1] += (ptpi[1][0] + ptpi[1][1] * x + ptpi[1][2] * x2) * y;
                     w[2] += (ptpi[2][0] + ptpi[2][1] * x + ptpi[2][2] * x2) * y;
                 }
-                let coef = w.map((x) => x.toFixed(2));
-                functionElement.innerText = `y = ${coef[2]}x² + ${coef[1]}x + ${coef[0]}`;
-                plot = sampleFunction((x) => w[0] + w[1] * x + w[2] * x * x, x0, x1, 100);
                 break;
             }
             default:
                 throw new Error("unreachable");
         }
     }
+    functionElement.innerText =
+        "y = " + w.map((v, i) => `${v.toFixed(2)}x^${i}`).join(" + ");
+    let plot = sampleFunction((x) => {
+        let ret = 0;
+        let a = 1;
+        for (let it of w) {
+            ret += a * it;
+            a *= x;
+        }
+        return ret;
+    }, x0, x1, 100);
     let dx = plotSize[0] / (plot.length - 1);
     let dy = plotSize[1] / (y1 - y0);
     pencil.path(plot.map((y, x) => [dx * x, Math.max(0, dy * (y - y0))]));
