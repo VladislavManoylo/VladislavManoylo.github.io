@@ -3,6 +3,11 @@ import { Pencil } from "./pencil.js";
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 let phiElement = document.getElementById("phi") as HTMLSelectElement;
 let functionElement = document.getElementById("function") as HTMLSpanElement;
+let solveElement = document.getElementById("solve") as HTMLSelectElement;
+let lrElement = document.getElementById("lr") as HTMLInputElement;
+let iterationsElement = document.getElementById(
+  "iterations"
+) as HTMLInputElement;
 let pencil = new Pencil(canvas);
 
 let x0 = 0;
@@ -53,97 +58,171 @@ function redraw() {
 
   let plot: number[] = [];
   // linear regression
-  switch (phiElement.selectedOptions[0].value) {
-    case "x": {
-      let xtx = 0;
-      for (let x of xs) xtx += x * x;
-      let xtxi = 1 / xtx;
-      let xty = 0;
-      for (let i in xs) xty += xs[i] * ys[i];
-      let w = xtxi * xty;
-      functionElement.innerText = `y = ${w.toFixed(2)}x`;
-      plot = sampleFunction((x) => w * x, x0, x1, 100);
-      break;
+  let gd = solveElement.selectedOptions[0].value == "gd";
+  if (gd) {
+    let lr = lrElement.valueAsNumber;
+    let iterations = iterationsElement.valueAsNumber;
+    switch (phiElement.selectedOptions[0].value) {
+      case "x": {
+        let w = 0;
+        for (let i = 0; i < iterations; i++) {
+          for (let i in xs) {
+            let x = xs[i];
+            let y = ys[i];
+            w -= lr * (w * x - y) * x;
+          }
+        }
+        functionElement.innerText = `y = ${w.toFixed(2)}x`;
+        plot = sampleFunction((x) => w * x, x0, x1, 100);
+        break;
+      }
+      case "x + 1": {
+        let w = [0, 0];
+        for (let i = 0; i < iterations; i++) {
+          let wi = [0, 0];
+          for (let j in xs) {
+            let x = xs[j];
+            let y = ys[j];
+            let c = w[0] + w[1] * x - y;
+            wi[0] += c;
+            wi[1] += c * x;
+          }
+          w[0] -= lr * wi[0];
+          w[1] -= lr * wi[1];
+        }
+        let coef = w.map((x) => x.toFixed(2));
+        functionElement.innerText = `y = ${coef[1]}x + ${coef[0]}`;
+        plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
+        break;
+      }
+      case "x² + x + 1": {
+        let w = [0, 0, 0];
+        for (let i = 0; i < iterations; i++) {
+          let wi = [0, 0, 0];
+          for (let j in xs) {
+            let x = xs[j];
+            let x2 = x * x;
+            let y = ys[j];
+            let c = w[0] + w[1] * x + w[2] * x2 - y;
+            wi[0] += c;
+            wi[1] += c * x;
+            wi[2] += c * x2;
+          }
+          w[0] -= lr * wi[0];
+          w[1] -= lr * wi[1];
+          w[2] -= lr * wi[2];
+        }
+        let coef = w.map((x) => x.toFixed(2));
+        functionElement.innerText = `y = ${coef[2]}x² + ${coef[1]}x + ${coef[0]}`;
+        plot = sampleFunction(
+          (x) => w[0] + w[1] * x + w[2] * x * x,
+          x0,
+          x1,
+          100
+        );
+        break;
+      }
+      default:
+        throw new Error("unreachable");
     }
-    case "x + 1": {
-      let sums = [0, 0, 0];
-      for (let x of xs) {
-        sums[0] += 1;
-        sums[1] += x;
-        sums[2] += x * x;
+  } else {
+    switch (phiElement.selectedOptions[0].value) {
+      case "x": {
+        let xtx = 0;
+        for (let x of xs) xtx += x * x;
+        let xtxi = 1 / xtx;
+        let xty = 0;
+        for (let i in xs) xty += xs[i] * ys[i];
+        let w = xtxi * xty;
+        functionElement.innerText = `y = ${w.toFixed(2)}x`;
+        plot = sampleFunction((x) => w * x, x0, x1, 100);
+        break;
       }
-      let det = sums[0] * sums[2] - sums[1] * sums[1];
-      sums = sums.map((x) => x / det);
-      let ptpi = [
-        [sums[2], -sums[1]],
-        [-sums[1], sums[0]],
-      ];
-      let w = [0, 0];
-      for (let i in xs) {
-        w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
-        w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
+      case "x + 1": {
+        let sums = [0, 0, 0];
+        for (let x of xs) {
+          sums[0] += 1;
+          sums[1] += x;
+          sums[2] += x * x;
+        }
+        let det = sums[0] * sums[2] - sums[1] * sums[1];
+        sums = sums.map((x) => x / det);
+        let ptpi = [
+          [sums[2], -sums[1]],
+          [-sums[1], sums[0]],
+        ];
+        let w = [0, 0];
+        for (let i in xs) {
+          w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
+          w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
+        }
+        let coef = w.map((x) => x.toFixed(2));
+        functionElement.innerText = `y = ${coef[1]}x + ${coef[0]}`;
+        plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
+        break;
       }
-      let coef = w.map((x) => x.toFixed(2));
-      functionElement.innerText = `y = ${coef[1]}x + ${coef[0]}`;
-      plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
-      break;
+      case "x² + x + 1": {
+        // closed form solution is W = (X^T X)^-1 X^T Y
+        // using X = [phi(x_1), phi(x_2), ..., phi(x_n)]
+        // the values in (X^T X) are the same across every diagonal
+        // e.g. [a b c]
+        //      [b c d]
+        //      [c d e]
+        // d is the values in that diagonal
+        let d = [0, 0, 0, 0, 0];
+        for (let x of xs) {
+          let x2 = x * x;
+          let x3 = x2 * x;
+          let x4 = x3 * x;
+          d[0] += 1;
+          d[1] += x;
+          d[2] += x2;
+          d[3] += x3;
+          d[4] += x4;
+        }
+        // the inverse of (X^T X) is the adjoint matrix divided by the determinant
+        // adjoint is the transpose of the cofactor matrix, but because the (X^T X) is symmetric
+        // transpose is redundant, and we only need half the matrix
+        // u is the upper triangle of the cofactor matrix
+        let u = [
+          d[2] * d[4] - d[3] * d[3],
+          d[3] * d[2] - d[1] * d[4],
+          d[1] * d[3] - d[2] * d[2],
+          d[4] * d[0] - d[2] * d[2],
+          d[2] * d[1] - d[3] * d[0],
+          d[0] * d[2] - d[1] * d[1],
+        ];
+        // determinant reuses values in the cofactor matrix
+        let det = d[0] * u[0] + d[1] * u[1] + d[2] * u[2];
+        u = u.map((x) => x / det);
+        // ptpi is now (X^T X)^-1
+        let ptpi = [
+          [u[0], u[1], u[2]],
+          [u[1], u[3], u[4]],
+          [u[2], u[4], u[5]],
+        ];
+        let w = [0, 0, 0];
+        for (let i in xs) {
+          let x = xs[i];
+          let y = ys[i];
+          let x2 = x * x;
+          w[0] += (ptpi[0][0] + ptpi[0][1] * x + ptpi[0][2] * x2) * y;
+          w[1] += (ptpi[1][0] + ptpi[1][1] * x + ptpi[1][2] * x2) * y;
+          w[2] += (ptpi[2][0] + ptpi[2][1] * x + ptpi[2][2] * x2) * y;
+        }
+        let coef = w.map((x) => x.toFixed(2));
+        functionElement.innerText = `y = ${coef[2]}x² + ${coef[1]}x + ${coef[0]}`;
+        plot = sampleFunction(
+          (x) => w[0] + w[1] * x + w[2] * x * x,
+          x0,
+          x1,
+          100
+        );
+        break;
+      }
+      default:
+        throw new Error("unreachable");
     }
-    case "x² + x + 1": {
-      // closed form solution is W = (X^T X)^-1 X^T Y
-      // using X = [phi(x_1), phi(x_2), ..., phi(x_n)]
-      // the values in (X^T X) are the same across every diagonal
-      // e.g. [a b c]
-      //      [b c d]
-      //      [c d e]
-      // d is the values in that diagonal
-      let d = [0, 0, 0, 0, 0];
-      for (let x of xs) {
-        let x2 = x * x;
-        let x3 = x2 * x;
-        let x4 = x3 * x;
-        d[0] += 1;
-        d[1] += x;
-        d[2] += x2;
-        d[3] += x3;
-        d[4] += x4;
-      }
-      // the inverse of (X^T X) is the adjoint matrix divided by the determinant
-      // adjoint is the transpose of the cofactor matrix, but because the (X^T X) is symmetric
-      // transpose is redundant, and we only need half the matrix
-      // u is the upper triangle of the cofactor matrix
-      let u = [
-        d[2] * d[4] - d[3] * d[3],
-        d[3] * d[2] - d[1] * d[4],
-        d[1] * d[3] - d[2] * d[2],
-        d[4] * d[0] - d[2] * d[2],
-        d[2] * d[1] - d[3] * d[0],
-        d[0] * d[2] - d[1] * d[1],
-      ];
-      // determinant reuses values in the cofactor matrix
-      let det = d[0] * u[0] + d[1] * u[1] + d[2] * u[2];
-      u = u.map((x) => x / det);
-      // ptpi is now (X^T X)^-1
-      let ptpi = [
-        [u[0], u[1], u[2]],
-        [u[1], u[3], u[4]],
-        [u[2], u[4], u[5]],
-      ];
-      let w = [0, 0, 0];
-      for (let i in xs) {
-        let x = xs[i];
-        let y = ys[i];
-        let x2 = x * x;
-        w[0] += (ptpi[0][0] + ptpi[0][1] * x + ptpi[0][2] * x2) * y;
-        w[1] += (ptpi[1][0] + ptpi[1][1] * x + ptpi[1][2] * x2) * y;
-        w[2] += (ptpi[2][0] + ptpi[2][1] * x + ptpi[2][2] * x2) * y;
-      }
-      let coef = w.map((x) => x.toFixed(2));
-      functionElement.innerText = `y = ${coef[2]}x² + ${coef[1]}x + ${coef[0]}`;
-      plot = sampleFunction((x) => w[0] + w[1] * x + w[2] * x * x, x0, x1, 100);
-      break;
-    }
-    default:
-      throw new Error("unreachable");
   }
 
   let dx = plotSize[0] / (plot.length - 1);
@@ -177,6 +256,11 @@ canvas.addEventListener("click", (event) => {
   }
 );
 
-phiElement.addEventListener("change", () => {
-  redraw();
+phiElement.addEventListener("change", () => redraw());
+solveElement.addEventListener("change", () => redraw());
+lrElement.addEventListener("change", () => {
+  if (solveElement.selectedOptions[0].value == "gd") redraw();
+});
+iterationsElement.addEventListener("change", () => {
+  if (solveElement.selectedOptions[0].value == "gd") redraw();
 });

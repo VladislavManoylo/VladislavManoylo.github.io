@@ -22,12 +22,26 @@
 <body>
   <canvas id="canvas" width="700" height="500"></canvas>
   <button type="button" id="clear">clear</button>
-  φ(x) =
-  <select id="phi" required>
-    <option value="x">x</option>
-    <option value="x + 1">x + 1</option>
-    <option value="x² + x + 1">x² + x + 1</option>
+  <div>
+    φ(x) =
+    <select id="phi" required>
+      <option value="x">x</option>
+      <option value="x + 1">x + 1</option>
+      <option value="x² + x + 1" selected>x² + x + 1</option>
+    </select>
+  </div>
+  <select id="solve" required>
+    <option>closed form</option>
+    <option value="gd">gradient descent</option>
   </select>
+  <div class="gd">
+    <label for="lr">learning rate =</label>
+    <input type="number" id="lr" value="0.1" />
+  </div>
+  <div class="gd">
+    <label for="iterations">iterations =</label>
+    <input type="number" id="iterations" step="1" min="0" value="0" />
+  </div>
   <span id="function"></span>
   <script type="module" src="dist/regression.js"></script>
 </body>
