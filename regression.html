@@ -23,13 +23,10 @@
   <canvas id="canvas" width="700" height="500"></canvas>
   <button type="button" id="clear">clear</button>
   <div>
+    <label for="phi">basis expansion</label>
+    <input id="phi" type="number" size="1" min="0" max="3" step="1" value="2" />
     φ(x) =
-    <select id="phi" required>
-      <option value="x">x</option>
-      <option value="1">1</option>
-      <option value="x + 1">x + 1</option>
-      <option value="x² + x + 1" selected>x² + x + 1</option>
-    </select>
+    <span id="phiLabel"> </span>
   </div>
   <select id="solve" required>
     <option>closed form</option>

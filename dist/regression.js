@@ -46,13 +46,18 @@ function redraw() {
     pencil.ctx.strokeRect(0, 0, plotSize[0], plotSize[1]);
     // linear regression
     let gd = solveElement.selectedOptions[0].value == "gd";
-    let phi = phiElement.selectedOptions[0].value;
+    let phi = phiElement.valueAsNumber;
+    document.getElementById("phiLabel").innerText = {
+        0: "x",
+        1: "1",
+        2: "x + 1",
+        3: "x² + x + 1",
+    }[phi];
     let w = [];
     if (gd) {
         let lr = lrElement.valueAsNumber;
         let iterations = iterationsElement.valueAsNumber;
-        let n = { x: 0, "1": 1, "x + 1": 2, "x² + x + 1": 3 }[phi];
-        if (n === 0) {
+        if (phi === 0) {
             w = [0];
             for (let i = 0; i < iterations; i++) {
                 let wi = [0];
@@ -65,15 +70,15 @@ function redraw() {
             }
         }
         else {
-            w = Array(n).fill(0);
+            w = Array(phi).fill(0);
             for (let i = 0; i < iterations; i++) {
-                let wi = Array(n).fill(0);
+                let wi = Array(phi).fill(0);
                 for (let i in xs) {
                     let x = xs[i];
                     let y = ys[i];
                     let phiX = [1];
                     let a = 1;
-                    for (let i = 1; i < n; i++) {
+                    for (let i = 1; i < phi; i++) {
                         a *= x;
                         phiX[i] = a;
                     }
@@ -90,7 +95,7 @@ function redraw() {
     }
     else {
         switch (phi) {
-            case "x": {
+            case 0: {
                 let xtx = 0;
                 for (let x of xs)
                     xtx += x * x;
@@ -101,11 +106,11 @@ function redraw() {
                 w = [xtxi * xty];
                 break;
             }
-            case "1": {
+            case 1: {
                 w = [ys.reduce((a, b) => a + b) / ys.length];
                 break;
             }
-            case "x + 1": {
+            case 2: {
                 let sums = [0, 0, 0];
                 for (let x of xs) {
                     sums[0] += 1;
@@ -125,7 +130,7 @@ function redraw() {
                 }
                 break;
             }
-            case "x² + x + 1": {
+            case 3: {
                 // closed form solution is W = (X^T X)^-1 X^T Y
                 // using X = [phi(x_1), phi(x_2), ..., phi(x_n)]
                 // the values in (X^T X) are the same across every diagonal
