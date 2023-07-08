@@ -63,15 +63,31 @@ function redraw() {
   if (gd) {
     let lr = lrElement.valueAsNumber;
     let iterations = iterationsElement.valueAsNumber;
+
     switch (phi) {
       case "x": {
         w = [0];
         for (let i = 0; i < iterations; i++) {
+          let wi = [0];
           for (let i in xs) {
             let x = xs[i];
             let y = ys[i];
-            w[0] -= lr * (w[0] * x - y) * x;
+            wi[0] += (w[0] * x - y) * x;
           }
+          w[0] -= lr * wi[0];
+        }
+        break;
+      }
+      case "1": {
+        w = [0];
+        for (let i = 0; i < iterations; i++) {
+          let wi = [0];
+          for (let j in xs) {
+            let y = ys[j];
+            let c = w[0] - y;
+            wi[0] += c;
+          }
+          w[0] -= lr * wi[0];
         }
         break;
       }
@@ -122,6 +138,10 @@ function redraw() {
         let xty = 0;
         for (let i in xs) xty += xs[i] * ys[i];
         w = [xtxi * xty];
+        break;
+      }
+      case "1": {
+        w = [ys.reduce((a, b) => a + b) / ys.length];
         break;
       }
       case "x + 1": {
