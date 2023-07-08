@@ -80,7 +80,7 @@ function redraw() {
             plot = sampleFunction((x) => w[0] + w[1] * x, x0, x1, 100);
             break;
         }
-        case "x^2 + x + 1": {
+        case "x² + x + 1": {
             // closed form solution is W = (X^T X)^-1 X^T Y
             // using X = [phi(x_1), phi(x_2), ..., phi(x_n)]
             // the values in (X^T X) are the same across every diagonal
@@ -130,7 +130,7 @@ function redraw() {
                 w[2] += (ptpi[2][0] + ptpi[2][1] * x + ptpi[2][2] * x2) * y;
             }
             let coef = w.map((x) => x.toFixed(2));
-            functionElement.innerText = `y = ${coef[2]}x^2 + ${coef[1]}x + ${coef[0]}`;
+            functionElement.innerText = `y = ${coef[2]}x² + ${coef[1]}x + ${coef[0]}`;
             plot = sampleFunction((x) => w[0] + w[1] * x + w[2] * x * x, x0, x1, 100);
             break;
         }
