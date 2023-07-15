@@ -30,6 +30,55 @@ function sampleFunction(f, x0, x1, samples) {
     }
     return ys;
 }
+function inverse(a) {
+    let v = structuredClone(a.val);
+    let d = a.rows;
+    if (d !== a.cols)
+        throw new Error("non-square matrix");
+    let ret = Array(v.length).fill(0);
+    for (let i = 0; i < v.length; i += d + 1)
+        ret[i] = 1;
+    // gauss-jordan elimination
+    // ret is an identity matrix
+    // v is the matrix to be inversed
+    // console.log(v, "I= ", ret);
+    // aftwards v will be identity and vi will be the inverse of v
+    // ---
+    // getting to an upper triangular matrix with row operations
+    for (let i = 0; i < d; i++) {
+        for (let j = i + 1; j < d; j++) {
+            let a = -v[j * d + i] / v[i * d + i];
+            for (let k = 0; k < d; k++) {
+                v[j * d + k] += a * v[i * d + k];
+                ret[j * d + k] += a * ret[i * d + k];
+            }
+        }
+    }
+    // console.log("U= ", v, ret);
+    // ---
+    // getting to a diagonal matrix
+    for (let i = 0; i < d; i++) {
+        for (let j = i + 1; j < d; j++) {
+            let a = -v[i * d + j] / v[j * d + j];
+            for (let k = 0; k < d; k++) {
+                v[i * d + k] += a * v[j * d + k];
+                ret[i * d + k] += a * ret[j * d + k];
+            }
+        }
+    }
+    // console.log("D= ", v, ret);
+    // ---
+    // getting to an identity matrix
+    for (let i = 0; i < d; i++) {
+        let a = 1 / v[i * d + i];
+        for (let j = 0; j < d; j++) {
+            v[i * d + j] *= a;
+            ret[i * d + j] *= a;
+        }
+    }
+    // console.log("I= ", v, ret);
+    return { val: ret, rows: d, cols: d };
+}
 function redraw() {
     pencil.clear();
     {
@@ -110,65 +159,22 @@ function redraw() {
         }
         else {
             // solve for w = (X^T X)^-1 (X^T) Y
-            let sums = Array(phi * 2 - 1).fill(0);
-            for (let x of xs) {
-                let a = 1;
-                for (let i in sums) {
-                    sums[i] += a;
-                    a *= x;
-                }
-            }
-            let ptpi = Array(phi * phi);
+            let xtx = Array(phi * phi);
             {
-                // calculate inverse of (X^T X)
-                ptpi.fill(0);
-                for (let i = 0; i < ptpi.length; i += phi + 1)
-                    ptpi[i] = 1;
-                let ptp = Array(phi * phi);
+                // calculate (phi(x)^T phi(x)) and put into xtx
+                let sums = Array(phi * 2 - 1).fill(0);
+                for (let x of xs) {
+                    let a = 1;
+                    for (let i in sums) {
+                        sums[i] += a;
+                        a *= x;
+                    }
+                }
                 for (let i = 0; i < phi; i++)
                     for (let j = 0; j < phi; j++)
-                        ptp[i * phi + j] = sums[i + j];
-                // gauss-jordan elimination
-                // ptpi is an identity matrix
-                // console.log("ptpi= ", ptpi);
-                // ptp is (X^T X)
-                // console.log("ptp = ", ptp);
-                // aftwards ptp will be identity and ptpi will be the inverse of ptp
-                // ---
-                // getting to an upper triangular matrix with row operations
-                for (let i = 0; i < phi; i++) {
-                    for (let j = i + 1; j < phi; j++) {
-                        let a = -ptp[j * phi + i] / ptp[i * phi + i];
-                        for (let k = 0; k < phi; k++) {
-                            ptp[j * phi + k] += a * ptp[i * phi + k];
-                            ptpi[j * phi + k] += a * ptpi[i * phi + k];
-                        }
-                    }
-                }
-                // console.log("U= ", ptp, ptpi);
-                // ---
-                // getting to a diagonal matrix
-                for (let i = 0; i < phi; i++) {
-                    for (let j = i + 1; j < phi; j++) {
-                        let a = -ptp[i * phi + j] / ptp[j * phi + j];
-                        for (let k = 0; k < phi; k++) {
-                            ptp[i * phi + k] += a * ptp[j * phi + k];
-                            ptpi[i * phi + k] += a * ptpi[j * phi + k];
-                        }
-                    }
-                }
-                // console.log("D= ", ptp, ptpi);
-                // ---
-                // getting to an identity matrix
-                for (let i = 0; i < phi; i++) {
-                    let a = 1 / ptp[i * phi + i];
-                    for (let j = 0; j < phi; j++) {
-                        ptp[i * phi + j] *= a;
-                        ptpi[i * phi + j] *= a;
-                    }
-                }
-                // console.log("I= ", ptp, ptpi);
+                        xtx[i * phi + j] = sums[i + j];
             }
+            let xtxi = inverse({ val: xtx, rows: phi, cols: phi }).val;
             w = Array(phi).fill(0);
             for (let i in xs) {
                 let x = xs[i];
@@ -179,7 +185,7 @@ function redraw() {
                 let tmp = Array(phi).fill(0);
                 for (let j = 0; j < phi; j++)
                     for (let k = 0; k < phi; k++)
-                        tmp[j] += ptpi[j * phi + k] * phiX[k];
+                        tmp[j] += xtxi[j * phi + k] * phiX[k];
                 let y = ys[i];
                 for (let j in w)
                     w[j] += tmp[j] * y;
