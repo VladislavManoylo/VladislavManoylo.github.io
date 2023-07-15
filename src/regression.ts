@@ -1,5 +1,25 @@
 import { Pencil } from "./pencil.js";
 
+function superscript(x: number): string {
+  let ret = "";
+  let m: Record<string, string> = {
+    "0": "⁰",
+    "1": "¹",
+    "2": "²",
+    "3": "³",
+    "4": "⁴",
+    "5": "⁵",
+    "6": "⁶",
+    "7": "⁷",
+    "8": "⁸",
+    "9": "⁹",
+  };
+  for (let a of x.toFixed(0)) {
+    ret += m[a]!;
+  }
+  return ret;
+}
+
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 let phiElement = document.getElementById("phi") as HTMLInputElement;
 let functionElement = document.getElementById("function") as HTMLSpanElement;
@@ -117,7 +137,7 @@ function redraw() {
     let label = "";
     let m = ["x", "1", "x + 1", "x² + x + 1"];
     if (phi < 4) label = m[phi];
-    else label = `x^${phi - 1} + ...`;
+    else label = `x${superscript(phi - 1)} + ... + 1`;
     (document.getElementById("phiLabel") as HTMLSpanElement).innerText = label;
   }
   let w: number[] = [];
@@ -197,7 +217,7 @@ function redraw() {
   }
 
   functionElement.innerText =
-    "y = " + w.map((v, i) => `${v.toFixed(2)}x^${i}`).join(" + ");
+    "y = " + w.map((v, i) => `${v.toFixed(2)}x${superscript(i)}`).join(" + ");
   let plot = sampleFunction(
     (x) => {
       let ret = 0;

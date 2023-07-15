@@ -1,4 +1,23 @@
 import { Pencil } from "./pencil.js";
+function superscript(x) {
+    let ret = "";
+    let m = {
+        "0": "⁰",
+        "1": "¹",
+        "2": "²",
+        "3": "³",
+        "4": "⁴",
+        "5": "⁵",
+        "6": "⁶",
+        "7": "⁷",
+        "8": "⁸",
+        "9": "⁹",
+    };
+    for (let a of x.toFixed(0)) {
+        ret += m[a];
+    }
+    return ret;
+}
 let canvas = document.getElementById("canvas");
 let phiElement = document.getElementById("phi");
 let functionElement = document.getElementById("function");
@@ -102,7 +121,7 @@ function redraw() {
         if (phi < 4)
             label = m[phi];
         else
-            label = `x^${phi - 1} + ...`;
+            label = `x${superscript(phi - 1)} + ... + 1`;
         document.getElementById("phiLabel").innerText = label;
     }
     let w = [];
@@ -193,7 +212,7 @@ function redraw() {
         }
     }
     functionElement.innerText =
-        "y = " + w.map((v, i) => `${v.toFixed(2)}x^${i}`).join(" + ");
+        "y = " + w.map((v, i) => `${v.toFixed(2)}x${superscript(i)}`).join(" + ");
     let plot = sampleFunction((x) => {
         let ret = 0;
         let a = 1;
