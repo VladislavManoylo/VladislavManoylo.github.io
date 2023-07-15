@@ -26,15 +26,15 @@ let lrElement = document.getElementById("lr");
 let iterationsElement = document.getElementById("iterations");
 let pencil = new Pencil(canvas);
 let x0 = 0;
-let x1 = 1;
+let x1 = 10;
 let y0 = 0;
-let y1 = 1;
+let y1 = 10;
 let margin = 50;
 let plotSize = [canvas.width - margin, canvas.height - margin];
 // given arbitrary values to start with
 let [xs, ys] = [
-    [0.3, 0.6, 0.9],
-    [0.9, 0.6, 0.3],
+    [3, 6, 9],
+    [9, 6, 3],
 ];
 /** take samples of the function f between x0 and x1
  * should have at least 2 samples to work as expected
@@ -228,6 +228,8 @@ function redraw() {
     // points
     for (let i in xs) {
         let [x, y] = [xs[i], ys[i]];
+        x = (x - x0) / (x1 - x0);
+        y = (y - y0) / (y1 - y0);
         pencil.ctx.fillRect(x * plotSize[0], y * plotSize[1], 2, 2);
     }
 }
@@ -237,6 +239,8 @@ canvas.addEventListener("click", (event) => {
     let x = event.x - bounds.left - margin;
     let y = canvas.height - margin - (event.y - bounds.top);
     if (x > 0 && y > 0) {
+        x = x * (x1 - x0) + x0;
+        y = y * (y1 - y0) + y0;
         xs.push(x / plotSize[0]);
         ys.push(y / plotSize[1]);
         redraw();
