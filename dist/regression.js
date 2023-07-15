@@ -47,12 +47,15 @@ function redraw() {
     // linear regression
     let gd = solveElement.selectedOptions[0].value == "gd";
     let phi = phiElement.valueAsNumber;
-    document.getElementById("phiLabel").innerText = {
-        0: "x",
-        1: "1",
-        2: "x + 1",
-        3: "x² + x + 1",
-    }[phi];
+    {
+        let label = "";
+        let m = ["x", "1", "x + 1", "x² + x + 1"];
+        if (phi < 4)
+            label = m[phi];
+        else
+            label = `x^${phi - 1} + ...`;
+        document.getElementById("phiLabel").innerText = label;
+    }
     let w = [];
     if (gd) {
         let lr = lrElement.valueAsNumber;
@@ -94,95 +97,93 @@ function redraw() {
         }
     }
     else {
-        switch (phi) {
-            case 0: {
-                let xtx = 0;
-                for (let x of xs)
-                    xtx += x * x;
-                let xtxi = 1 / xtx;
-                let xty = 0;
-                for (let i in xs)
-                    xty += xs[i] * ys[i];
-                w = [xtxi * xty];
-                break;
-            }
-            case 1: {
-                w = [ys.reduce((a, b) => a + b) / ys.length];
-                break;
-            }
-            case 2: {
-                let sums = [0, 0, 0];
-                for (let x of xs) {
-                    sums[0] += 1;
-                    sums[1] += x;
-                    sums[2] += x * x;
+        if (phi === 0) {
+            // special case of no basis expansion
+            let xtx = 0;
+            for (let x of xs)
+                xtx += x * x;
+            let xtxi = 1 / xtx;
+            let xty = 0;
+            for (let i in xs)
+                xty += xs[i] * ys[i];
+            w = [xtxi * xty];
+        }
+        else {
+            // solve for w = (X^T X)^-1 (X^T) Y
+            let sums = Array(phi * 2 - 1).fill(0);
+            for (let x of xs) {
+                let a = 1;
+                for (let i in sums) {
+                    sums[i] += a;
+                    a *= x;
                 }
-                let det = sums[0] * sums[2] - sums[1] * sums[1];
-                sums = sums.map((x) => x / det);
-                let ptpi = [
-                    [sums[2], -sums[1]],
-                    [-sums[1], sums[0]],
-                ];
-                w = [0, 0];
-                for (let i in xs) {
-                    w[0] += (ptpi[0][0] + ptpi[0][1] * xs[i]) * ys[i];
-                    w[1] += (ptpi[1][0] + ptpi[1][1] * xs[i]) * ys[i];
-                }
-                break;
             }
-            case 3: {
-                // closed form solution is W = (X^T X)^-1 X^T Y
-                // using X = [phi(x_1), phi(x_2), ..., phi(x_n)]
-                // the values in (X^T X) are the same across every diagonal
-                // e.g. [a b c]
-                //      [b c d]
-                //      [c d e]
-                // d is the values in that diagonal
-                let d = [0, 0, 0, 0, 0];
-                for (let x of xs) {
-                    let x2 = x * x;
-                    let x3 = x2 * x;
-                    let x4 = x3 * x;
-                    d[0] += 1;
-                    d[1] += x;
-                    d[2] += x2;
-                    d[3] += x3;
-                    d[4] += x4;
+            let ptpi = Array(phi * phi);
+            {
+                // calculate inverse of (X^T X)
+                ptpi.fill(0);
+                for (let i = 0; i < ptpi.length; i += phi + 1)
+                    ptpi[i] = 1;
+                let ptp = Array(phi * phi);
+                for (let i = 0; i < phi; i++)
+                    for (let j = 0; j < phi; j++)
+                        ptp[i * phi + j] = sums[i + j];
+                // gauss-jordan elimination
+                // ptpi is an identity matrix
+                // console.log("ptpi= ", ptpi);
+                // ptp is (X^T X)
+                // console.log("ptp = ", ptp);
+                // aftwards ptp will be identity and ptpi will be the inverse of ptp
+                // ---
+                // getting to an upper triangular matrix with row operations
+                for (let i = 0; i < phi; i++) {
+                    for (let j = i + 1; j < phi; j++) {
+                        let a = -ptp[j * phi + i] / ptp[i * phi + i];
+                        for (let k = 0; k < phi; k++) {
+                            ptp[j * phi + k] += a * ptp[i * phi + k];
+                            ptpi[j * phi + k] += a * ptpi[i * phi + k];
+                        }
+                    }
                 }
-                // the inverse of (X^T X) is the adjoint matrix divided by the determinant
-                // adjoint is the transpose of the cofactor matrix, but because the (X^T X) is symmetric
-                // transpose is redundant, and we only need half the matrix
-                // u is the upper triangle of the cofactor matrix
-                let u = [
-                    d[2] * d[4] - d[3] * d[3],
-                    d[3] * d[2] - d[1] * d[4],
-                    d[1] * d[3] - d[2] * d[2],
-                    d[4] * d[0] - d[2] * d[2],
-                    d[2] * d[1] - d[3] * d[0],
-                    d[0] * d[2] - d[1] * d[1],
-                ];
-                // determinant reuses values in the cofactor matrix
-                let det = d[0] * u[0] + d[1] * u[1] + d[2] * u[2];
-                u = u.map((x) => x / det);
-                // ptpi is now (X^T X)^-1
-                let ptpi = [
-                    [u[0], u[1], u[2]],
-                    [u[1], u[3], u[4]],
-                    [u[2], u[4], u[5]],
-                ];
-                w = [0, 0, 0];
-                for (let i in xs) {
-                    let x = xs[i];
-                    let y = ys[i];
-                    let x2 = x * x;
-                    w[0] += (ptpi[0][0] + ptpi[0][1] * x + ptpi[0][2] * x2) * y;
-                    w[1] += (ptpi[1][0] + ptpi[1][1] * x + ptpi[1][2] * x2) * y;
-                    w[2] += (ptpi[2][0] + ptpi[2][1] * x + ptpi[2][2] * x2) * y;
+                // console.log("U= ", ptp, ptpi);
+                // ---
+                // getting to a diagonal matrix
+                for (let i = 0; i < phi; i++) {
+                    for (let j = i + 1; j < phi; j++) {
+                        let a = -ptp[i * phi + j] / ptp[j * phi + j];
+                        for (let k = 0; k < phi; k++) {
+                            ptp[i * phi + k] += a * ptp[j * phi + k];
+                            ptpi[i * phi + k] += a * ptpi[j * phi + k];
+                        }
+                    }
                 }
-                break;
+                // console.log("D= ", ptp, ptpi);
+                // ---
+                // getting to an identity matrix
+                for (let i = 0; i < phi; i++) {
+                    let a = 1 / ptp[i * phi + i];
+                    for (let j = 0; j < phi; j++) {
+                        ptp[i * phi + j] *= a;
+                        ptpi[i * phi + j] *= a;
+                    }
+                }
+                // console.log("I= ", ptp, ptpi);
             }
-            default:
-                throw new Error("unreachable");
+            w = Array(phi).fill(0);
+            for (let i in xs) {
+                let x = xs[i];
+                let phiX = Array(phi);
+                phiX[0] = 1;
+                for (let i = 1; i < phiX.length; i++)
+                    phiX[i] = phiX[i - 1] * x;
+                let tmp = Array(phi).fill(0);
+                for (let j = 0; j < phi; j++)
+                    for (let k = 0; k < phi; k++)
+                        tmp[j] += ptpi[j * phi + k] * phiX[k];
+                let y = ys[i];
+                for (let j in w)
+                    w[j] += tmp[j] * y;
+            }
         }
     }
     functionElement.innerText =
