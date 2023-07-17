@@ -55,7 +55,10 @@ function formatDebruijn(expr) {
         case "lambda":
             return `λ ${formatDebruijn(expr.val.body)}`;
         case "apply":
-            return `(${formatDebruijn(expr.val[0])} ${formatDebruijn(expr.val[1])})`;
+            let l = formatDebruijn(expr.val[0]);
+            if (expr.val[0].type === "lambda" && expr.val[1].type !== "lambda")
+                l = `(${l})`;
+            return `(${l} ${formatDebruijn(expr.val[1])})`;
     }
 }
 function formatShort(expr, index = "0", space = false) {
