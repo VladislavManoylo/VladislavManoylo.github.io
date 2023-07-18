@@ -308,6 +308,7 @@ function pushExpr(expr) {
     let td = document.createElement("td");
     td.appendChild(html);
     //console.log("filled", clickableSubexprs[clickableSubexprs.length-1]);
+    tr.insertAdjacentHTML("beforeend", `<td>${history.length}</td>`);
     tr.appendChild(td);
     tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "simple")}</td>`);
     tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "short")}</td>`);
