@@ -266,13 +266,13 @@ let output = document.getElementById("output");
         ["+", "(lambda (m n) (m Succ n))"],
         ["*", "(lambda (m n) (m (+ n) 0))"],
         ["^", "(lambda (b e) (e b))"],
-        /*
         [
-          "Pred",
-          // TODO: only outer first evaluations (2 & 4) work correctly on Pred 1,
-          // too much recursion on any higher predecessor
-          "(lambda (n) (Car (n (lambda (p) (Cons (Cdr p) (Succ (Cdr p)))) (Cons 0 0))))",
+            "Pred",
+            // TODO: only outer first evaluations (2 & 4) work correctly on Pred 1,
+            // too much recursion on any higher predecessor
+            "(lambda (n) (Car (n (lambda (p) (Cons (Cdr p) (Succ (Cdr p)))) (Cons 0 0))))",
         ],
+        /*
         ["-", "(lambda (m n) (m Pred n))"],
         */
     ];
@@ -284,11 +284,22 @@ let output = document.getElementById("output");
 }
 /** Add a new step to the expression being computed */
 function pushExpr(expr) {
-    history.push(expr);
-    clickableSubexprs.push([]); // is filled by toHtml
+    let html;
+    try {
+        history.push(expr);
+        clickableSubexprs.push([]); // is filled by toHtml
+        html = toHtml(expr);
+    }
+    catch (e) {
+        // hack to continue computation when reaching too much recursion
+        if (history.length > 1)
+            inputText(format(history[history.length - 2]));
+        input.blur();
+        return;
+    }
     let tr = document.createElement("tr");
     let td = document.createElement("td");
-    td.appendChild(toHtml(expr));
+    td.appendChild(html);
     //console.log("filled", clickableSubexprs[clickableSubexprs.length-1]);
     tr.appendChild(td);
     tr.insertAdjacentHTML("beforeend", `<td>${format(expr, "simple")}</td>`);
