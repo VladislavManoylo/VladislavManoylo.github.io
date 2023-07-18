@@ -141,6 +141,23 @@ function format(expr, fmt = "simple") {
             return swapNumerals(formatDebruijn(expr));
     }
 }
+function rename(expr, from, to) {
+    switch (expr.type) {
+        case "var":
+            if (expr.val.s === from)
+                expr.val.s = to;
+            break;
+        case "lambda":
+            if (expr.val.param === from)
+                expr.val.param = to;
+            rename(expr.val.body, from, to);
+            break;
+        case "apply":
+            rename(expr.val[0], from, to);
+            rename(expr.val[1], from, to);
+            break;
+    }
+}
 function subst(expr, param, arg) {
     switch (expr.type) {
         case "var":
@@ -277,6 +294,16 @@ function popExpr() {
     clickableSubexprs.pop();
     output.removeChild(output.lastChild);
 }
+function names(expr) {
+    switch (expr.type) {
+        case "var":
+            return expr.val.i === 0 ? [] : [expr.val.s];
+        case "lambda":
+            return names(expr.val.body);
+        case "apply":
+            return names(expr.val[0]).concat(names(expr.val[1]));
+    }
+}
 function evalAt(i, index) {
     while (history.length > i)
         popExpr();
@@ -295,6 +322,20 @@ function evalAt(i, index) {
     }
     else if (subexpr.type == "apply" && subexpr.val[0].type == "lambda") {
         let [l, r] = subexpr.val;
+        {
+            // alpha substitution- a.k.a. rename conflicting variables
+            let [lnames, rnames] = [new Set(names(l)), new Set(names(r))];
+            for (let it of rnames) {
+                if (lnames.has(it)) {
+                    let [from, to] = [it, it + "'"];
+                    while (lnames.has(to))
+                        to += "'";
+                    rename(l, from, to);
+                    lnames.delete(from);
+                    lnames.add(to);
+                }
+            }
+        }
         result = subst(l.val.body, l.val.param, r);
     }
     if (result !== undefined) {
@@ -375,7 +416,7 @@ function inputText(str) {
 input.addEventListener("input", (event) => {
     inputText(event.target.value);
 });
-inputText("(λa.(λb.a)) (λa.a)");
+inputText("(λa.(λb.b a)) (λb.b)");
 /** returns a comparator to choose between 2 strings for an evaluation strategy
  * e.g. an inner left strategy will choose L00 over L01 because it's more left
  * an inner right strategy will choose 0100 010 because it's more inner*/
