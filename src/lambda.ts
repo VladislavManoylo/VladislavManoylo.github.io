@@ -53,7 +53,7 @@ function parseSexpr(str: string): LambdaExpr {
 
 /** parses (λa.(λb.a)) as (lambda (a) (lambda (b) a)) */
 function parse(str: string): LambdaExpr {
-  return parseSexpr(str.replace(/λ([^.])+\./g, "lambda ($1) "));
+  return parseSexpr(str.replace(/λ([^.]+)\./g, "lambda ($1) "));
 }
 
 function formatSimple(expr: LambdaExpr): string {
