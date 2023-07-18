@@ -499,6 +499,10 @@ document.addEventListener("keypress", (event) => {
         let row = clickableSubexprs[i - 1];
         if (row.length !== 0) evalAt(i, best(row, strategies[event.key]));
         break;
+      case "r":
+        inputText(format(history[history.length - 1]));
+        input.blur();
+        break;
     }
   }
 });
