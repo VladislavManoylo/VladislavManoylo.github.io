@@ -272,9 +272,12 @@ let output = document.getElementById("output");
             // too much recursion on any higher predecessor
             "(lambda (n) (Car (n (lambda (p) (Cons (Cdr p) (Succ (Cdr p)))) (Cons 0 0))))",
         ],
-        /*
-        ["-", "(lambda (m n) (m Pred n))"],
-        */
+        ["-", "(lambda (m n) (n Pred m))"],
+        [
+            "-*",
+            // fails unpredictably for negative answers, and also has issues on inner first
+            "(lambda (m n) (Car (n Cdr (m (lambda (x) (Cons (Succ (Car x)) x)) (Cons 0 Nil)))))",
+        ],
     ];
     for (let it of sampleEnv) {
         let e = parseSexpr(it[1]);
