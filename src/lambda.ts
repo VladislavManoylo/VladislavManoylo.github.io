@@ -286,8 +286,7 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["^", "(lambda (b e) (e b))"],
     [
       "Pred",
-      // TODO: only outer first evaluations (2 & 4) work correctly on Pred 1,
-      // too much recursion on any higher predecessor
+      // too much recursion for Pred x when x > 2
       "(lambda (n) (Car (n (lambda (p) (Cons (Cdr p) (Succ (Cdr p)))) (Cons 0 0))))",
     ],
     ["-", "(lambda (m n) (n Pred m))"],
@@ -299,7 +298,7 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["<=", "(lambda (m n) (Zero? (- m n)))"],
     [">=", "(lambda (m n) (<= n m))"],
     ["<", "(lambda (m n) (Not (<= n m)))"],
-    [">", "(lambda (m n) (< n m))"]
+    [">", "(lambda (m n) (< n m))"],
   ];
   for (let it of sampleEnv) {
     let e = parseSexpr(it[1]);
@@ -344,6 +343,7 @@ function popExpr() {
   output.removeChild(output.lastChild!);
 }
 
+// all variable names used in expression
 function names(expr: LambdaExpr): string[] {
   switch (expr.type) {
     case "var":
@@ -352,6 +352,18 @@ function names(expr: LambdaExpr): string[] {
       return names(expr.val.body);
     case "apply":
       return names(expr.val[0]).concat(names(expr.val[1]));
+  }
+}
+
+// all variables names bound in expression
+function boundNames(expr: LambdaExpr): string[] {
+  switch (expr.type) {
+    case "var":
+      return [];
+    case "lambda":
+      return [expr.val.param].concat(boundNames(expr.val.body));
+    case "apply":
+      return boundNames(expr.val[0]).concat(boundNames(expr.val[1]));
   }
 }
 
@@ -370,7 +382,7 @@ function evalAt(i: number, index: string) {
     let [l, r] = subexpr.val;
     {
       // alpha substitution- a.k.a. rename conflicting variables
-      let [lnames, rnames] = [new Set(names(l)), new Set(names(r))];
+      let [lnames, rnames] = [new Set(boundNames(l)), new Set(names(r))];
       for (let it of rnames) {
         if (lnames.has(it)) {
           let [from, to] = [it, it + "'"];
