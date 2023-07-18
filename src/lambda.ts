@@ -276,7 +276,7 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["Cdr", "(lambda (l) (l Ki))"],
     ["Nil", "(lambda (p) K)"],
     ["Nil?", "(lambda (l) (l (lambda (a b) Ki)))"],
-    ["Not", "(lambda (p) (p I))"],
+    ["Not", "(lambda (p) (p Ki K))"],
     ["And", "(lambda (p q) (p q p))"],
     ["Or", "(lambda (p q) (p p q))"],
     ["Zero?", "(lambda (n) n (lambda (a) Ki) K)"],
@@ -296,6 +296,10 @@ let output = document.getElementById("output") as HTMLTableElement;
       // fails unpredictably for negative answers, and also has issues on inner first
       "(lambda (m n) (Car (n Cdr (m (lambda (x) (Cons (Succ (Car x)) x)) (Cons 0 Nil)))))",
     ],
+    ["<=", "(lambda (m n) (Zero? (- m n)))"],
+    [">=", "(lambda (m n) (<= n m))"],
+    ["<", "(lambda (m n) (Not (<= n m)))"],
+    [">", "(lambda (m n) (< n m))"]
   ];
   for (let it of sampleEnv) {
     let e = parseSexpr(it[1]);
