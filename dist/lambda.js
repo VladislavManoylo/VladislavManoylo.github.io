@@ -463,6 +463,7 @@ document.addEventListener("keypress", (event) => {
                     inputText("");
                 break;
             case "`":
+                scrollTo(0, 0);
                 input.select();
                 break;
             case "1":

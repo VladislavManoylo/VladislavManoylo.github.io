@@ -481,6 +481,7 @@ document.addEventListener("keypress", (event) => {
         if (i == 1) inputText("");
         break;
       case "`":
+        scrollTo(0, 0);
         input.select();
         break;
       case "1":
