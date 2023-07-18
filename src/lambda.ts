@@ -281,10 +281,18 @@ let output = document.getElementById("output") as HTMLTableElement;
     ["Or", "(lambda (p q) (p p q))"],
     ["Zero?", "(lambda (n) n (lambda (a) Ki) K)"],
     ["Succ", "(lambda (n f x) (f (n f x)))"],
-    // ["Pred", "(lambda (n) (Cdr (n (lambda (l) (Cons (Cdr l) (Succ (Cdr l)))) (Cons 0 0))))"],
     ["+", "(lambda (m n) (m Succ n))"],
     ["*", "(lambda (m n) (m (+ n) 0))"],
     ["^", "(lambda (b e) (e b))"],
+    /*
+    [
+      "Pred",
+      // TODO: only outer first evaluations (2 & 4) work correctly on Pred 1,
+      // too much recursion on any higher predecessor
+      "(lambda (n) (Car (n (lambda (p) (Cons (Cdr p) (Succ (Cdr p)))) (Cons 0 0))))",
+    ],
+    ["-", "(lambda (m n) (m Pred n))"],
+    */
   ];
   for (let it of sampleEnv) {
     let e = parseSexpr(it[1]);
