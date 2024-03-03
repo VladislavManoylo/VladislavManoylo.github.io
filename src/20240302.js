@@ -1,3 +1,4 @@
+let render = true; // used to turn off rendering to fast forward
 const config = {
 	trials: 1000,
 	rounds: 20,
@@ -77,6 +78,7 @@ function sum(ar, start = 0, end = ar.length) {
 }
 
 function show() {
+	if (!render) return;
 	/** @type {HTMLDivElement} */
 	const progress = document.getElementById("progress");
 	progress.innerHTML = `workers ${game.freeWorkers}/${config.workers}</br>round ${game.round}/${config.rounds}`;
@@ -129,7 +131,10 @@ function updateGame() {
 	show();
 }
 function fastforward() {
+	render = false;
 	while (!gameover()) updateGame();
+	render = true;
+	show();
 }
 document.getElementById("update").addEventListener("click", () => { updateGame(); })
 document.getElementById("fastforward").addEventListener("click", () => { fastforward(); })
