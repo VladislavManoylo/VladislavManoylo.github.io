@@ -20,8 +20,8 @@ for (let i = 0; i < size; i++) {
 }
 
 function celltype(i, j) {
-	if (i%2==0 && j%2==0) return "rod";
-	if (i%2==0 || j%2==0) return "bridge";
+	if (i % 2 == 0 && j % 2 == 0) return "rod";
+	if (i % 2 == 0 || j % 2 == 0) return "bridge";
 	return "grass";
 }
 
@@ -77,29 +77,29 @@ gridContainer.addEventListener('click', function(event) {
 				grid[i][j] += "r"
 				break;
 			case "bridge":
-				if (i%2==0 && grid[i][j-1]==grid[i][j+1]) {
-					h = grid[i][j-1].length
-					grid[i][j] += " ".repeat(h-grid[i][j].length);
+				if (i % 2 == 0 && grid[i][j - 1] == grid[i][j + 1]) {
+					h = grid[i][j - 1].length
+					grid[i][j] += " ".repeat(h - grid[i][j].length);
 					grid[i][j] += "b";
-					grid[i][j-1] += "r";
-					grid[i][j+1] += "r";
+					grid[i][j - 1] += "r";
+					grid[i][j + 1] += "r";
 				}
-				if (j%2==0 && grid[i-1][j]==grid[i+1][j]) {
-					h = grid[i-1][j].length
-					grid[i][j] += " ".repeat(h-grid[i][j].length);
+				if (j % 2 == 0 && grid[i - 1][j] == grid[i + 1][j]) {
+					h = grid[i - 1][j].length
+					grid[i][j] += " ".repeat(h - grid[i][j].length);
 					grid[i][j] += "b";
-					grid[i-1][j] += "r";
-					grid[i+1][j] += "r";
+					grid[i - 1][j] += "r";
+					grid[i + 1][j] += "r";
 				}
 				break;
 			case "grass":
-				h = grid[i-1][j-1].length
-				if (h == grid[i-1][j+1].length && h==grid[i+1][j-1].length && h==grid[i+1][j+1].length) {
+				h = grid[i - 1][j - 1].length
+				if (h == grid[i - 1][j + 1].length && h == grid[i + 1][j - 1].length && h == grid[i + 1][j + 1].length) {
 					grid[i][j] += "g";
-					grid[i-1][j-1] += "r";
-					grid[i-1][j+1] += "r";
-					grid[i+1][j-1] += "r";
-					grid[i+1][j+1] += "r";
+					grid[i - 1][j - 1] += "r";
+					grid[i - 1][j + 1] += "r";
+					grid[i + 1][j - 1] += "r";
+					grid[i + 1][j + 1] += "r";
 				}
 				break;
 		}
