@@ -22,6 +22,7 @@
 			background-color: gray;
 			margin: 1em;
 		}
+
 		.sold {
 			background-color: green;
 		}
@@ -32,13 +33,21 @@
 	<!-- config -->
 	<label for="rounds">rounds</label>
 	<input type="number" id="rounds" min="1">
-	<label for="station">station</label>
+	<label for="stations">stations</label>
 	<input type="number" id="stations" min="1">
 	<label for="workers">workers</label>
 	<input type="number" id="workers" min="1">
 	<label for="held">starting inventory</label>
 	<input type="number" id="held" min="0">
 	<!-- game -->
+	<label for="strategy">Choose a strategy:</label>
+
+	<select name="strategy" id="strategy">
+		<option value="none">none</option>
+		<option value="random">random</option>
+		<option value="nowaste">no waste</option>
+		<option value="expedite">expedite at end</option>
+	</select>
 	<p id="progress"> </p>
 	<div id="game"></div>
 	<button type="button" id="update">update</button>

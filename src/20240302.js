@@ -52,18 +52,20 @@ function startGame() {
 	// game.inventory[game.inventory.length-1] = 0;
 	game.inventory[0] = Infinity;
 	game.workers = Array(config.stations).fill(0);
-	game.roll = Array(config.stations).fill(0);
 	game.freeWorkers = config.workers;
+	game.roll = Array(config.stations).fill(0);
 	game.round = 0;
 	game.wastedPips = 0;
 	game.sold = 0;
+	applyStrategy();
 	show();
 }
-startGame();
 
 /**
  * Calculates the sum of all numbers in an array.
  * @param {number[]} array - The array of numbers to be summed.
+ * @param {number} start - starting index
+ * @param {number} end - ending index
  * @returns {number}
  */
 function sum(ar, start = 0, end = ar.length) {
@@ -105,7 +107,6 @@ function gameover() {
 	return game.round == config.rounds;
 }
 function updateGame() {
-	console.log("update");
 	if (gameover()) return;
 	for (let i = config.stations - 1; i > 0; i--) {
 		let pips = rollDice(game.workers[i]);
@@ -117,13 +118,14 @@ function updateGame() {
 		}
 		if (i == config.stations - 1) {
 			game.sold += pips;
-		}
-		else {
-			game.inventory[i] += pips;
+		} else {
+			game.inventory[i + 1] += pips;
 		}
 		game.inventory[i] -= pips;
 	}
+	game.inventory[1] += rollDice(game.workers[0]);
 	game.round++;
+	applyStrategy();
 	show();
 }
 function fastforward() {
@@ -145,3 +147,44 @@ function rollDice(n) {
 	}
 	return ret;
 }
+
+/** @type {HTMLSelectElement} */
+const selectstrategy = document.getElementById("strategy")
+function applyStrategy() {
+	s = selectstrategy.options[selectstrategy.selectedIndex].value;
+	if (s == "none") return;
+	game.workers = Array(config.stations).fill(0);
+	game.freeWorkers = config.workers;
+	switch (s) {
+		case "random":
+			while (game.freeWorkers > 0) {
+				addWorker(Math.floor(Math.random() * config.stations));
+			}
+			break;
+		case "nowaste":
+			for (let i = config.stations - 1; i > 0; i--) {
+				for (let n = Math.floor(game.inventory[i] / 6); n > 0; n--) {
+					addWorker(i);
+				}
+			}
+			while (game.freeWorkers > 0) {
+				addWorker(0);
+			}
+			break;
+		case "expedite":
+			const j = Math.max(0, config.stations - (config.rounds - game.round));
+			for (let i = config.stations - 1; i > j; i--) {
+				for (let n = Math.floor(game.inventory[i] / 6); n > 0; n--) {
+					addWorker(i);
+				}
+			}
+			while (game.freeWorkers > 0) {
+				addWorker(j);
+			}
+			break;
+	}
+	show();
+}
+selectstrategy.addEventListener("change", () => applyStrategy());
+
+startGame();
