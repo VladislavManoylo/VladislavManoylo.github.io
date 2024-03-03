@@ -86,7 +86,12 @@ function show() {
 	/** @type {HTMLParagraphElement> */
 	const report = document.getElementById("report");
 	const excess = sum(game.inventory, 1);
-	report.innerHTML = `sold: ${game.sold}<br>per worker per round: ${game.sold / config.workers / game.round}<br>excess per station: ${excess / (config.stations - 1)}<br>wasted work: ${game.wastedPips}`
+	report.innerHTML = `sold: ${game.sold}<br>` +
+		`per worker: ${(game.sold / config.workers).toFixed(2)}<br>` +
+		`per round: ${(game.sold / game.round).toFixed(2)}<br>` +
+		`per worker per round: ${(game.sold / config.workers / game.round).toFixed(2)}<br>` +
+		`excess per station: ${(excess / (config.stations - 1)).toFixed(2)}<br>` +
+		`wasted work: ${game.wastedPips}`;
 
 	/** @type {HTMLDivElement} */
 	const gamediv = document.getElementById("game");
@@ -95,7 +100,10 @@ function show() {
 	for (let i = 0; i < config.stations; i++) {
 		const box = document.createElement("div");
 		box.classList.add("station");
-		box.innerHTML = `held: ${game.inventory[i]}<br>workers: ${game.workers[i]}<br>roll: ${game.roll[i]}<br><button type='button' onclick='addWorker(${i})'>+</button><button type='button' onclick='removeWorker(${i})'>-</button>`
+		box.innerHTML = `held: ${game.inventory[i]}<br>` +
+			`workers: ${game.workers[i]}<br>` +
+			`roll: ${game.roll[i]}<br>` +
+			`<button type='button' onclick='addWorker(${i})'>+</button><button type='button' onclick='removeWorker(${i})'>-</button>`;
 		gamediv.appendChild(box);
 	}
 	const sold = document.createElement("div");
@@ -185,6 +193,11 @@ function applyStrategy() {
 			}
 			while (game.freeWorkers > 0) {
 				addWorker(j);
+			}
+			break;
+		case "flat":
+			for (let i = 0; i < config.workers; i++) {
+				game.workers[i%game.workers.length]++;
 			}
 			break;
 	}
