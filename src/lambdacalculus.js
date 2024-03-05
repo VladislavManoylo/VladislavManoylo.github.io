@@ -170,7 +170,7 @@ function evalAt(expr, index) {
  * @param {string} index
  * @returns {HTMLDivElement}
  */
-function toHtml(expr, index) {
+function toHtml(expr, index="") {
 	let ret = document.createElement("div");
 	ret.classList.add("expr", expr.type);
 	switch (expr.type) {
@@ -189,8 +189,7 @@ function toHtml(expr, index) {
 				ret.addEventListener("click", (event) => {
 					event.stopPropagation(); // only click most-nested element
 					let expr = parse(config.history[config.history.length - 1]);
-					const next = evalAt(expr, index);
-					config.history.push(format(next));
+					config.history.push(format(evalAt(expr, index)));
 					show();
 				});
 			}
@@ -204,7 +203,7 @@ function toHtml(expr, index) {
  */
 function newInput(str) {
 	config.input.value = str;
-	config.history = [str];
+	config.history = [format(parse(str))];
 	show();
 }
 
@@ -230,4 +229,5 @@ function show() {
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
 // newInput("(lambda (a) a)");
 // newInput("(lambda (a) ((lambda (b) (b a)) (lambda (c) c))");
-newInput("((lambda (x) (x x)) (lambda (x) (x x)))");
+// newInput("((lambda (x) (x x)) (lambda (x) (x x)))");
+newInput("(lambda (f) ((lambda (x) (f (x x))) (lambda (x) (f (x x)))))");
