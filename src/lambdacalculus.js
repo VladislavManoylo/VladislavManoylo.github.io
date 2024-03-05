@@ -70,7 +70,7 @@ function toSexpr(str) {
  * @prop {string} id
  *
  * @typedef LambdaFun
- * @prop {string} id
+ * @prop {string[]} id
  * @prop {Lambda} body
  *
  * @typedef LambdaApply
@@ -90,7 +90,13 @@ function toLambda(s) {
 	if (s.length == 2) {
 		return { type: "apply", val: { left: toLambda(s[0]), right: toLambda(s[1]) } };
 	}
-	return { type: "fun", val: { id: s[1], body: toLambda(s[2]) } };
+	const ids = s[1];
+	if (ids.length == 1) {
+		return { type: "fun", val: { id: ids[0], body: toLambda(s[2]) } };
+	} else {
+		s[1] = s[1].slice(1);
+		return { type: "fun", val: { id: ids[0], body: toLambda(s) } };
+	}
 }
 
 /**
@@ -100,9 +106,6 @@ function toLambda(s) {
 function parse(str) {
 	return toLambda(toSexpr(str)[0]);
 }
-console.log(parse("(a b)"));
-console.log(parse("(λ (a) a)"));
-console.log(parse("(λ (a) ((λ (b) (b a)) (λ (b) b)"));
 
 /**
  * @param {Lambda} expr
@@ -157,9 +160,9 @@ function evalAt(expr, index) {
 				return subst(l.body, l.id, expr.val.right);
 			}
 			if (index[0] == "L") {
-				expr.val.left == evalAt(expr.val.left, index.slice(1));
+				expr.val.left = evalAt(expr.val.left, index.slice(1));
 			} else {
-				expr.val.right == evalAt(expr.val.right, index.slice(1));
+				expr.val.right = evalAt(expr.val.right, index.slice(1));
 			}
 			return expr;
 	}
@@ -170,7 +173,7 @@ function evalAt(expr, index) {
  * @param {string} index
  * @returns {HTMLDivElement}
  */
-function toHtml(expr, index="") {
+function toHtml(expr, index = "") {
 	let ret = document.createElement("div");
 	ret.classList.add("expr", expr.type);
 	switch (expr.type) {
@@ -229,5 +232,6 @@ function show() {
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
 // newInput("(lambda (a) a)");
 // newInput("(lambda (a) ((lambda (b) (b a)) (lambda (c) c))");
+newInput("(((lambda (a b) a) 1) 2)")
 // newInput("((lambda (x) (x x)) (lambda (x) (x x)))");
-newInput("(lambda (f) ((lambda (x) (f (x x))) (lambda (x) (f (x x)))))");
+// newInput("(lambda (f) ((lambda (x) (f (x x))) (lambda (x) (f (x x)))))");
