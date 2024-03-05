@@ -182,13 +182,13 @@ function toHtml(expr, index) {
 			ret.append(toHtml(expr.val.body, index));
 			return ret;
 		case "apply":
-			const l = toHtml(expr.val.left, index+"L");
-			const r = toHtml(expr.val.right, index+"R");
+			const l = toHtml(expr.val.left, index + "L");
+			const r = toHtml(expr.val.right, index + "R");
 			if (l.classList.contains("fun")) {
 				ret.classList.add("eval");
 				ret.addEventListener("click", (event) => {
 					event.stopPropagation(); // only click most-nested element
-					let expr = structuredClone(config.history[config.history.length-1]);
+					let expr = structuredClone(config.history[config.history.length - 1]);
 					const next = evalAt(expr, index);
 					config.history.push(next);
 					show();
@@ -210,11 +210,23 @@ function newInput(str) {
 
 function show() {
 	// config.input.value = format(config.history[0]);
+	config.output.innerHTML = "";
+	for (let i in config.history) {
+		const d = document.createElement("div");
+		d.innerHTML = format(config.history[i]);
+		if (i != 0) {
+			d.classList.add("pop");
+			d.addEventListener("click", (_) => {
+				config.history.splice(i);
+				show();
+			});
+		}
+		config.output.append(d);
+	}
 	const last = config.history[config.history.length - 1];
-	config.output.innerHTML = format(last) + "<br>";
 	config.output.append(toHtml(last));
 }
 
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
 // newInput("(lambda (a) a)");
-newInput("((lambda (a) (lambda (b) (b a))) (lambda (c) c))");
+newInput("(lambda (a) ((lambda (b) (b a)) (lambda (c) c))");
