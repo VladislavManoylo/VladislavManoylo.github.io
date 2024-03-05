@@ -1,12 +1,15 @@
 /**
  * @type {Object}
- * @prop {Lambda[]} history
+ * @prop {Object.<string, string>} env
+ * @prop {string[]} history
  * @prop {string[]} evalable
  * @prop {HTMLTextAreaElement} input
  * @prop {HTMLDivElement} output
  */
 const config = {
+	env: {},
 	history: [],
+	envElement: document.getElementById("env"),
 	input: document.getElementById("input"),
 	output: document.getElementById("output"),
 }
@@ -150,7 +153,7 @@ function subst(expr, from, to) {
 function evalAt(expr, index) {
 	switch (expr.type) {
 		case "var":
-			return expr;
+			return parse(config.env[expr.val.id]);
 		case "fun":
 			expr.val.body = evalAt(expr.val.body, index);
 			return expr;
@@ -174,11 +177,24 @@ function evalAt(expr, index) {
  * @returns {HTMLDivElement}
  */
 function toHtml(expr, index = "") {
+	/** @param {HTMLDivElement} div */
+	function evalme(div) {
+		div.classList.add("eval");
+		div.addEventListener("click", (event) => {
+			event.stopPropagation();
+			let expr = parse(config.history[config.history.length - 1]);
+			config.history.push(format(evalAt(expr, index)));
+			show();
+		});
+	}
 	let ret = document.createElement("div");
 	ret.classList.add("expr", expr.type);
 	switch (expr.type) {
 		case "var":
 			ret.innerHTML = expr.val.id;
+			if (expr.val.id in config.env) {
+				evalme(ret);
+			}
 			return ret;
 		case "fun":
 			ret.innerHTML = `<div>λ${expr.val.id}</div>`;
@@ -188,26 +204,27 @@ function toHtml(expr, index = "") {
 			const l = toHtml(expr.val.left, index + "L");
 			const r = toHtml(expr.val.right, index + "R");
 			if (l.classList.contains("fun")) {
-				ret.classList.add("eval");
-				ret.addEventListener("click", (event) => {
-					event.stopPropagation(); // only click most-nested element
-					let expr = parse(config.history[config.history.length - 1]);
-					config.history.push(format(evalAt(expr, index)));
-					show();
-				});
+				evalme(ret);
 			}
 			ret.append(l, r);
 			return ret;
 	}
 }
 
-/**
- * @param {string} str
- */
+/** @param {string} str */
 function newInput(str) {
 	config.input.value = str;
 	config.history = [format(parse(str))];
 	show();
+}
+
+/** @param {string} str */
+function newEnv(str) {
+	config.envElement.value = str;
+	const exprs = toSexpr(str);
+	for (let i = 0; i < exprs.length; i += 2) {
+		config.env[exprs[i]] = format(toLambda(exprs[i + 1]));
+	}
 }
 
 function show() {
@@ -230,8 +247,10 @@ function show() {
 }
 
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
+config.envElement.addEventListener("input", (event) => { newEnv(event.target.value); });
+newEnv("S (lambda (a b c) ((a c) (b c)))\nK (lambda (a b) a)\nI (lambda (a) a)");
 // newInput("(lambda (a) a)");
 // newInput("(lambda (a) ((lambda (b) (b a)) (lambda (c) c))");
-newInput("(((lambda (a b) a) 1) 2)")
+// newInput("(((lambda (a b) a) 1) 2)")
 // newInput("((lambda (x) (x x)) (lambda (x) (x x)))");
-// newInput("(lambda (f) ((lambda (x) (f (x x))) (lambda (x) (f (x x)))))");
+newInput("(S K)");
