@@ -104,17 +104,38 @@ console.log(parse("(λ (a) a)"));
 console.log(parse("(λ (a) ((λ (b) (b a)) (λ (b) b)"));
 
 /**
- * @param {Lambda} l
+ * @param {Lambda} expr
  * @returns {string}
  */
-function format(l) {
-	switch (l.type) {
+function format(expr) {
+	switch (expr.type) {
 		case "var":
-			return l.val.id;
+			return expr.val.id;
 		case "fun":
-			return `(lambda (${l.val.id}) ${format(l.val.body)})`;
+			return `(lambda (${expr.val.id}) ${format(expr.val.body)})`;
 		case "apply":
-			return `(${format(l.val.left)} ${format(l.val.right)})`;
+			return `(${format(expr.val.left)} ${format(expr.val.right)})`;
+	}
+}
+
+/**
+ * @param {Lambda} expr
+ * @returns {string}
+ */
+function toHtml(expr) {
+	let ret = document.createElement("div");
+	ret.classList.add("expr", expr.type);
+	switch (expr.type) {
+		case "var":
+			ret.innerHTML = expr.val.id;
+			return ret;
+		case "fun":
+			ret.innerHTML = `<div>λ${expr.val.id}</div>`;
+			ret.append(toHtml(expr.val.body));
+			return ret;
+		case "apply":
+			ret.append(toHtml(expr.val.left), toHtml(expr.val.right));
+			return ret;
 	}
 }
 
@@ -122,10 +143,13 @@ function format(l) {
  * @param {string} str
  */
 function newInput(str) {
+	console.log("go", str);
 	config.input.value = str;
 	config.history = [parse(str)];
-	config.output.innerHTML = format(config.history[0]);
+	config.output.innerHTML = format(config.history[0]) + "<br>";
+	config.output.append(toHtml(config.history[0]));
 }
 
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
-newInput("(lambda (a) a)");
+// newInput("(lambda (a) a)");
+newInput("((lambda (a) (lambda (b) (b a))) (lambda (c) c))");
