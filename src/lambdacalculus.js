@@ -248,9 +248,19 @@ function show() {
 
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
 config.envElement.addEventListener("input", (event) => { newEnv(event.target.value); });
-newEnv("S (lambda (a b c) ((a c) (b c)))\nK (lambda (a b) a)\nI (lambda (a) a)");
-// newInput("(lambda (a) a)");
-// newInput("(lambda (a) ((lambda (b) (b a)) (lambda (c) c))");
-// newInput("(((lambda (a b) a) 1) 2)")
-// newInput("((lambda (x) (x x)) (lambda (x) (x x)))");
+newEnv(`S (lambda (a b c) ((a c) (b c)))
+K (lambda (a b) a)
+I (lambda (a) a)
+Ki (lambda (a b) b)
+M (lambda (a) a a)
+W (M M)
+Y (lambda (f) ((lambda (x) (f (x x))) (lambda (x) (f (x x)))))
+True K
+False Ki
+Cons (lambda (a b) (lambda (p) ((p a) b)))
+Car (lambda (l) (l True))
+Cdr (lambda (l) (l False))
+Nil (Lambda (p) True)
+Nil? (lambda (l) (lambda (a b) False))
+`);
 newInput("(S K)");
