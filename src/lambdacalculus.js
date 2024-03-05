@@ -153,6 +153,11 @@ function subst(expr, from, to) {
 function evalAt(expr, index) {
 	switch (expr.type) {
 		case "var":
+			const id = expr.val.id;
+			if (/^\d+$/.test(id)) {
+				const n = Number(id);
+				return parse(`(lambda (f x) ${"(f".repeat(n)} x ${")".repeat(n)})`);
+			}
 			return parse(config.env[expr.val.id]);
 		case "fun":
 			expr.val.body = evalAt(expr.val.body, index);
@@ -191,8 +196,11 @@ function toHtml(expr, index = "") {
 	ret.classList.add("expr", expr.type);
 	switch (expr.type) {
 		case "var":
-			ret.innerHTML = expr.val.id;
-			if (expr.val.id in config.env) {
+			const id = expr.val.id;
+			ret.innerHTML = id;
+			if (/^\d+$/.test(id)) {
+				evalme(ret)
+			} else if (id in config.env) {
 				evalme(ret);
 			}
 			return ret;
