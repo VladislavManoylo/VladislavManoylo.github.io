@@ -1,14 +1,15 @@
 /**
  * @type {Object}
  * @prop {Object.<string, string>} env
- * @prop {string[]} history
- * @prop {string[]} evalable
+ * @prop {string[]} history - expression as its partially evalauted
+ * @prop {string[]} evalable - list of indexes that can be evaled at the latest point
  * @prop {HTMLTextAreaElement} input
  * @prop {HTMLDivElement} output
  */
 const config = {
 	env: {},
 	history: [],
+	evalable: [],
 	envElement: document.getElementById("env"),
 	input: document.getElementById("input"),
 	output: document.getElementById("output"),
@@ -185,6 +186,7 @@ function toHtml(expr, index = "") {
 	/** @param {HTMLDivElement} div */
 	function evalme(div) {
 		div.classList.add("eval");
+		config.evalable.push(index);
 		div.addEventListener("click", (event) => {
 			event.stopPropagation();
 			let expr = parse(config.history[config.history.length - 1]);
@@ -251,11 +253,81 @@ function show() {
 		config.output.append(d);
 	}
 	const last = config.history[config.history.length - 1];
+	config.evalable = [];
 	config.output.append(toHtml(parse(last)));
+	config.output.lastChild.scrollIntoView(false);
 }
 
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
 config.envElement.addEventListener("input", (event) => { newEnv(event.target.value); });
+
+/** returns a comparator to choose between 2 strings for an evaluation strategy
+ * e.g. an inner left strategy will choose L00 over L01 because it's more left
+ * an inner right strategy will choose 0100 010 because it's more inner
+ * @prop {Boolean} inner
+ * @prop {Boolean} left
+ */
+function makeStrategy(inner, left) {
+	return (a, b) => {
+		let end = a.length < b.length ? a.length : b.length;
+		for (let i = 0; i < end; i++) {
+			if (a[i] !== b[i])
+				return left === (a[i] === "0");
+		}
+		return inner === a.length > end;
+	};
+}
+
+/** given a comparison function, return the best item in list l */
+function best(l, cmp) {
+	return l.reduce((found, current) => {
+		if (cmp(found, current))
+			return found;
+		return current;
+	});
+}
+
+document.addEventListener("keypress", (event) => {
+	var _a;
+	if (event.key === "Enter" && event.shiftKey) {
+		// exit text box, without a timeout it immediately regains focus
+		setTimeout(() => {
+			input.blur();
+		}, 30);
+		return;
+	}
+	let strategies = {
+		"1": makeStrategy(true, true), // inner left
+		"2": makeStrategy(false, true), // outer left
+		"3": makeStrategy(true, false), // inner right
+		"4": makeStrategy(false, false), // outer right
+	};
+	if ((_a = document.activeElement) === null || _a === void 0 ? void 0 : _a.matches("body")) {
+		switch (event.key) {
+			case "-":
+				if (config.history.length > 1)
+					config.history.pop();
+				show();
+				break;
+			case "1":
+			case "2":
+			case "3":
+			case "4":
+				if (config.evalable.length == 0) {
+					return;
+				}
+				const last = config.history[config.history.length - 1];
+				const index = best(config.evalable, strategies[event.key]);
+				console.log("YO", last, index);
+				if (config.evalable.length !== 0) {
+					config.history.push(format(evalAt(parse(last), index)));
+				}
+				show();
+				break;
+		}
+	}
+});
+
 newEnv(`S (lambda (a b c) ((a c) (b c)))
 K (lambda (a b) a)
 I (lambda (a) a)
