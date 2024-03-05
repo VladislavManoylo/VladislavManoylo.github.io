@@ -1,6 +1,7 @@
 /**
  * @type {Object}
  * @prop {Lambda[]} history
+ * @prop {string[]} evalable
  * @prop {HTMLTextAreaElement} input
  * @prop {HTMLDivElement} output
  */
@@ -120,9 +121,56 @@ function format(expr) {
 
 /**
  * @param {Lambda} expr
- * @returns {string}
+ * @param {string} from
+ * @param {Lambda} to
+ * @returns {Lambda}
  */
-function toHtml(expr) {
+function subst(expr, from, to) {
+	switch (expr.type) {
+		case "var":
+			return expr.val.id == from ? to : expr;
+		case "fun":
+			expr.val.body = subst(expr.val.body, from, to);
+			return expr;
+		case "apply":
+			expr.val.left = subst(expr.val.left, from, to);
+			expr.val.right = subst(expr.val.right, from, to);
+			return expr;
+	}
+}
+
+/**
+ * @param {Lambda} expr
+ * @param {string} index
+ * @returns {Lambda}
+ */
+function evalAt(expr, index) {
+	switch (expr.type) {
+		case "var":
+			return expr;
+		case "fun":
+			expr.val.body = evalAt(expr.val.body, index);
+			return expr;
+		case "apply":
+			if (!index) {
+				const l = expr.val.left.val;
+				return subst(l.body, l.id, expr.val.right);
+			}
+			if (index[0] == "L") {
+				expr.val.left == evalAt(expr.val.left, index.slice(1));
+			} else {
+				expr.val.right == evalAt(expr.val.right, index.slice(1));
+			}
+			return expr;
+	}
+}
+
+/**
+ * @param {Lambda} expr
+ * @param {string} index
+ * @returns {HTMLDivElement}
+ */
+function toHtml(expr, index) {
 	let ret = document.createElement("div");
 	ret.classList.add("expr", expr.type);
 	switch (expr.type) {
@@ -131,10 +179,22 @@ function toHtml(expr) {
 			return ret;
 		case "fun":
 			ret.innerHTML = `<div>λ${expr.val.id}</div>`;
-			ret.append(toHtml(expr.val.body));
+			ret.append(toHtml(expr.val.body, index));
 			return ret;
 		case "apply":
-			ret.append(toHtml(expr.val.left), toHtml(expr.val.right));
+			const l = toHtml(expr.val.left, index+"L");
+			const r = toHtml(expr.val.right, index+"R");
+			if (l.classList.contains("fun")) {
+				ret.classList.add("eval");
+				ret.addEventListener("click", (event) => {
+					event.stopPropagation(); // only click most-nested element
+					let expr = structuredClone(config.history[config.history.length-1]);
+					const next = evalAt(expr, index);
+					config.history.push(next);
+					show();
+				});
+			}
+			ret.append(l, r);
 			return ret;
 	}
 }
@@ -143,11 +203,16 @@ function toHtml(expr) {
  * @param {string} str
  */
 function newInput(str) {
-	console.log("go", str);
 	config.input.value = str;
 	config.history = [parse(str)];
-	config.output.innerHTML = format(config.history[0]) + "<br>";
-	config.output.append(toHtml(config.history[0]));
+	show();
+}
+
+function show() {
+	// config.input.value = format(config.history[0]);
+	const last = config.history[config.history.length - 1];
+	config.output.innerHTML = format(last) + "<br>";
+	config.output.append(toHtml(last));
 }
 
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
