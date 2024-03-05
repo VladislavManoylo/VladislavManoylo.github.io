@@ -297,10 +297,10 @@ document.addEventListener("keypress", (event) => {
 		return;
 	}
 	let strategies = {
-		"1": makeStrategy(true, true), // inner left
+		"1": makeStrategy(false, false), // outer right
 		"2": makeStrategy(false, true), // outer left
 		"3": makeStrategy(true, false), // inner right
-		"4": makeStrategy(false, false), // outer right
+		"4": makeStrategy(true, true), // inner left
 	};
 	if ((_a = document.activeElement) === null || _a === void 0 ? void 0 : _a.matches("body")) {
 		switch (event.key) {
@@ -342,5 +342,17 @@ Car (lambda (l) (l True))
 Cdr (lambda (l) (l False))
 Nil (Lambda (p) True)
 Nil? (lambda (l) (lambda (a b) False))
+Not (lambda (p) ((p Ki) K))
+And (lambda (p q) ((p q) p))
+Or (lambda (p q) ((p p) q))
+Zero? (lambda (n) ((n (lambda (a) Ki)) K))
+Succ (lambda (n f x) (f ((n f) x)))
++ (lambda (a b) ((a Succ) b))
+* (lambda (a b) ((a (+ b)) 0))
+^ (lambda (b e) (e b))
+<= (lambda (a b) (Zero? ((- a) b)))
+>= (lambda (a b) ((<= b) a))
+> (lambda (a b) (not ((<= a) b)))
+< (lambda (a b) (not ((<= b) a)))
 `);
 newInput("(S K)");
