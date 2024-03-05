@@ -91,16 +91,19 @@ function toLambda(s) {
 	if (!Array.isArray(s)) {
 		return { type: "var", val: { id: s } };
 	}
-	if (s.length == 2) {
-		return { type: "apply", val: { left: toLambda(s[0]), right: toLambda(s[1]) } };
-	}
-	const ids = s[1];
-	if (ids.length == 1) {
-		return { type: "fun", val: { id: ids[0], body: toLambda(s[2]) } };
-	} else {
+	if (s[0] == "lambda") {
+		const ids = s[1];
+		if (ids.length == 1) {
+			return { type: "fun", val: { id: ids[0], body: toLambda(s.slice(2)) } };
+		}
 		s[1] = s[1].slice(1);
 		return { type: "fun", val: { id: ids[0], body: toLambda(s) } };
 	}
+	let apply = toLambda(s[0]);
+	for (let i = 1; i < s.length; i++) {
+		apply = { type: "apply", val: { left: apply, right: toLambda(s[i]) }};
+	}
+	return apply;
 }
 
 /**
@@ -108,7 +111,7 @@ function toLambda(s) {
  * @returns {Lambda}
  */
 function parse(str) {
-	return toLambda(toSexpr(str)[0]);
+	return toLambda(toSexpr(str));
 }
 
 /**
