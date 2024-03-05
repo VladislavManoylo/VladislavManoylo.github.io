@@ -188,9 +188,9 @@ function toHtml(expr, index) {
 				ret.classList.add("eval");
 				ret.addEventListener("click", (event) => {
 					event.stopPropagation(); // only click most-nested element
-					let expr = structuredClone(config.history[config.history.length - 1]);
+					let expr = parse(config.history[config.history.length - 1]);
 					const next = evalAt(expr, index);
-					config.history.push(next);
+					config.history.push(format(next));
 					show();
 				});
 			}
@@ -204,7 +204,7 @@ function toHtml(expr, index) {
  */
 function newInput(str) {
 	config.input.value = str;
-	config.history = [parse(str)];
+	config.history = [str];
 	show();
 }
 
@@ -213,7 +213,7 @@ function show() {
 	config.output.innerHTML = "";
 	for (let i in config.history) {
 		const d = document.createElement("div");
-		d.innerHTML = format(config.history[i]);
+		d.innerHTML = config.history[i];
 		if (i != 0) {
 			d.classList.add("pop");
 			d.addEventListener("click", (_) => {
@@ -224,9 +224,10 @@ function show() {
 		config.output.append(d);
 	}
 	const last = config.history[config.history.length - 1];
-	config.output.append(toHtml(last));
+	config.output.append(toHtml(parse(last)));
 }
 
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
 // newInput("(lambda (a) a)");
-newInput("(lambda (a) ((lambda (b) (b a)) (lambda (c) c))");
+// newInput("(lambda (a) ((lambda (b) (b a)) (lambda (c) c))");
+newInput("((lambda (x) (x x)) (lambda (x) (x x)))");
