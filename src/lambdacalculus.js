@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} Config
  * @prop {Object.<string, string>} env
- * @prop {string[]} history - expression as its partially evalauted
+ * @prop {Lambda[]} history - expression as its partially evalauted
  * @prop {string[]} evalable - list of indexes that can be evaled at the latest point
  * @prop {HTMLTextAreaElement} envElement
  * @prop {HTMLTextAreaElement} input
@@ -266,7 +266,7 @@ function toHtml(expr, index = "") {
 		div.addEventListener("click", (event) => {
 			event.stopPropagation();
 			let expr = parse(config.history[config.history.length - 1]);
-			config.history.push(format(evalAt(expr, index)));
+			config.history.push(evalAt(parse(format(expr))), index);
 			show();
 		});
 		div.addEventListener("mouseover", (event) => {
@@ -307,7 +307,7 @@ function toHtml(expr, index = "") {
 /** @param {string} str */
 function newInput(str) {
 	config.input.value = str;
-	config.history = [format(parse(str))];
+	config.history = [parse(str)];
 	show();
 }
 
@@ -328,7 +328,7 @@ function show() {
 		const row = config.historyElement.insertRow();
 		row.classList.add("pop");
 		const cell = row.insertCell();
-		cell.innerHTML = config.history[i];
+		cell.innerHTML = format(config.history[i]);
 		row.addEventListener("click", (_) => {
 			config.history.splice(Number(i) + 1);
 			show();
@@ -336,7 +336,7 @@ function show() {
 	}
 	const last = config.history[config.history.length - 1];
 	config.evalable = [];
-	config.output.replaceChildren(toHtml(parse(last)));
+	config.output.replaceChildren(toHtml(last));
 	config.output.lastChild.scrollIntoView(false);
 }
 
@@ -401,7 +401,7 @@ document.addEventListener("keypress", (event) => {
 				const last = config.history[config.history.length - 1];
 				const index = best(config.evalable, strategies[event.key]);
 				if (config.evalable.length !== 0) {
-					config.history.push(format(evalAt(parse(last), index)));
+					config.history.push(evalAt(parse(format(last)), index));
 				}
 				show();
 				break;
