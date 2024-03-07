@@ -247,6 +247,10 @@ function formatEta(expr) {
 		swaps.push([i, j, `((Cons ${car}) ${cdr}`]);
 	}
 	swap(swaps);
+	// Swap in Nil
+	s = s.replaceAll("((Lambda p) True)", "Nil");
+	s = s.replaceAll("((Lambda p) K)", "Nil");
+	s = s.replaceAll("((Lambda p) λλ#1)", "Nil");
 	return s;
 }
 // console.log("ETA 0", formatEta(parse("(lambda (f x) x)")));
