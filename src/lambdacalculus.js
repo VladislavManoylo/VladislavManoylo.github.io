@@ -253,6 +253,12 @@ function evalAt(expr, index) {
 	}
 }
 
+function evalLast(index) {
+	const last = config.history[config.history.length - 1];
+	config.history.push(evalAt(parse(format(last)), index));
+	show();
+}
+
 /**
  * @param {Lambda} expr
  * @param {string} index
@@ -265,9 +271,7 @@ function toHtml(expr, index = "") {
 		config.evalable.push(index);
 		div.addEventListener("click", (event) => {
 			event.stopPropagation();
-			let expr = parse(config.history[config.history.length - 1]);
-			config.history.push(evalAt(parse(format(expr))), index);
-			show();
+			evalLast(index);
 		});
 		div.addEventListener("mouseover", (event) => {
 			event.stopPropagation();
@@ -400,12 +404,8 @@ document.addEventListener("keypress", (event) => {
 				if (config.evalable.length == 0) {
 					return;
 				}
-				const last = config.history[config.history.length - 1];
 				const index = best(config.evalable, strategies[event.key]);
-				if (config.evalable.length !== 0) {
-					config.history.push(evalAt(parse(format(last)), index));
-				}
-				show();
+				evalLast(index);
 				break;
 		}
 	}
