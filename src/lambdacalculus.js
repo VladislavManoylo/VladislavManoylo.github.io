@@ -101,7 +101,7 @@ function toLambda(s) {
 	}
 	let apply = toLambda(s[0]);
 	for (let i = 1; i < s.length; i++) {
-		apply = { type: "apply", val: { left: apply, right: toLambda(s[i]) }};
+		apply = { type: "apply", val: { left: apply, right: toLambda(s[i]) } };
 	}
 	return apply;
 }
@@ -195,6 +195,13 @@ function toHtml(expr, index = "") {
 			let expr = parse(config.history[config.history.length - 1]);
 			config.history.push(format(evalAt(expr, index)));
 			show();
+		});
+		div.addEventListener("mouseover", (event) => {
+			event.stopPropagation();
+			div.classList.add("eval-hover");
+		});
+		div.addEventListener("mouseout", () => {
+			div.classList.remove("eval-hover");
 		});
 	}
 	let ret = document.createElement("div");
