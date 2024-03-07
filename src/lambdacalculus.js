@@ -499,6 +499,10 @@ document.addEventListener("keypress", (event) => {
 				const index = best(config.evalable, strategies[event.key]);
 				evalLast(index);
 				break;
+			case "0":
+				config.history = [config.history[0]];
+				show();
+				break;
 		}
 	}
 });
