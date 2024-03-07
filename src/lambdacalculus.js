@@ -57,7 +57,8 @@ function tokensToSexpr(tokens) {
  * @returns {Sexpr}
  */
 function toSexpr(str) {
-	const tokens = str.match(/[()]|[^()\s]+/g);
+	r = /[()]|[^()\s]+/g;
+	const tokens = str.match(r);
 	if (tokens === null) return "";
 	return tokensToSexpr(tokens)[0];
 }
@@ -127,6 +128,38 @@ function format(expr) {
 			return `(lambda (${expr.val.id}) ${format(expr.val.body)})`;
 		case "apply":
 			return `(${format(expr.val.left)} ${format(expr.val.right)})`;
+	}
+}
+
+/**
+ * @param {Lambda} expr
+ * @returns {string}
+ */
+function formatLambda(expr) {
+	switch (expr.type) {
+		case "var":
+			return expr.val.id;
+		case "fun":
+			return `λ${expr.val.id}.${formatLambda(expr.val.body)}`;
+		case "apply":
+			return `(${formatLambda(expr.val.left)} ${formatLambda(expr.val.right)})`;
+	}
+}
+
+/**
+ * @param {Lambda} expr
+ * @param {string[]} env
+ * @returns {string}
+ */
+function formatDebruijn(expr, env = []) {
+	switch (expr.type) {
+		case "var":
+			const i = env.indexOf(expr.val.id);
+			return i === -1 ? expr.val.id : "#" + i;
+		case "fun":
+			return `λ${formatDebruijn(expr.val.body, [expr.val.id, ...env])}`;
+		case "apply":
+			return `(${formatDebruijn(expr.val.left, env)} ${formatDebruijn(expr.val.right, env)})`;
 	}
 }
 
@@ -330,11 +363,16 @@ function show() {
 	for (let i in config.history) {
 		// why is i a string???
 		const row = config.historyElement.insertRow();
+		function addCell(text) {
+			const cell = row.insertCell();
+			cell.addEventListener("click", () => { navigator.clipboard.writeText(text); });
+			cell.innerHTML = text;
+			return cell;
+		}
 		row.classList.add("pop");
-		const cell = row.insertCell();
-		cell.innerHTML = format(config.history[i]);
-		// copy to clipboard on clicking cell
-		cell.addEventListener("click", () => { navigator.clipboard.writeText(format(config.history[i])); });
+		addCell(format(config.history[i]));
+		addCell(formatLambda(config.history[i]));
+		addCell(formatDebruijn(config.history[i]));
 		row.addEventListener("click", (_) => {
 			config.history.splice(Number(i) + 1);
 			show();
@@ -442,4 +480,6 @@ Pred (lambda (n) Car ((lambda (p) ((Cons (Cdr p)) (Succ (Cdr p)))) (Cons 0 0)))
 < (lambda (a b) not (<= b a))
 `);
 // newInput("S K K");
-newInput("(lambda (x y) x y) (y w)");
+// newInput("(lambda (x y) x y) (y w)");
+// newInput("(lambda (f) (lambda (x) (f (f x))))");
+newInput("((lambda (f) (lambda (x) x)) (lambda (f) (lambda (x) (f (f x)))))");
