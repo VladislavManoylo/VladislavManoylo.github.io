@@ -3,8 +3,10 @@
  * @prop {Object.<string, string>} env
  * @prop {string[]} history - expression as its partially evalauted
  * @prop {string[]} evalable - list of indexes that can be evaled at the latest point
+ * @prop {HTMLTextAreaElement} envElement
  * @prop {HTMLTextAreaElement} input
  * @prop {HTMLDivElement} output
+ * @prop {HTMLTableElement} historyElement
  */
 /** @type {Config} */
 const config = {
@@ -12,6 +14,7 @@ const config = {
 	history: [],
 	evalable: [],
 	envElement: document.getElementById("env"),
+	historyElement: document.getElementById("history"),
 	input: document.getElementById("input"),
 	output: document.getElementById("output"),
 }
@@ -319,22 +322,21 @@ function newEnv(str) {
 
 function show() {
 	// config.input.value = format(config.history[0]);
-	config.output.innerHTML = "";
+	config.historyElement.innerHTML = "";
 	for (let i in config.history) {
-		const d = document.createElement("div");
-		d.innerHTML = config.history[i];
-		if (i != 0) {
-			d.classList.add("pop");
-			d.addEventListener("click", (_) => {
-				config.history.splice(i);
-				show();
-			});
-		}
-		config.output.append(d);
+		// why is i a string???
+		const row = config.historyElement.insertRow();
+		row.classList.add("pop");
+		const cell = row.insertCell();
+		cell.innerHTML = config.history[i];
+		row.addEventListener("click", (_) => {
+			config.history.splice(Number(i) + 1);
+			show();
+		});
 	}
 	const last = config.history[config.history.length - 1];
 	config.evalable = [];
-	config.output.append(toHtml(parse(last)));
+	config.output.replaceChildren(toHtml(parse(last)));
 	config.output.lastChild.scrollIntoView(false);
 }
 

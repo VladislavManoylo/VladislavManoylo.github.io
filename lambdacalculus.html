@@ -42,12 +42,13 @@
 			background-color: yellow;
 		}
 
-		.pop {
+		#history {
 			border: 1px solid gray;
 		}
 
 		.pop:hover {
 			background-color: yellow;
+			color: black;
 		}
 
 		#output {
@@ -59,6 +60,7 @@
 <body>
 	<textarea id="env" rows="30" cols="80"></textarea>
 	<textarea id="input" rows="3" cols="80"></textarea>
+	<table id="history"></table>
 	<div id="output"></div>
 	<script src="src/lambdacalculus.js"></script>
 </body>
