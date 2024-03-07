@@ -172,8 +172,15 @@ function formatDebruijn(expr, env = []) {
  */
 function formatEta(expr) {
 	let s = formatDebruijn(expr);
+	// swap in church numerals
 	let swaps = [];
 	r = /λλ(\(#1 )*#0/g
+	function swap(swaps) {
+		while (swaps.length > 0) { // apply swaps in reverse order
+			const [i, e, n] = swaps.pop();
+			s = s.slice(0, i) + n + s.slice(e);
+		}
+	}
 	while ((m = r.exec(s)) !== null) {
 		const l = m[0].length;
 		const n = (l - 4) / 4; // 4 is the length of "λλ(#0" and "(#1 "
@@ -181,18 +188,30 @@ function formatEta(expr) {
 		if (endparens !== ")".repeat(n)) {
 			continue;
 		}
-		swaps.push([m.index, m.index + l + n, n]);
+		swaps.push([m.index, m.index + l + n, String(n)]);
 	}
-	while (swaps.length > 0) { // apply swaps in reverse order
-		const [i, e, n] = swaps.pop();
-		s = s.slice(0, i) + String(n) + s.slice(e);
+	swap(swaps);
+	// swap in Cons
+	r = /\(\(λλλ\(\(#0 #2\) #1\)/g;
+	swaps = [];
+	while ((m = r.exec(s)) !== null) {
+		let c = 2;
+		for (let i = m.index + m[0].length; i < s.length; i++) {
+			if (s[i] == "(") c++;
+			if (s[i] == ")") c--;
+			if (c == 0) {
+				swaps.push([m.index + 2, m.index + m[0].length, "Cons"]);
+				break;
+			}
+		}
 	}
+	swap(swaps);
 	return s;
 }
-console.log("ETA 0", formatEta(parse("(lambda (f x) x)")));
-console.log("ETA 0", formatEta(parse("(lambda (f x) (f x))")));
-console.log("ETA 3", formatEta(parse("(lambda (f x) (f (f (f x))))")));
-console.log("ETA 0 2", formatEta(parse("(lambda (f x) x) (lambda (f x) (f (f x)))")));
+// console.log("ETA 0", formatEta(parse("(lambda (f x) x)")));
+// console.log("ETA 0", formatEta(parse("(lambda (f x) (f x))")));
+// console.log("ETA 3", formatEta(parse("(lambda (f x) (f (f (f x))))")));
+// console.log("ETA 0 2", formatEta(parse("(lambda (f x) x) (lambda (f x) (f (f x)))")));
 
 /**
  * @param {Lambda} expr
@@ -515,4 +534,5 @@ Pred (lambda (n) Car ((lambda (p) ((Cons (Cdr p)) (Succ (Cdr p)))) (Cons 0 0)))
 // newInput("S K K");
 // newInput("(lambda (x y) x y) (y w)");
 // newInput("(lambda (f) (lambda (x) (f (f x))))");
-newInput("((lambda (f) (lambda (x) x)) (lambda (f) (lambda (x) (f (f x)))))");
+// newInput("((lambda (f) (lambda (x) x)) (lambda (f) (lambda (x) (f (f x)))))");
+newInput("(((lambda (a) (lambda (b) (lambda (p) ((p a) b)))) (lambda (f) (lambda (x) (f (f x))))) 3)");
