@@ -449,7 +449,7 @@ function makeStrategy(inner, left) {
 		let end = a.length < b.length ? a.length : b.length;
 		for (let i = 0; i < end; i++) {
 			if (a[i] !== b[i])
-				return left === (a[i] === "0");
+				return left === (a[i] === "L");
 		}
 		return inner === a.length > end;
 	};
@@ -474,11 +474,11 @@ document.addEventListener("keypress", (event) => {
 		return;
 	}
 	let strategies = {
-		"1": makeStrategy(false, false), // outer right
-		"2": makeStrategy(false, true), // outer left
-		// TODO: outer left breaks for (3 2)
-		"3": makeStrategy(true, false), // inner right
-		"4": makeStrategy(true, true), // inner left
+		"1": makeStrategy(true, true), // inner left
+		"2": makeStrategy(true, false), // inner right
+		"3": makeStrategy(false, true), // outer left
+		"4": makeStrategy(false, false), // outer right
+		// TODO: outer right breaks for (3 2)
 	};
 	if ((_a = document.activeElement) === null || _a === void 0 ? void 0 : _a.matches("body")) {
 		switch (event.key) {
