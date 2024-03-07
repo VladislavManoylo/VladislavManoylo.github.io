@@ -329,6 +329,8 @@ function show() {
 		row.classList.add("pop");
 		const cell = row.insertCell();
 		cell.innerHTML = format(config.history[i]);
+		// copy to clipboard on clicking cell
+		cell.addEventListener("click", () => { navigator.clipboard.writeText(format(config.history[i])); });
 		row.addEventListener("click", (_) => {
 			config.history.splice(Number(i) + 1);
 			show();
