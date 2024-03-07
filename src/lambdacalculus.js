@@ -164,6 +164,25 @@ function formatDebruijn(expr, env = []) {
 }
 
 /**
+ * @param {Lambda} s
+ * @returns {string} return match, or "" if not properly closed
+ */
+function matchParen(s) {
+	let i = 0;
+	for (; i < s.length && s[i] != "("; i++) {
+		if (s[i] == ")") return s.slice(0, i); // no parens
+	}
+	if (i == s.length) return s; // no parens
+	let c = 1;
+	for (; i < s.length; i++) {
+		if (s[i] == "(") c++;
+		if (s[i] == ")") c--;
+		if (c == 0) return s.slice(0, i); // found matching
+	}
+	return ""; // not fully closed
+}
+
+/**
  * @param {Lambda} expr
  * @param {string[]} env
  * @returns {string}
@@ -191,19 +210,41 @@ function formatEta(expr) {
 		swaps.push([m.index, m.index + l + n, String(n)]);
 	}
 	swap(swaps);
+	// TODO: do this on the lambda instead of through string manipulation
 	// swap in Cons
-	r = /\(\(λλλ\(\(#0 #2\) #1\)/g;
+	s = s.replaceAll("λλλ((#0 #2) #1)", "Cons");
+	// more Cons
+	// r=/λλ((#0 x) #1)/g;
+	r = /λλ\(\(#0 /g;
 	swaps = [];
 	while ((m = r.exec(s)) !== null) {
-		let c = 2;
-		for (let i = m.index + m[0].length; i < s.length; i++) {
-			if (s[i] == "(") c++;
-			if (s[i] == ")") c--;
-			if (c == 0) {
-				swaps.push([m.index + 2, m.index + m[0].length, "Cons"]);
-				break;
-			}
-		}
+		const i = m.index;
+		let j = i + m[0].length;
+		let car = matchParen(s.slice(j));
+		if (car == "") continue;
+		j += car.length;
+		if (s.slice(j, j + 5) != ") #1)") continue;
+		j += 5;
+		swaps.push([i, j, `(Cons ${car})`]);
+	}
+	swap(swaps);
+	// more Cons
+	// r=/λ((#0 (x x)) y)/g;
+	r = /λ\(\(#0 /g;
+	swaps = []
+	while ((m = r.exec(s)) !== null) {
+		const i = m.index;
+		let j = i + m[0].length;
+		let car = matchParen(s.slice(j));
+		if (car == "") continue;
+		j += car.length;
+		if (s[j] != ")") continue;
+		j += 2;
+		let cdr = matchParen(s.slice(j));
+		if (cdr == "") continue;
+		j += cdr.length;
+		if (s[j] != ")") continue;
+		swaps.push([i, j, `((Cons ${car}) ${cdr}`]);
 	}
 	swap(swaps);
 	return s;
@@ -535,4 +576,4 @@ Pred (lambda (n) Car ((lambda (p) ((Cons (Cdr p)) (Succ (Cdr p)))) (Cons 0 0)))
 // newInput("(lambda (x y) x y) (y w)");
 // newInput("(lambda (f) (lambda (x) (f (f x))))");
 // newInput("((lambda (f) (lambda (x) x)) (lambda (f) (lambda (x) (f (f x)))))");
-newInput("(((lambda (a) (lambda (b) (lambda (p) ((p a) b)))) (lambda (f) (lambda (x) (f (f x))))) 3)");
+newInput("Cons (x x) y");
