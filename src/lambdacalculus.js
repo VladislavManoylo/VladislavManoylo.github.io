@@ -138,6 +138,7 @@ function subst(expr, from, to) {
 		case "var":
 			return expr.val.id == from ? to : expr;
 		case "fun":
+			if (expr.val.id == from) return expr;
 			expr.val.body = subst(expr.val.body, from, to);
 			return expr;
 		case "apply":
@@ -146,6 +147,69 @@ function subst(expr, from, to) {
 			return expr;
 	}
 }
+
+/**
+ * @param {Lambda} expr
+ * @returns {string[]}
+ * @example
+ * freevars(parse("(lambda (x) x y)")) // ["y"]
+ */
+function freevars(expr) {
+	switch (expr.type) {
+		case "var":
+			return [expr.val.id];
+		case "fun":
+			return freevars(expr.val.body).filter((id) => id !== expr.val.id);
+		case "apply":
+			return [...freevars(expr.val.left), ...freevars(expr.val.right)];
+	}
+}
+
+/**
+ * @param {Lambda} expr
+ * @returns {string[]}
+ * @example
+ * freevars(parse("(lambda (x) x y)")) // ["x"]
+ */
+function boundvars(expr) {
+	switch (expr.type) {
+		case "var":
+			return [];
+		case "fun":
+			return [expr.val.id, ...boundvars(expr.val.body)];
+		case "apply":
+			return [...boundvars(expr.val.left), ...boundvars(expr.val.right)];
+	}
+}
+
+/**
+ * @param {Lambda} expr
+ * @param {string} from
+ * @param {string} to
+ * @returns {Lambda}
+ * @example
+ * format(rename(parse("(lambda (x) x y)")), "y", "z") // (lambda (x) x z)
+ * format(rename(parse("x (lambda (x) x y)")), "x", "z") // (z (lambda (x) x y))
+ */
+function rename(expr, from, to) {
+	// console.log("REEname", format(expr));
+	switch (expr.type) {
+		case "var":
+			return expr.val.id == from ? { type: "var", val: { id: to } } : expr;
+		case "fun":
+			if (expr.val.id == from) {
+				expr.val.id = to;
+			}
+			expr.val.body = rename(expr.val.body, from, to);
+			return expr;
+		case "apply":
+			expr.val.left = rename(expr.val.left, from, to);
+			expr.val.right = rename(expr.val.right, from, to);
+			return expr;
+	}
+}
+console.log(format(rename(parse("(lambda (x) x y)"), "y", "z")), "(lambda (x) x z)");
+console.log(format(rename(parse("(lambda (x) x y)"), "x", "z")), "(lambda (z) z y)");
 
 /**
  * @param {Lambda} expr
@@ -166,8 +230,16 @@ function evalAt(expr, index) {
 			return expr;
 		case "apply":
 			if (!index) {
-				const l = expr.val.left.val;
-				return subst(l.body, l.id, expr.val.right);
+				if (expr.val.left.type != "fun") throw new Error("left side of apply isn't a function");
+				/** @type {LambdaFun} */
+				const l = expr.val.left;
+				const rfree = freevars(expr.val.right);
+				for (let id of boundvars(l.val.body)) {
+					if (rfree.includes(id)) {
+						l.val.body = rename(l.val.body, id, id + "'");
+					}
+				}
+				return subst(l.val.body, l.val.id, expr.val.right);
 			}
 			if (index[0] == "L") {
 				expr.val.left = evalAt(expr.val.left, index.slice(1));
@@ -326,7 +398,6 @@ document.addEventListener("keypress", (event) => {
 				}
 				const last = config.history[config.history.length - 1];
 				const index = best(config.evalable, strategies[event.key]);
-				console.log("YO", last, index);
 				if (config.evalable.length !== 0) {
 					config.history.push(format(evalAt(parse(last), index)));
 				}
@@ -366,4 +437,5 @@ Pred (lambda (n) Car ((lambda (p) ((Cons (Cdr p)) (Succ (Cdr p)))) (Cons 0 0)))
 > (lambda (a b) not (<= a b))
 < (lambda (a b) not (<= b a))
 `);
-newInput("S K K");
+// newInput("S K K");
+newInput("(lambda (x y) x y) (y w)");
