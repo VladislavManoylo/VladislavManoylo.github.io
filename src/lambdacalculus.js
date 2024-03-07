@@ -457,6 +457,7 @@ document.addEventListener("keypress", (event) => {
 	let strategies = {
 		"1": makeStrategy(false, false), // outer right
 		"2": makeStrategy(false, true), // outer left
+		// TODO: outer left breaks for (3 2)
 		"3": makeStrategy(true, false), // inner right
 		"4": makeStrategy(true, true), // inner left
 	};
