@@ -165,6 +165,37 @@ function formatDebruijn(expr, env = []) {
 
 /**
  * @param {Lambda} expr
+ * @param {string[]} env
+ * @returns {string}
+ * @example
+ * formatEta(parse("(lambda (f x) (f (f x)))")) // "2"
+ */
+function formatEta(expr) {
+	let s = formatDebruijn(expr);
+	let swaps = [];
+	r = /λλ(\(#1 )*#0/g
+	while ((m = r.exec(s)) !== null) {
+		const l = m[0].length;
+		const n = (l - 4) / 4; // 4 is the length of "λλ(#0" and "(#1 "
+		endparens = s.slice(m.index + l, m.index + l + n);
+		if (endparens !== ")".repeat(n)) {
+			continue;
+		}
+		swaps.push([m.index, m.index + l + n, n]);
+	}
+	while (swaps.length > 0) { // apply swaps in reverse order
+		const [i, e, n] = swaps.pop();
+		s = s.slice(0, i) + String(n) + s.slice(e);
+	}
+	return s;
+}
+console.log("ETA 0", formatEta(parse("(lambda (f x) x)")));
+console.log("ETA 0", formatEta(parse("(lambda (f x) (f x))")));
+console.log("ETA 3", formatEta(parse("(lambda (f x) (f (f (f x))))")));
+console.log("ETA 0 2", formatEta(parse("(lambda (f x) x) (lambda (f x) (f (f x)))")));
+
+/**
+ * @param {Lambda} expr
  * @param {string} from
  * @param {Lambda} to
  * @returns {Lambda}
@@ -373,6 +404,7 @@ function show() {
 		addCell(format(config.history[i]));
 		addCell(formatLambda(config.history[i]));
 		addCell(formatDebruijn(config.history[i]));
+		addCell(formatEta(config.history[i]));
 		row.addEventListener("click", (_) => {
 			config.history.splice(Number(i) + 1);
 			show();
