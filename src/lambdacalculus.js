@@ -135,14 +135,15 @@ function format(expr) {
  * @param {Lambda} expr
  * @returns {string}
  */
-function formatLambda(expr) {
+function formatLambda(expr, paren = false) {
 	switch (expr.type) {
 		case "var":
 			return expr.val.id;
 		case "fun":
-			return `λ${expr.val.id}.${formatLambda(expr.val.body)}`;
+			return `λ${expr.val.id}.${formatLambda(expr.val.body, true)}`;
 		case "apply":
-			return `(${formatLambda(expr.val.left)} ${formatLambda(expr.val.right)})`;
+			const s = `${formatLambda(expr.val.left)} ${formatLambda(expr.val.right, true)}`;
+			return paren ? `(${s})` : s;
 	}
 }
 
