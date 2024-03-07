@@ -152,15 +152,16 @@ function formatLambda(expr, paren = false) {
  * @param {string[]} env
  * @returns {string}
  */
-function formatDebruijn(expr, env = []) {
+function formatDebruijn(expr, env = [], parent = false) {
 	switch (expr.type) {
 		case "var":
 			const i = env.indexOf(expr.val.id);
 			return i === -1 ? expr.val.id : "#" + i;
 		case "fun":
-			return `λ${formatDebruijn(expr.val.body, [expr.val.id, ...env])}`;
+			return `λ${formatDebruijn(expr.val.body, [expr.val.id, ...env], true)}`;
 		case "apply":
-			return `(${formatDebruijn(expr.val.left, env)} ${formatDebruijn(expr.val.right, env)})`;
+			const s = `${formatDebruijn(expr.val.left, env)} ${formatDebruijn(expr.val.right, env, true)}`;
+			return parent ? `(${s})` : s;
 	}
 }
 
@@ -211,53 +212,8 @@ function formatEta(expr) {
 		swaps.push([m.index, m.index + l + n, String(n)]);
 	}
 	swap(swaps);
-	// TODO: do this on the lambda instead of through string manipulation
-	// swap in Cons
-	s = s.replaceAll("λλλ((#0 #2) #1)", "Cons");
-	// more Cons
-	// r=/λλ((#0 x) #1)/g;
-	r = /λλ\(\(#0 /g;
-	swaps = [];
-	while ((m = r.exec(s)) !== null) {
-		const i = m.index;
-		let j = i + m[0].length;
-		let car = matchParen(s.slice(j));
-		if (car == "") continue;
-		j += car.length;
-		if (s.slice(j, j + 5) != ") #1)") continue;
-		j += 5;
-		swaps.push([i, j, `(Cons ${car})`]);
-	}
-	swap(swaps);
-	// more Cons
-	// r=/λ((#0 (x x)) y)/g;
-	r = /λ\(\(#0 /g;
-	swaps = []
-	while ((m = r.exec(s)) !== null) {
-		const i = m.index;
-		let j = i + m[0].length;
-		let car = matchParen(s.slice(j));
-		if (car == "") continue;
-		j += car.length;
-		if (s[j] != ")") continue;
-		j += 2;
-		let cdr = matchParen(s.slice(j));
-		if (cdr == "") continue;
-		j += cdr.length;
-		if (s[j] != ")") continue;
-		swaps.push([i, j, `((Cons ${car}) ${cdr}`]);
-	}
-	swap(swaps);
-	// Swap in Nil
-	s = s.replaceAll("((Lambda p) True)", "Nil");
-	s = s.replaceAll("((Lambda p) K)", "Nil");
-	s = s.replaceAll("((Lambda p) λλ#1)", "Nil");
 	return s;
 }
-// console.log("ETA 0", formatEta(parse("(lambda (f x) x)")));
-// console.log("ETA 0", formatEta(parse("(lambda (f x) (f x))")));
-// console.log("ETA 3", formatEta(parse("(lambda (f x) (f (f (f x))))")));
-// console.log("ETA 0 2", formatEta(parse("(lambda (f x) x) (lambda (f x) (f (f x)))")));
 
 /**
  * @param {Lambda} expr
