@@ -526,15 +526,15 @@ Succ (lambda (n f x) f (n f x))
 + (lambda (a b) a Succ b)
 * (lambda (a b) a (+ b) 0)
 ^ (lambda (b e) e b)
-Pred (lambda (n) Car ((lambda (p) ((Cons (Cdr p)) (Succ (Cdr p)))) (Cons 0 0)))
-- (lambda (a b) a Pred b)
-<= (lambda (a b) Zero? (- a b))
->= (lambda (a b) <= b a)
-> (lambda (a b) not (<= a b))
-< (lambda (a b) not (<= b a))
 `);
+// Pred (lambda (n) Car ((lambda (p) ((Cons (Cdr p)) (Succ (Cdr p)))) (Cons 0 0)))
+// - (lambda (a b) a Pred b)
+// <= (lambda (a b) Zero? (- a b))
+// >= (lambda (a b) <= b a)
+// > (lambda (a b) Not (<= a b))
+// < (lambda (a b) > b a)
 // newInput("S K K");
 // newInput("(lambda (x y) x y) (y w)");
 // newInput("(lambda (f) (lambda (x) (f (f x))))");
 // newInput("((lambda (f) (lambda (x) x)) (lambda (f) (lambda (x) (f (f x)))))");
-newInput("Cons (x x) y");
+newInput("(lambda (cell) (+ (Car cell) (Cdr cell))) (Cons (^ 2 3) (+ 2 3))");
