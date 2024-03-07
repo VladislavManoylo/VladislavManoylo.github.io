@@ -1,11 +1,12 @@
 /**
- * @type {Object}
+ * @typedef {Object} Config
  * @prop {Object.<string, string>} env
  * @prop {string[]} history - expression as its partially evalauted
  * @prop {string[]} evalable - list of indexes that can be evaled at the latest point
  * @prop {HTMLTextAreaElement} input
  * @prop {HTMLDivElement} output
  */
+/** @type {Config} */
 const config = {
 	env: {},
 	history: [],
@@ -15,10 +16,6 @@ const config = {
 	output: document.getElementById("output"),
 }
 
-/**
- * @typedef Sexpr
- * @type {Sexpr[]|string}
- */
 
 /**
  * @param {string} str
@@ -29,6 +26,7 @@ function toTokens(str) {
 	return m === null ? [] : m;
 }
 
+/** @typedef {any[]|string} Sexpr */ // recursive types don't work in jsdoc
 /**
  * @param {string[]} tokens
  * @returns {[Sexpr, number]}
@@ -84,7 +82,7 @@ function toSexpr(str) {
 
 
 /**
- * @param {Sexpr} str
+ * @param {Sexpr} s
  * @returns {Lambda}
  */
 function toLambda(s) {
