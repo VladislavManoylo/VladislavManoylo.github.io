@@ -416,6 +416,13 @@ function newEnv(str) {
 	console.log("env", Object.keys(config.env));
 }
 
+function showLast() {
+	const last = config.history[config.history.length - 1];
+	config.evalable = [];
+	config.output.replaceChildren(toHtml(last));
+	config.output.lastChild.scrollIntoView(false);
+}
+
 function show(append=false) {
 	// config.input.value = format(config.history[0]);
 	if (!append) {
@@ -435,14 +442,15 @@ function show(append=false) {
 		}
 		const i2 = i;
 		row.addEventListener("click", (_) => {
+			for (let j = config.history.length - 1; j > i2; j--) {
+				config.historyElement.deleteRow(j);
+			}
 			config.history.splice(Number(i2) + 1);
-			show();
+			// remove splice from the table
+			showLast();
 		});
 	}
-	const last = config.history[config.history.length - 1];
-	config.evalable = [];
-	config.output.replaceChildren(toHtml(last));
-	config.output.lastChild.scrollIntoView(false);
+	showLast();
 }
 
 config.input.addEventListener("input", (event) => { newInput(event.target.value); });
@@ -493,9 +501,11 @@ document.addEventListener("keypress", (event) => {
 	if ((_a = document.activeElement) === null || _a === void 0 ? void 0 : _a.matches("body")) {
 		switch (event.key) {
 			case "-":
-				if (config.history.length > 1)
+				if (config.history.length > 1) {
 					config.history.pop();
-				show();
+					config.historyElement.deleteRow(-1);
+					showLast();
+				}
 				break;
 			case "1":
 			case "2":
