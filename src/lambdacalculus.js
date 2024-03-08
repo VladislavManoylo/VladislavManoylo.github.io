@@ -422,17 +422,13 @@ function show() {
 	for (let i in config.history) {
 		// why is i a string???
 		const row = config.historyElement.insertRow();
-		function addCell(text) {
+		row.classList.add("pop");
+		for (const f of [format, formatLambda, formatDebruijn, formatEta]) {
+			const text = f(config.history[i]);
 			const cell = row.insertCell();
 			cell.addEventListener("click", () => { navigator.clipboard.writeText(text); });
 			cell.innerHTML = text;
-			return cell;
 		}
-		row.classList.add("pop");
-		addCell(format(config.history[i]));
-		addCell(formatLambda(config.history[i]));
-		addCell(formatDebruijn(config.history[i]));
-		addCell(formatEta(config.history[i]));
 		row.addEventListener("click", (_) => {
 			config.history.splice(Number(i) + 1);
 			show();
