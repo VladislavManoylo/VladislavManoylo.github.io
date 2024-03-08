@@ -346,7 +346,7 @@ function evalAt(expr, index) {
 function evalLast(index) {
 	const last = config.history[config.history.length - 1];
 	config.history.push(evalAt(parse(format(last)), index));
-	show();
+	show(true);
 }
 
 /**
@@ -416,10 +416,14 @@ function newEnv(str) {
 	console.log("env", Object.keys(config.env));
 }
 
-function show() {
+function show(append=false) {
 	// config.input.value = format(config.history[0]);
-	config.historyElement.innerHTML = "";
-	for (let i in config.history) {
+	if (!append) {
+		config.historyElement.innerHTML = "";
+	}
+	let i = append? config.history.length - 1 : 0;
+	for (; i < config.history.length; i++) {
+	// for (let i in config.history) {
 		// why is i a string???
 		const row = config.historyElement.insertRow();
 		row.classList.add("pop");
@@ -429,8 +433,9 @@ function show() {
 			cell.addEventListener("click", () => { navigator.clipboard.writeText(text); });
 			cell.innerHTML = text;
 		}
+		const i2 = i;
 		row.addEventListener("click", (_) => {
-			config.history.splice(Number(i) + 1);
+			config.history.splice(Number(i2) + 1);
 			show();
 		});
 	}
