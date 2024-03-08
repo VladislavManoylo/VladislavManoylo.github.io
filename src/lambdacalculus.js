@@ -409,9 +409,11 @@ function newInput(str) {
 function newEnv(str) {
 	config.envElement.value = str;
 	const exprs = toSexpr(str);
+	config.env = {};
 	for (let i = 0; i < exprs.length; i += 2) {
 		config.env[exprs[i]] = format(toLambda(exprs[i + 1]));
 	}
+	console.log("env", Object.keys(config.env));
 }
 
 function show() {
@@ -535,13 +537,13 @@ Succ (lambda (n f x) f (n f x))
 + (lambda (a b) a Succ b)
 * (lambda (a b) a (+ b) 0)
 ^ (lambda (b e) e b)
+Prev (lambda (n) (Car (n (lambda (p) (Cons (Cdr p) (Succ (Cdr p)))) (Cons 0 0))))
+- (lambda (a b) b Prev a)
+<= (lambda (a b) Zero? (- a b))
+>= (lambda (a b) <= b a)
+> (lambda (a b) Not (<= a b))
+< (lambda (a b) > b a)
 `);
-// Pred (lambda (n) Car ((lambda (p) ((Cons (Cdr p)) (Succ (Cdr p)))) (Cons 0 0)))
-// - (lambda (a b) a Pred b)
-// <= (lambda (a b) Zero? (- a b))
-// >= (lambda (a b) <= b a)
-// > (lambda (a b) Not (<= a b))
-// < (lambda (a b) > b a)
 // newInput("S K K");
 // newInput("(lambda (x y) x y) (y w)");
 // newInput("(lambda (f) (lambda (x) (f (f x))))");
