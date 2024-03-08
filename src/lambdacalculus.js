@@ -296,8 +296,6 @@ function rename(expr, from, to) {
 			return expr;
 	}
 }
-console.log(format(rename(parse("(lambda (x) x y)"), "y", "z")), "(lambda (x) x z)");
-console.log(format(rename(parse("(lambda (x) x y)"), "x", "z")), "(lambda (z) z y)");
 
 /**
  * @param {Lambda} expr
@@ -322,9 +320,16 @@ function evalAt(expr, index) {
 				/** @type {LambdaFun} */
 				const l = expr.val.left;
 				const rfree = freevars(expr.val.right);
+				let collision = [...rfree, ...boundvars(l.val.body)];
 				for (let id of boundvars(l.val.body)) {
 					if (rfree.includes(id)) {
-						l.val.body = rename(l.val.body, id, id + "'");
+						let id2 = id + "'";
+						while (collision.includes(id2)) {
+							id2 += "'";
+						}
+						collision.push(id2);
+						collision.splice(collision.indexOf(id), 1);
+						l.val.body = rename(l.val.body, id, id2);
 					}
 				}
 				return subst(l.val.body, l.val.id, expr.val.right);
@@ -541,4 +546,6 @@ Succ (lambda (n f x) f (n f x))
 // newInput("(lambda (x y) x y) (y w)");
 // newInput("(lambda (f) (lambda (x) (f (f x))))");
 // newInput("((lambda (f) (lambda (x) x)) (lambda (f) (lambda (x) (f (f x)))))");
+// newInput("(lambda (x x' x'') x' x'') x'");
 newInput("(lambda (cell) (+ (Car cell) (Cdr cell))) (Cons (^ 2 3) (+ 2 3))");
+// evalLast("");
