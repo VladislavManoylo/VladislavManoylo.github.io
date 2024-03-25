@@ -1,7 +1,16 @@
 body {
-  background-color: rgb(25, 25, 32);
+  background-color: rgb(30, 30, 30);
   color: white;
   font-size: 1em;
+}
+a:link {
+    color: rgb(50, 90, 250);
+}
+a:visited {
+    color: rgb(150, 90, 150);
+}
+a:hover {
+    color: rgb(200, 200, 255);
 }
 .header {
   display: inline-block;
