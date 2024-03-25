@@ -538,10 +538,9 @@ document.addEventListener("keypress", (event) => {
     }
 });
 
-newEnv(`
-True (lambda (a b) a)
+newEnv(`True (lambda (a b) a)
 False (lambda (a b) b)
-Not (lambda (p) (p Ki K))
+Not (lambda (p) (p False True))
 And (lambda (p q) (p q p))
 Or (lambda (p q) (p p q))
 Cons (lambda (a b) (lambda (p) (p a b)))
@@ -569,7 +568,7 @@ Ki (lambda (a b) b)
 M (lambda (a) (a a))
 W (M M)
 Y (lambda (f) ((lambda (x) (f (x x))) (lambda (x) (f (x x)))))
-i (lambda (x) (x S K))
+iota (lambda (x) (x S K))
 `);
 // newInput("S K K");
 // newInput("(lambda (x y) x y) (y w)");

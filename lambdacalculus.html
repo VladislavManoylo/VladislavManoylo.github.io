@@ -13,12 +13,11 @@
 
         .expr {
             display: inline-block;
-            padding: 0.3em;
+            padding: 0.15em;
             border-radius: 0.3em;
             color: white;
-            border-style: solid;
-            border-width: 1px;
-            border-color: white;
+            border: 1px solid white;
+            margin: 0 0.1em 0.2em 0.1em;
         }
 
         .var {
@@ -35,7 +34,7 @@
 
         .eval {
             border-color: yellow;
-            border-width: 3px;
+            border-width: 0.15em;
         }
 
         .eval-hover {
@@ -60,8 +59,8 @@
 </head>
 
 <body>
-    <textarea id="env" rows="30" cols="80"></textarea>
-    <textarea id="input" rows="3" cols="80"></textarea>
+    <textarea id="env" rows="15" cols="80"></textarea>
+    <textarea id="input" rows="2" cols="80"></textarea>
     <table id="history"></table>
     <div id="output"></div>
     <script src="src/lambdacalculus.js"></script>
