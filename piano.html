@@ -1,977 +1,857 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="style.css" />
     <title>Piano</title>
     <style>
-      .output {
-        font-size: xx-large;
-        margin: auto;
-      }
+        .output {
+            font-size: xx-large;
+            margin: auto;
+        }
 
-      .hidden {
-        display: none;
-      }
+        .hidden {
+            display: none;
+        }
 
-      sub {
-        color: grey;
-      }
+        sub {
+            color: grey;
+        }
 
-      input {
-        font-size: x-large;
-        width: 4em;
-        margin: 0.1em;
-      }
+        input {
+            font-size: x-large;
+            width: 4em;
+            margin: 0.1em;
+        }
 
-      label {
-        display: block;
-        font-size: x-large;
-      }
+        label {
+            display: block;
+            font-size: x-large;
+        }
 
-      button {
-        background-color: DarkSlateBlue;
-        border: none;
-        color: white;
-        font-size: x-large;
-        padding: 0.5em;
-        cursor: pointer;
-        float: left;
-        user-select: none;
-      }
+        button {
+            background-color: DarkSlateBlue;
+            border: none;
+            color: white;
+            font-size: x-large;
+            padding: 0.5em;
+            cursor: pointer;
+            float: left;
+            user-select: none;
+        }
 
-      button:hover {
-        background-color: turquoise;
-      }
+        button:hover {
+            background-color: turquoise;
+        }
 
-      button.selected {
-        background-color: turquoise;
-      }
+        button.selected {
+            background-color: turquoise;
+        }
 
-      div.button-group {
-        margin-bottom: 1em;
-      }
+        div.button-group {
+            margin-bottom: 1em;
+        }
 
-      /* clearfix */
-      div.button-group:after {
-        content: "";
-        clear: both;
-        display: table;
-      }
+        /* clearfix */
+        div.button-group:after {
+            content: "";
+            clear: both;
+            display: table;
+        }
 
-      #volume {
-        max-width: 100%;
-        width: 20em;
-        accent-color: turquoise;
-      }
+        #volume {
+            max-width: 100%;
+            width: 20em;
+            accent-color: turquoise;
+        }
 
-      #piano {
-        max-width: 100%;
-        width: 60em;
-        height: 10em;
-        position: relative;
-        margin-bottom: 1em;
-        background: DarkSlateBlue;
-      }
+        #piano {
+            max-width: 100%;
+            width: 60em;
+            height: 10em;
+            position: relative;
+            margin-bottom: 1em;
+            background: DarkSlateBlue;
+        }
 
-      div.black-keys-box > div,
-      div.white-keys-box > div {
-        position: absolute;
-        float: left;
-        box-shadow: -0.2em 0.3em gray;
-        text-align: right;
-        cursor: pointer;
-      }
+        div.black-keys-box>div,
+        div.white-keys-box>div {
+            position: absolute;
+            float: left;
+            box-shadow: -0.2em 0.3em gray;
+            text-align: right;
+            cursor: pointer;
+        }
 
-      div.black-keys-box > div {
-        background-color: black;
-        width: calc(100% / 30);
-        height: 60%;
-        z-index: 1;
-      }
+        div.black-keys-box>div {
+            background-color: black;
+            width: calc(100% / 30);
+            height: 60%;
+            z-index: 1;
+        }
 
-      div.white-keys-box > div {
-        background-color: white;
-        width: calc(100% / 11);
-        height: 100%;
-      }
+        div.white-keys-box>div {
+            background-color: white;
+            width: calc(100% / 11);
+            height: 100%;
+        }
 
-      div.white-keys-box div * {
-        text-color: blue;
-        position: absolute;
-        bottom: 0.5em;
-        right: 0.5em;
-        user-select: none;
-      }
+        div.white-keys-box div * {
+            text-color: blue;
+            position: absolute;
+            bottom: 0.5em;
+            right: 0.5em;
+            user-select: none;
+        }
 
-      #piano sub {
-        position: absolute;
-        bottom: 0.5em;
-        right: 0.5em;
-        user-select: none;
-      }
+        #piano sub {
+            position: absolute;
+            bottom: 0.5em;
+            right: 0.5em;
+            user-select: none;
+        }
 
-      #piano div.A {
-        background: antiqueWhite;
-      }
+        #piano div.A {
+            background: antiqueWhite;
+        }
 
-      #piano div.selected {
-        box-shadow: -0.2em 0.3em turquoise;
-      }
+        #piano div.selected {
+            box-shadow: -0.2em 0.3em turquoise;
+        }
 
-      div.black-keys-box :nth-child(1) {
-        left: calc(0 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(1) {
+            left: calc(0 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(2) {
-        left: calc(1 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(2) {
+            left: calc(1 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(3) {
-        left: calc(2 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(3) {
+            left: calc(2 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(4) {
-        left: calc(3 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(4) {
+            left: calc(3 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(5) {
-        left: calc(4 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(5) {
+            left: calc(4 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(6) {
-        left: calc(5 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(6) {
+            left: calc(5 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(7) {
-        left: calc(6 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(7) {
+            left: calc(6 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(8) {
-        left: calc(7 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(8) {
+            left: calc(7 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(9) {
-        left: calc(8 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(9) {
+            left: calc(8 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(10) {
-        left: calc(9 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(10) {
+            left: calc(9 * (100% / 11));
+        }
 
-      div.black-keys-box :nth-child(11) {
-        left: calc(10 * (100% / 11));
-      }
+        div.black-keys-box :nth-child(11) {
+            left: calc(10 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(1) {
-        left: calc(0 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(1) {
+            left: calc(0 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(2) {
-        left: calc(1 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(2) {
+            left: calc(1 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(3) {
-        left: calc(2 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(3) {
+            left: calc(2 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(4) {
-        left: calc(3 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(4) {
+            left: calc(3 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(5) {
-        left: calc(4 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(5) {
+            left: calc(4 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(6) {
-        left: calc(5 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(6) {
+            left: calc(5 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(7) {
-        left: calc(6 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(7) {
+            left: calc(6 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(8) {
-        left: calc(7 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(8) {
+            left: calc(7 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(9) {
-        left: calc(8 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(9) {
+            left: calc(8 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(10) {
-        left: calc(9 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(10) {
+            left: calc(9 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(11) {
-        left: calc(10 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(11) {
+            left: calc(10 * (100% / 11));
+        }
 
-      div.white-keys-box :nth-child(12) {
-        left: calc(11 * (100% / 11));
-      }
+        div.white-keys-box :nth-child(12) {
+            left: calc(11 * (100% / 11));
+        }
 
-      tr.selected {
-        box-shadow: 2px 2px turquoise;
-      }
+        tr.selected {
+            box-shadow: 2px 2px turquoise;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <label>
-      volume
-      <input
-        id="volume"
-        type="range"
-        min="0"
-        max="1"
-        value="0.5"
-        step="0.01"
-        onchange="changeVolume(this.value)"
-      />
-      🔊
+        volume
+        <input id="volume" type="range" min="0" max="1" value="0.5" step="0.01" onchange="changeVolume(this.value)" />
+        🔊
     </label>
 
     <div id="piano">
-      <div class="black-keys-box">
-        <div
-          id="black-key-0"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>a</sub>
+        <div class="black-keys-box">
+            <div id="black-key-0" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>a</sub>
+            </div>
+            <div id="black-key-1" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)" class="">
+                <sub>s</sub>
+            </div>
+            <div id="black-key-2" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)" class="hidden">
+                <sub>d</sub>
+            </div>
+            <div id="black-key-3" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>f</sub>
+            </div>
+            <div id="black-key-4" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>g</sub>
+            </div>
+            <div id="black-key-5" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)" class="hidden">
+                <sub>h</sub>
+            </div>
+            <div id="black-key-6" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>j</sub>
+            </div>
+            <div id="black-key-7" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>k</sub>
+            </div>
+            <div id="black-key-8" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>l</sub>
+            </div>
+            <div id="black-key-9" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)" class="hidden">
+                <sub>;</sub>
+            </div>
+            <div id="black-key-10" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>"</sub>
+            </div>
         </div>
-        <div
-          id="black-key-1"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-          class=""
-        >
-          <sub>s</sub>
+        <div class="white-keys-box">
+            <div id="white-key-0" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)" class="A">
+                <sub>z</sub>
+            </div>
+            <div id="white-key-1" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>x</sub>
+            </div>
+            <div id="white-key-2" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>c</sub>
+            </div>
+            <div id="white-key-3" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>v</sub>
+            </div>
+            <div id="white-key-4" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>b</sub>
+            </div>
+            <div id="white-key-5" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>n</sub>
+            </div>
+            <div id="white-key-6" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>m</sub>
+            </div>
+            <div id="white-key-7" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)" class="A">
+                <sub>,</sub>
+            </div>
+            <div id="white-key-8" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>.</sub>
+            </div>
+            <div id="white-key-9" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
+                onmouseleave="releaseKey(this.id)">
+                <sub>/</sub>
+            </div>
         </div>
-        <div
-          id="black-key-2"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-          class="hidden"
-        >
-          <sub>d</sub>
-        </div>
-        <div
-          id="black-key-3"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>f</sub>
-        </div>
-        <div
-          id="black-key-4"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>g</sub>
-        </div>
-        <div
-          id="black-key-5"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-          class="hidden"
-        >
-          <sub>h</sub>
-        </div>
-        <div
-          id="black-key-6"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>j</sub>
-        </div>
-        <div
-          id="black-key-7"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>k</sub>
-        </div>
-        <div
-          id="black-key-8"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>l</sub>
-        </div>
-        <div
-          id="black-key-9"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-          class="hidden"
-        >
-          <sub>;</sub>
-        </div>
-        <div
-          id="black-key-10"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>"</sub>
-        </div>
-      </div>
-      <div class="white-keys-box">
-        <div
-          id="white-key-0"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-          class="A"
-        >
-          <sub>z</sub>
-        </div>
-        <div
-          id="white-key-1"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>x</sub>
-        </div>
-        <div
-          id="white-key-2"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>c</sub>
-        </div>
-        <div
-          id="white-key-3"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>v</sub>
-        </div>
-        <div
-          id="white-key-4"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>b</sub>
-        </div>
-        <div
-          id="white-key-5"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>n</sub>
-        </div>
-        <div
-          id="white-key-6"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>m</sub>
-        </div>
-        <div
-          id="white-key-7"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-          class="A"
-        >
-          <sub>,</sub>
-        </div>
-        <div
-          id="white-key-8"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>.</sub>
-        </div>
-        <div
-          id="white-key-9"
-          onmousedown="playKey(this.id)"
-          onmouseup="releaseKey(this.id)"
-          onmouseleave="releaseKey(this.id)"
-        >
-          <sub>/</sub>
-        </div>
-      </div>
     </div>
 
     <div class="button-group wavetype">
-      <button id="sine" onclick="setWaveType(this.id)" class="selected">
-        sine <sub>q</sub>
-      </button>
-      <button id="triangle" onclick="setWaveType(this.id)">
-        triangle <sub>w</sub>
-      </button>
-      <button id="sawtooth" onclick="setWaveType(this.id)">
-        sawtooth <sub>e</sub>
-      </button>
-      <button id="square" onclick="setWaveType(this.id)">
-        square <sub>r</sub>
-      </button>
+        <button id="sine" onclick="setWaveType(this.id)" class="selected">
+            sine <sub>q</sub>
+        </button>
+        <button id="triangle" onclick="setWaveType(this.id)">
+            triangle <sub>w</sub>
+        </button>
+        <button id="sawtooth" onclick="setWaveType(this.id)">
+            sawtooth <sub>e</sub>
+        </button>
+        <button id="square" onclick="setWaveType(this.id)">
+            square <sub>r</sub>
+        </button>
     </div>
 
     <div class="button-group tuning">
-      <button
-        id="equal-temperament"
-        onclick="setTuning(this.id)"
-        class="selected"
-      >
-        equal<sub>u</sub>
-        <label>
-          A4
-          <input
-            class="pitch"
-            type="number"
-            value="440"
-            step="0.01"
-            onchange="resetTuning()"
-          />
-        </label>
-        <label>
-          tones
-          <input
-            class="tones"
-            type="number"
-            value="12"
-            step="1"
-            min="1"
-            max="52"
-            onchange="resetTuning()"
-          />
-        </label>
-      </button>
-      <button id="just" onclick="setTuning(this.id)">
-        just<sub>i</sub>
-        <label>
-          A4
-          <input
-            class="pitch"
-            type="number"
-            value="440"
-            step="0.01"
-            onchange="resetTuning()"
-          />
-        </label>
-      </button>
+        <button id="equal-temperament" onclick="setTuning(this.id)" class="selected">
+            equal<sub>u</sub>
+            <label>
+                A4
+                <input class="pitch" type="number" value="440" step="0.01" onchange="resetTuning()" />
+            </label>
+            <label>
+                tones
+                <input class="tones" type="number" value="12" step="1" min="1" max="52" onchange="resetTuning()" />
+            </label>
+        </button>
+        <button id="just" onclick="setTuning(this.id)">
+            just<sub>i</sub>
+            <label>
+                A4
+                <input class="pitch" type="number" value="440" step="0.01" onchange="resetTuning()" />
+            </label>
+        </button>
     </div>
 
     <div class="button-group">
-      <button onclick="offsetKeys(+1)">←<sub>[</sub></button>
-      <button onclick="offsetKeys(-1)">→<sub>]</sub></button>
+        <button onclick="offsetKeys(+1)">←<sub>[</sub></button>
+        <button onclick="offsetKeys(-1)">→<sub>]</sub></button>
     </div>
 
     <table id="pitches">
-      <tbody>
-        <tr class="black-key-0">
-          <td>G#/A♭</td>
-          <td>415.30</td>
-        </tr>
-        <tr class="white-key-0">
-          <td>A</td>
-          <td>440.00</td>
-        </tr>
-        <tr class="black-key-1">
-          <td>A#/B♭</td>
-          <td>466.16</td>
-        </tr>
-        <tr class="white-key-1">
-          <td>B</td>
-          <td>493.88</td>
-        </tr>
-        <tr class="black-key-2 hidden">
-          <td></td>
-          <td></td>
-        </tr>
-        <tr class="white-key-2">
-          <td>C</td>
-          <td>523.25</td>
-        </tr>
-        <tr class="black-key-3">
-          <td>C#/D♭</td>
-          <td>554.37</td>
-        </tr>
-        <tr class="white-key-3">
-          <td>D</td>
-          <td>587.33</td>
-        </tr>
-        <tr class="black-key-4">
-          <td>D#/E♭</td>
-          <td>622.25</td>
-        </tr>
-        <tr class="white-key-4">
-          <td>E</td>
-          <td>659.26</td>
-        </tr>
-        <tr class="black-key-5 hidden">
-          <td></td>
-          <td></td>
-        </tr>
-        <tr class="white-key-5">
-          <td>F</td>
-          <td>698.46</td>
-        </tr>
-        <tr class="black-key-6">
-          <td>F#/G♭</td>
-          <td>739.99</td>
-        </tr>
-        <tr class="white-key-6">
-          <td>G</td>
-          <td>783.99</td>
-        </tr>
-        <tr class="black-key-7">
-          <td>G#/A♭</td>
-          <td>830.61</td>
-        </tr>
-        <tr class="white-key-7">
-          <td>A</td>
-          <td>880.00</td>
-        </tr>
-        <tr class="black-key-8">
-          <td>A#/B♭</td>
-          <td>932.33</td>
-        </tr>
-        <tr class="white-key-8">
-          <td>B</td>
-          <td>987.77</td>
-        </tr>
-        <tr class="black-key-9 hidden">
-          <td></td>
-          <td></td>
-        </tr>
-        <tr class="white-key-9">
-          <td>C</td>
-          <td>1046.50</td>
-        </tr>
-        <tr class="black-key-10">
-          <td>C#/D♭</td>
-          <td>1108.73</td>
-        </tr>
-      </tbody>
+        <tbody>
+            <tr class="black-key-0">
+                <td>G#/A♭</td>
+                <td>415.30</td>
+            </tr>
+            <tr class="white-key-0">
+                <td>A</td>
+                <td>440.00</td>
+            </tr>
+            <tr class="black-key-1">
+                <td>A#/B♭</td>
+                <td>466.16</td>
+            </tr>
+            <tr class="white-key-1">
+                <td>B</td>
+                <td>493.88</td>
+            </tr>
+            <tr class="black-key-2 hidden">
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="white-key-2">
+                <td>C</td>
+                <td>523.25</td>
+            </tr>
+            <tr class="black-key-3">
+                <td>C#/D♭</td>
+                <td>554.37</td>
+            </tr>
+            <tr class="white-key-3">
+                <td>D</td>
+                <td>587.33</td>
+            </tr>
+            <tr class="black-key-4">
+                <td>D#/E♭</td>
+                <td>622.25</td>
+            </tr>
+            <tr class="white-key-4">
+                <td>E</td>
+                <td>659.26</td>
+            </tr>
+            <tr class="black-key-5 hidden">
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="white-key-5">
+                <td>F</td>
+                <td>698.46</td>
+            </tr>
+            <tr class="black-key-6">
+                <td>F#/G♭</td>
+                <td>739.99</td>
+            </tr>
+            <tr class="white-key-6">
+                <td>G</td>
+                <td>783.99</td>
+            </tr>
+            <tr class="black-key-7">
+                <td>G#/A♭</td>
+                <td>830.61</td>
+            </tr>
+            <tr class="white-key-7">
+                <td>A</td>
+                <td>880.00</td>
+            </tr>
+            <tr class="black-key-8">
+                <td>A#/B♭</td>
+                <td>932.33</td>
+            </tr>
+            <tr class="white-key-8">
+                <td>B</td>
+                <td>987.77</td>
+            </tr>
+            <tr class="black-key-9 hidden">
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="white-key-9">
+                <td>C</td>
+                <td>1046.50</td>
+            </tr>
+            <tr class="black-key-10">
+                <td>C#/D♭</td>
+                <td>1108.73</td>
+            </tr>
+        </tbody>
     </table>
 
     <script>
-      window.AudioContext = window.AudioContext || window.webkitAudioContext;
-      const audioCtx = new AudioContext();
-      const volumeGain = audioCtx.createGain();
-      const notesPlaying = new Map();
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        const volumeGain = audioCtx.createGain();
+        const notesPlaying = new Map();
 
-      const screenKeys = [
-        "black-key-0",
-        "white-key-0",
-        "black-key-1",
-        "white-key-1",
-        "black-key-2",
-        "white-key-2",
-        "black-key-3",
-        "white-key-3",
-        "black-key-4",
-        "white-key-4",
-        "black-key-5",
-        "white-key-5",
-        "black-key-6",
-        "white-key-6",
-        "black-key-7",
-        "white-key-7",
-        "black-key-8",
-        "white-key-8",
-        "black-key-9",
-        "white-key-9",
-        "black-key-10",
-      ];
+        const screenKeys = [
+            "black-key-0",
+            "white-key-0",
+            "black-key-1",
+            "white-key-1",
+            "black-key-2",
+            "white-key-2",
+            "black-key-3",
+            "white-key-3",
+            "black-key-4",
+            "white-key-4",
+            "black-key-5",
+            "white-key-5",
+            "black-key-6",
+            "white-key-6",
+            "black-key-7",
+            "white-key-7",
+            "black-key-8",
+            "white-key-8",
+            "black-key-9",
+            "white-key-9",
+            "black-key-10",
+        ];
 
-      let config = {
-        waveType: "sine",
-        tuning: "equal-temperament",
-        visibleKeys: [
-          "black-key-0",
-          "white-key-0",
-          "black-key-1",
-          "white-key-1",
-          "white-key-2",
-          "black-key-3",
-          "white-key-3",
-          "black-key-4",
-          "white-key-4",
-          "white-key-5",
-          "black-key-6",
-          "white-key-6",
-          "black-key-7",
-          "white-key-7",
-          "black-key-8",
-          "white-key-8",
-          "white-key-9",
-          "black-key-10",
-        ],
-        pianokeyPitches: undefined,
-        volume: 0.5,
-        whiteKeyOffset: 0,
-      };
-      resetTuning();
-      changeVolume(config.volume);
-
-      const qwertyKeys = [
-        "`1234567890-=",
-        "qwertyuiop[]\\",
-        "asdfghjkl;'",
-        "zxcvbnm,./",
-      ];
-
-      function keyToScreenKey(a) {
-        const keys = new Map([
-          [qwertyKeys[3][0], "white-key-0"],
-          [qwertyKeys[3][1], "white-key-1"],
-          [qwertyKeys[3][2], "white-key-2"],
-          [qwertyKeys[3][3], "white-key-3"],
-          [qwertyKeys[3][4], "white-key-4"],
-          [qwertyKeys[3][5], "white-key-5"],
-          [qwertyKeys[3][6], "white-key-6"],
-          [qwertyKeys[3][7], "white-key-7"],
-          [qwertyKeys[3][8], "white-key-8"],
-          [qwertyKeys[3][9], "white-key-9"],
-          [qwertyKeys[2][0], "black-key-0"],
-          [qwertyKeys[2][1], "black-key-1"],
-          [qwertyKeys[2][2], "black-key-2"],
-          [qwertyKeys[2][3], "black-key-3"],
-          [qwertyKeys[2][4], "black-key-4"],
-          [qwertyKeys[2][5], "black-key-5"],
-          [qwertyKeys[2][6], "black-key-6"],
-          [qwertyKeys[2][7], "black-key-7"],
-          [qwertyKeys[2][8], "black-key-8"],
-          [qwertyKeys[2][9], "black-key-9"],
-          [qwertyKeys[2][10], "black-key-10"],
-        ]);
-        return keys.get(a);
-      }
-
-      function keyToWavetype(a) {
-        const wavetypes = new Map([
-          [qwertyKeys[1][0], "sine"],
-          [qwertyKeys[1][1], "triangle"],
-          [qwertyKeys[1][2], "sawtooth"],
-          [qwertyKeys[1][3], "square"],
-        ]);
-        return wavetypes.get(a);
-      }
-
-      function keyToTuning(a) {
-        const tuning = new Map([
-          [qwertyKeys[1][6], "equal-temperament"],
-          [qwertyKeys[1][7], "just"],
-        ]);
-        return tuning.get(a);
-      }
-
-      function keyToOffset(a) {
-        const offset = new Map([
-          [qwertyKeys[1][10], -1],
-          [qwertyKeys[1][11], +1],
-        ]);
-        return offset.get(a);
-      }
-
-      function changeVolume(a) {
-        if (audioCtx.state === "suspended") audioCtx.resume();
-        config.volume = a;
-        volumeGain.gain.value = (Math.pow(100, a) - 1) / 50;
-      }
-
-      function playKey(a) {
-        if (audioCtx.state === "suspended") audioCtx.resume();
-        if (!config.visibleKeys.includes(a)) return;
-        if (a in notesPlaying) return;
-        document.getElementById(a).classList.add("selected");
-        document.querySelector("." + a).classList.add("selected");
-        const pitch = config.pianokeyPitches.get(a);
-        if (pitch) {
-          notesPlaying[a] = {
-            source: audioCtx.createOscillator(),
-            decayer: audioCtx.createGain(),
-          };
-          notesPlaying[a].source
-            .connect(notesPlaying[a].decayer)
-            .connect(volumeGain)
-            .connect(audioCtx.destination);
-          notesPlaying[a].source.frequency.value = pitch;
-          notesPlaying[a].source.type = config.waveType;
-          notesPlaying[a].source.start();
-        }
-      }
-
-      function releaseKey(a) {
-        const decayTime = 0.1;
-        if (a in notesPlaying) {
-          document.getElementById(a).classList.remove("selected");
-          document.querySelector("." + a).classList.remove("selected");
-          const { source, decayer } = notesPlaying[a];
-          decayer.gain.exponentialRampToValueAtTime(
-            0.01,
-            audioCtx.currentTime + decayTime
-          );
-          source.stop(audioCtx.currentTime + decayTime);
-          source.onended = () => {
-            decayer.disconnect();
-          };
-          delete notesPlaying[a];
-        }
-      }
-
-      function setWaveType(a) {
-        config.waveType = a;
-        for (let it of document.querySelectorAll(
-          ".button-group.wavetype > button"
-        )) {
-          it.classList.remove("selected");
-        }
-        document.getElementById(a).classList.add("selected");
-      }
-
-      function offsetKeys(a) {
-        config.whiteKeyOffset += a;
-        setTuning(config.tuning);
-      }
-
-      function changeReferencePitch(a) {
-        config.referencePitch = a;
-        setTuning(config.tuning);
-      }
-
-      function resetTuning() {
-        setTuning(config.tuning);
-      }
-
-      function zip(a, b) {
-        return a.map((it, i) => [it, b[i]]);
-      }
-      function range(a, b) {
-        return [...Array(b - a)].map((_, i) => i + a);
-      }
-      function replaceAt(s, i, c) {
-        return s.slice(0, i) + c + s.slice(i + 1);
-      }
-      function interpolate(a, b) {
-        let ret = [];
-        for (let i = 0; i < Math.min(a.length, b.length); i++) {
-          ret.push(a[i]);
-          ret.push(b[i]);
-        }
-        if (a.length > b.length) ret = ret.concat(a.slice(b.length));
-        else if (b.length > a.length) ret = ret.concat(b.slice(a.length));
-        return ret;
-      }
-      function* cycleIterator(s, i, l = s.length) {
-        for (; ; i++) {
-          yield s.at(i % l);
-        }
-      }
-
-      function getPitchFunc(a) {
-        switch (a) {
-          case "equal-temperament": {
-            const referencePitch = document.querySelector(`#${a} .pitch`).value;
-            const tones = document.querySelector(`#${a} .tones`).value;
-            return (x) => referencePitch * 2 ** (x / tones);
-          }
-          case "just": {
-            const ratios = [
-              1,
-              16 / 15,
-              9 / 8,
-              6 / 5,
-              5 / 4,
-              4 / 3,
-              Math.sqrt(2),
-              3 / 2,
-              8 / 5,
-              5 / 3,
-              7 / 4,
-              15 / 8,
-            ];
-            const referencePitch = document.querySelector(`#${a} .pitch`).value;
-            return (x) =>
-              referencePitch * 2 ** Math.floor(x / 12) * ratios.at(x % 12);
-          }
-          default:
-            console.assert(
-              false,
-              `Argument ${tuning} must be one of ['equal-temperament', 'just']`
-            );
-        }
-      }
-
-      function getNotes(noteCount) {
-        if (noteCount === 12) {
-          const wholeNotes = "ABCDEFG";
-          const notes = [
-            "A",
-            "A#/B♭",
-            "B",
-            "C",
-            "C#/D♭",
-            "D",
-            "D#/E♭",
-            "E",
-            "F",
-            "F#/G♭",
-            "G",
-            "G#/A♭",
-          ];
-          return { notes, wholeNotes };
-        } else {
-          const wholeNotes = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ").slice(
-            0,
-            Math.ceil(noteCount / 2)
-          );
-          const accidentals = [
-            "A#/B♭",
-            "B#/C♭",
-            "C#/D♭",
-            "D#/E♭",
-            "E#/F♭",
-            "F#/G♭",
-            "G#/H♭",
-            "H#/I♭",
-            "I#/J♭",
-            "J#/K♭",
-            "K#/L♭",
-            "L#/M♭",
-            "M#/N♭",
-            "N#/O♭",
-            "O#/P♭",
-            "P#/Q♭",
-            "Q#/R♭",
-            "R#/S♭",
-            "S#/T♭",
-            "T#/U♭",
-            "U#/V♭",
-            "V#/Q♭",
-            "W#/X♭",
-            "X#/Y♭",
-            "Y#/Z♭",
-            "Z#/A♭",
-          ];
-          notes = interpolate(wholeNotes, accidentals).slice(0, noteCount);
-          if (noteCount % 2 === 0) {
-            // 'Last' flat is A flat
-            notes[notes.length - 1] = replaceAt(
-              notes[notes.length - 1],
-              3,
-              "A"
-            );
-          }
-          return { notes, wholeNotes };
-        }
-      }
-
-      function isWholeNote(a) {
-        return a.length === 1;
-      }
-
-      function noteGenerator(noteCount, whiteKeyOffset) {
-        const { notes, wholeNotes } = getNotes(noteCount);
-        const firstNote = wholeNotes.at(whiteKeyOffset % wholeNotes.length);
-        let noteIndex = notes.findIndex((x) => x === firstNote);
-        // flat before the first white key fits on the screen
-        if (
-          isWholeNote(notes.at(noteIndex)) &&
-          !isWholeNote(notes.at(noteIndex - 1))
-        ) {
-          noteIndex--;
-        }
-        const totalOffset =
-          Math.floor(whiteKeyOffset / wholeNotes.length) * notes.length +
-          noteIndex;
-        return {
-          notes: cycleIterator(notes, noteIndex),
-          totalOffset: totalOffset,
+        let config = {
+            waveType: "sine",
+            tuning: "equal-temperament",
+            visibleKeys: [
+                "black-key-0",
+                "white-key-0",
+                "black-key-1",
+                "white-key-1",
+                "white-key-2",
+                "black-key-3",
+                "white-key-3",
+                "black-key-4",
+                "white-key-4",
+                "white-key-5",
+                "black-key-6",
+                "white-key-6",
+                "black-key-7",
+                "white-key-7",
+                "black-key-8",
+                "white-key-8",
+                "white-key-9",
+                "black-key-10",
+            ],
+            pianokeyPitches: undefined,
+            volume: 0.5,
+            whiteKeyOffset: 0,
         };
-      }
+        resetTuning();
+        changeVolume(config.volume);
 
-      function resetKeys() {
-        let tmp = document.querySelector(`#${config.tuning} .tones`);
-        const tones = tmp ? +tmp.value : 12;
-        const { notes, totalOffset } = noteGenerator(
-          tones,
-          config.whiteKeyOffset
-        );
-        let visibleKeys = [];
-        let note = notes.next().value;
-        for (let it of screenKeys) {
-          const keyDiv = document.getElementById(it);
-          const pitchTableDiv = document.querySelector(`#pitches .${it}`);
-          if (isWholeNote(note) !== it.startsWith("white-key")) {
-            keyDiv.classList.add("hidden");
-            pitchTableDiv.classList.add("hidden");
-          } else {
-            keyDiv.classList.remove("hidden");
-            pitchTableDiv.classList.remove("hidden");
-            pitchTableDiv.firstChild.innerHTML = note;
-            if (note === "A") keyDiv.classList.add("A");
-            else keyDiv.classList.remove("A");
-            visibleKeys.push(it);
-            note = notes.next().value;
-          }
-        }
-        config.visibleKeys = visibleKeys;
-        const totalWhiteKeys = document.querySelectorAll(
-          ".white-keys-box div"
-        ).length;
-        return [totalOffset, totalOffset + visibleKeys.length, visibleKeys];
-      }
+        const qwertyKeys = [
+            "`1234567890-=",
+            "qwertyuiop[]\\",
+            "asdfghjkl;'",
+            "zxcvbnm,./",
+        ];
 
-      function setTuning(a) {
-        config.tuning = a;
-        const [firstNote, lastNote, visibleKeys] = resetKeys();
-        const pitchFunc = getPitchFunc(a);
-        const pitches = range(firstNote, lastNote).map((x) => pitchFunc(x));
-        config.pianokeyPitches = new Map(zip(visibleKeys, pitches));
-        // update UI
-        for (let [key, pitch] of config.pianokeyPitches) {
-          document.querySelector(`#pitches tr.${key} :nth-child(2)`).innerHTML =
-            pitch.toFixed(2);
+        function keyToScreenKey(a) {
+            const keys = new Map([
+                [qwertyKeys[3][0], "white-key-0"],
+                [qwertyKeys[3][1], "white-key-1"],
+                [qwertyKeys[3][2], "white-key-2"],
+                [qwertyKeys[3][3], "white-key-3"],
+                [qwertyKeys[3][4], "white-key-4"],
+                [qwertyKeys[3][5], "white-key-5"],
+                [qwertyKeys[3][6], "white-key-6"],
+                [qwertyKeys[3][7], "white-key-7"],
+                [qwertyKeys[3][8], "white-key-8"],
+                [qwertyKeys[3][9], "white-key-9"],
+                [qwertyKeys[2][0], "black-key-0"],
+                [qwertyKeys[2][1], "black-key-1"],
+                [qwertyKeys[2][2], "black-key-2"],
+                [qwertyKeys[2][3], "black-key-3"],
+                [qwertyKeys[2][4], "black-key-4"],
+                [qwertyKeys[2][5], "black-key-5"],
+                [qwertyKeys[2][6], "black-key-6"],
+                [qwertyKeys[2][7], "black-key-7"],
+                [qwertyKeys[2][8], "black-key-8"],
+                [qwertyKeys[2][9], "black-key-9"],
+                [qwertyKeys[2][10], "black-key-10"],
+            ]);
+            return keys.get(a);
         }
-        for (let it of document.querySelectorAll(
-          ".button-group.tuning > button"
-        )) {
-          it.classList.remove("selected");
-        }
-        document.getElementById(a).classList.add("selected");
-      }
 
-      document.onkeydown = function (e) {
-        let val;
-        if ((val = keyToScreenKey(e.key))) {
-          playKey(val);
-        } else if ((val = keyToWavetype(e.key))) {
-          setWaveType(val);
-        } else if ((val = keyToTuning(e.key))) {
-          setTuning(val);
-        } else if ((val = keyToOffset(e.key))) {
-          offsetKeys(val);
+        function keyToWavetype(a) {
+            const wavetypes = new Map([
+                [qwertyKeys[1][0], "sine"],
+                [qwertyKeys[1][1], "triangle"],
+                [qwertyKeys[1][2], "sawtooth"],
+                [qwertyKeys[1][3], "square"],
+            ]);
+            return wavetypes.get(a);
         }
-      };
 
-      document.onkeyup = function (e) {
-        const note = keyToScreenKey(e.key);
-        if (note) releaseKey(note);
-      };
+        function keyToTuning(a) {
+            const tuning = new Map([
+                [qwertyKeys[1][6], "equal-temperament"],
+                [qwertyKeys[1][7], "just"],
+            ]);
+            return tuning.get(a);
+        }
+
+        function keyToOffset(a) {
+            const offset = new Map([
+                [qwertyKeys[1][10], -1],
+                [qwertyKeys[1][11], +1],
+            ]);
+            return offset.get(a);
+        }
+
+        function changeVolume(a) {
+            if (audioCtx.state === "suspended") audioCtx.resume();
+            config.volume = a;
+            volumeGain.gain.value = (Math.pow(100, a) - 1) / 50;
+        }
+
+        function playKey(a) {
+            if (audioCtx.state === "suspended") audioCtx.resume();
+            if (!config.visibleKeys.includes(a)) return;
+            if (a in notesPlaying) return;
+            document.getElementById(a).classList.add("selected");
+            document.querySelector("." + a).classList.add("selected");
+            const pitch = config.pianokeyPitches.get(a);
+            if (pitch) {
+                notesPlaying[a] = {
+                    source: audioCtx.createOscillator(),
+                    decayer: audioCtx.createGain(),
+                };
+                notesPlaying[a].source
+                    .connect(notesPlaying[a].decayer)
+                    .connect(volumeGain)
+                    .connect(audioCtx.destination);
+                notesPlaying[a].source.frequency.value = pitch;
+                notesPlaying[a].source.type = config.waveType;
+                notesPlaying[a].source.start();
+            }
+        }
+
+        function releaseKey(a) {
+            const decayTime = 0.1;
+            if (a in notesPlaying) {
+                document.getElementById(a).classList.remove("selected");
+                document.querySelector("." + a).classList.remove("selected");
+                const {source, decayer} = notesPlaying[a];
+                decayer.gain.exponentialRampToValueAtTime(
+                    0.01,
+                    audioCtx.currentTime + decayTime
+                );
+                source.stop(audioCtx.currentTime + decayTime);
+                source.onended = () => {
+                    decayer.disconnect();
+                };
+                delete notesPlaying[a];
+            }
+        }
+
+        function setWaveType(a) {
+            config.waveType = a;
+            for (let it of document.querySelectorAll(
+                ".button-group.wavetype > button"
+            )) {
+                it.classList.remove("selected");
+            }
+            document.getElementById(a).classList.add("selected");
+        }
+
+        function offsetKeys(a) {
+            config.whiteKeyOffset += a;
+            setTuning(config.tuning);
+        }
+
+        function changeReferencePitch(a) {
+            config.referencePitch = a;
+            setTuning(config.tuning);
+        }
+
+        function resetTuning() {
+            setTuning(config.tuning);
+        }
+
+        function zip(a, b) {
+            return a.map((it, i) => [it, b[i]]);
+        }
+        function range(a, b) {
+            return [...Array(b - a)].map((_, i) => i + a);
+        }
+        function replaceAt(s, i, c) {
+            return s.slice(0, i) + c + s.slice(i + 1);
+        }
+        function interpolate(a, b) {
+            let ret = [];
+            for (let i = 0; i < Math.min(a.length, b.length); i++) {
+                ret.push(a[i]);
+                ret.push(b[i]);
+            }
+            if (a.length > b.length) ret = ret.concat(a.slice(b.length));
+            else if (b.length > a.length) ret = ret.concat(b.slice(a.length));
+            return ret;
+        }
+        function* cycleIterator(s, i, l = s.length) {
+            for (; ; i++) {
+                yield s.at(i % l);
+            }
+        }
+
+        function getPitchFunc(a) {
+            switch (a) {
+                case "equal-temperament": {
+                    const referencePitch = document.querySelector(`#${a} .pitch`).value;
+                    const tones = document.querySelector(`#${a} .tones`).value;
+                    return (x) => referencePitch * 2 ** (x / tones);
+                }
+                case "just": {
+                    const ratios = [
+                        1,
+                        16 / 15,
+                        9 / 8,
+                        6 / 5,
+                        5 / 4,
+                        4 / 3,
+                        Math.sqrt(2),
+                        3 / 2,
+                        8 / 5,
+                        5 / 3,
+                        7 / 4,
+                        15 / 8,
+                    ];
+                    const referencePitch = document.querySelector(`#${a} .pitch`).value;
+                    return (x) =>
+                        referencePitch * 2 ** Math.floor(x / 12) * ratios.at(x % 12);
+                }
+                default:
+                    console.assert(
+                        false,
+                        `Argument ${tuning} must be one of ['equal-temperament', 'just']`
+                    );
+            }
+        }
+
+        function getNotes(noteCount) {
+            if (noteCount === 12) {
+                const wholeNotes = "ABCDEFG";
+                const notes = [
+                    "A",
+                    "A#/B♭",
+                    "B",
+                    "C",
+                    "C#/D♭",
+                    "D",
+                    "D#/E♭",
+                    "E",
+                    "F",
+                    "F#/G♭",
+                    "G",
+                    "G#/A♭",
+                ];
+                return {notes, wholeNotes};
+            } else {
+                const wholeNotes = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ").slice(
+                    0,
+                    Math.ceil(noteCount / 2)
+                );
+                const accidentals = [
+                    "A#/B♭",
+                    "B#/C♭",
+                    "C#/D♭",
+                    "D#/E♭",
+                    "E#/F♭",
+                    "F#/G♭",
+                    "G#/H♭",
+                    "H#/I♭",
+                    "I#/J♭",
+                    "J#/K♭",
+                    "K#/L♭",
+                    "L#/M♭",
+                    "M#/N♭",
+                    "N#/O♭",
+                    "O#/P♭",
+                    "P#/Q♭",
+                    "Q#/R♭",
+                    "R#/S♭",
+                    "S#/T♭",
+                    "T#/U♭",
+                    "U#/V♭",
+                    "V#/Q♭",
+                    "W#/X♭",
+                    "X#/Y♭",
+                    "Y#/Z♭",
+                    "Z#/A♭",
+                ];
+                notes = interpolate(wholeNotes, accidentals).slice(0, noteCount);
+                if (noteCount % 2 === 0) {
+                    // 'Last' flat is A flat
+                    notes[notes.length - 1] = replaceAt(
+                        notes[notes.length - 1],
+                        3,
+                        "A"
+                    );
+                }
+                return {notes, wholeNotes};
+            }
+        }
+
+        function isWholeNote(a) {
+            return a.length === 1;
+        }
+
+        function noteGenerator(noteCount, whiteKeyOffset) {
+            const {notes, wholeNotes} = getNotes(noteCount);
+            const firstNote = wholeNotes.at(whiteKeyOffset % wholeNotes.length);
+            let noteIndex = notes.findIndex((x) => x === firstNote);
+            // flat before the first white key fits on the screen
+            if (
+                isWholeNote(notes.at(noteIndex)) &&
+                !isWholeNote(notes.at(noteIndex - 1))
+            ) {
+                noteIndex--;
+            }
+            const totalOffset =
+                Math.floor(whiteKeyOffset / wholeNotes.length) * notes.length +
+                noteIndex;
+            return {
+                notes: cycleIterator(notes, noteIndex),
+                totalOffset: totalOffset,
+            };
+        }
+
+        function resetKeys() {
+            let tmp = document.querySelector(`#${config.tuning} .tones`);
+            const tones = tmp ? +tmp.value : 12;
+            const {notes, totalOffset} = noteGenerator(
+                tones,
+                config.whiteKeyOffset
+            );
+            let visibleKeys = [];
+            let note = notes.next().value;
+            for (let it of screenKeys) {
+                const keyDiv = document.getElementById(it);
+                const pitchTableDiv = document.querySelector(`#pitches .${it}`);
+                if (isWholeNote(note) !== it.startsWith("white-key")) {
+                    keyDiv.classList.add("hidden");
+                    pitchTableDiv.classList.add("hidden");
+                } else {
+                    keyDiv.classList.remove("hidden");
+                    pitchTableDiv.classList.remove("hidden");
+                    pitchTableDiv.firstChild.innerHTML = note;
+                    if (note === "A") keyDiv.classList.add("A");
+                    else keyDiv.classList.remove("A");
+                    visibleKeys.push(it);
+                    note = notes.next().value;
+                }
+            }
+            config.visibleKeys = visibleKeys;
+            const totalWhiteKeys = document.querySelectorAll(
+                ".white-keys-box div"
+            ).length;
+            return [totalOffset, totalOffset + visibleKeys.length, visibleKeys];
+        }
+
+        function setTuning(a) {
+            config.tuning = a;
+            const [firstNote, lastNote, visibleKeys] = resetKeys();
+            const pitchFunc = getPitchFunc(a);
+            const pitches = range(firstNote, lastNote).map((x) => pitchFunc(x));
+            config.pianokeyPitches = new Map(zip(visibleKeys, pitches));
+            // update UI
+            for (let [key, pitch] of config.pianokeyPitches) {
+                document.querySelector(`#pitches tr.${key} :nth-child(2)`).innerHTML =
+                    pitch.toFixed(2);
+            }
+            for (let it of document.querySelectorAll(
+                ".button-group.tuning > button"
+            )) {
+                it.classList.remove("selected");
+            }
+            document.getElementById(a).classList.add("selected");
+        }
+
+        document.onkeydown = function (e) {
+            let val;
+            if ((val = keyToScreenKey(e.key))) {
+                playKey(val);
+            } else if ((val = keyToWavetype(e.key))) {
+                setWaveType(val);
+            } else if ((val = keyToTuning(e.key))) {
+                setTuning(val);
+            } else if ((val = keyToOffset(e.key))) {
+                offsetKeys(val);
+            }
+        };
+
+        document.onkeyup = function (e) {
+            const note = keyToScreenKey(e.key);
+            if (note) releaseKey(note);
+        };
     </script>
-  </body>
+</body>
+
 </html>

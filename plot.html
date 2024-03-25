@@ -1,55 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <title>plot</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      body {
-        margin: auto;
-        margin-top: 1em;
-        max-width: 30em;
-      }
+        body {
+            margin: auto;
+            margin-top: 1em;
+            max-width: 30em;
+        }
 
-      canvas {
-        display: block;
-        margin: auto;
-      }
+        canvas {
+            display: block;
+            margin: auto;
+        }
 
-      div {
-        margin: 1em;
-      }
+        div {
+            margin: 1em;
+        }
 
-      ul {
-        list-style-type: none;
-      }
+        ul {
+            list-style-type: none;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <canvas id="canvas" width="700," height="500"></canvas>
     <div id="domain">
-      <input type="number" size="8" id="x0" value="-1" />
-      <input type="number" size="8" id="x1" value="1" />
-      domain
+        <input type="number" size="8" id="x0" value="-1" />
+        <input type="number" size="8" id="x1" value="1" />
+        domain
     </div>
     <div id="range">
-      <input type="number" size="8" id="y0" value="-1" />
-      <input type="number" size="8" id="y1" value="1" />
-      range
-      <input type="checkbox" id="autorange" checked="true" />
-      <label for="autorange">auto range</label>
+        <input type="number" size="8" id="y0" value="-1" />
+        <input type="number" size="8" id="y1" value="1" />
+        range
+        <input type="checkbox" id="autorange" checked="true" />
+        <label for="autorange">auto range</label>
     </div>
     <div id="functions">
-      <ul id="funlist">
-        <li>
-          <input type="text" class="fun" id="fun0" value="1 2 0 3" />
-          <label for="fun0"></label>
-        </li>
-      </ul>
-      <button type="button" id="+">+</button>
-      <button type="button" id="-">-</button>
+        <ul id="funlist">
+            <li>
+                <input type="text" class="fun" id="fun0" value="1 2 0 3" />
+                <label for="fun0"></label>
+            </li>
+        </ul>
+        <button type="button" id="+">+</button>
+        <button type="button" id="-">-</button>
     </div>
     <script type="module" src="dist/plot.js"></script>
-  </body>
+</body>
+
 </html>

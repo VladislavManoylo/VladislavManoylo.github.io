@@ -2,59 +2,59 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>dice game</title>
-	<link rel="stylesheet" href="style.css" />
-	<style>
-		input[type='number'] {
-			width: 5em;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dice game</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        input[type='number'] {
+            width: 5em;
+        }
 
-		#game {
-			display: flex;
-			flex-wrap: wrap;
-		}
+        #game {
+            display: flex;
+            flex-wrap: wrap;
+        }
 
-		.station {
-			width: 6em;
-			height: 6em;
-			background-color: gray;
-			margin: 1em;
-		}
+        .station {
+            width: 6em;
+            height: 6em;
+            background-color: gray;
+            margin: 1em;
+        }
 
-		.sold {
-			background-color: green;
-		}
-	</style>
+        .sold {
+            background-color: green;
+        }
+    </style>
 </head>
 
 <body>
-	<!-- config -->
-	<label for="rounds">rounds</label>
-	<input type="number" id="rounds" min="1">
-	<label for="stations">stations</label>
-	<input type="number" id="stations" min="1">
-	<label for="workers">workers</label>
-	<input type="number" id="workers" min="1">
-	<label for="held">starting inventory</label>
-	<input type="number" id="held" min="0">
-	<!-- game -->
-	<label for="strategy">Choose a strategy:</label>
-	<select name="strategy" id="strategy">
-		<option value="none">none</option>
-		<option value="flat">flat</option>
-		<option value="random">random</option>
-		<option value="nowaste">no waste</option>
-		<option value="expedite">expedite</option>
-	</select>
-	<p id="progress"> </p>
-	<div id="game"></div>
-	<button type="button" id="update">update</button>
-	<button type="button" id="fastforward">fast forward</button>
-	<button type="button" id="restart">restart</button>
-	<p id="report"></p>
-	<script src="src/20240302.js"></script>
+    <!-- config -->
+    <label for="rounds">rounds</label>
+    <input type="number" id="rounds" min="1">
+    <label for="stations">stations</label>
+    <input type="number" id="stations" min="1">
+    <label for="workers">workers</label>
+    <input type="number" id="workers" min="1">
+    <label for="held">starting inventory</label>
+    <input type="number" id="held" min="0">
+    <!-- game -->
+    <label for="strategy">Choose a strategy:</label>
+    <select name="strategy" id="strategy">
+        <option value="none">none</option>
+        <option value="flat">flat</option>
+        <option value="random">random</option>
+        <option value="nowaste">no waste</option>
+        <option value="expedite">expedite</option>
+    </select>
+    <p id="progress"> </p>
+    <div id="game"></div>
+    <button type="button" id="update">update</button>
+    <button type="button" id="fastforward">fast forward</button>
+    <button type="button" id="restart">restart</button>
+    <p id="report"></p>
+    <script src="src/20240302.js"></script>
 </body>
 
 </html>

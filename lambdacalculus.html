@@ -2,75 +2,75 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8" />
-	<link rel="stylesheet" href="style.css" />
-	<title>lambda calculus</title>
-	<style>
-		body {
-			display: flex;
-			flex-direction: column;
-		}
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+    <title>lambda calculus</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+        }
 
-		.expr {
-			display: inline-block;
-			padding: 0.3em;
-			border-radius: 0.3em;
-			color: white;
-			border-style: solid;
-			border-width: 1px;
-			border-color: white;
-		}
+        .expr {
+            display: inline-block;
+            padding: 0.3em;
+            border-radius: 0.3em;
+            color: white;
+            border-style: solid;
+            border-width: 1px;
+            border-color: white;
+        }
 
-		.var {
-			background-color: red;
-		}
+        .var {
+            background-color: red;
+        }
 
-		.fun {
-			background-color: blue;
-		}
+        .fun {
+            background-color: blue;
+        }
 
-		.apply {
-			background-color: green;
-		}
+        .apply {
+            background-color: green;
+        }
 
-		.eval {
-			border-color: yellow;
-			border-width: 3px;
-		}
+        .eval {
+            border-color: yellow;
+            border-width: 3px;
+        }
 
-		.eval-hover {
-			background-color: yellow;
-			cursor: pointer;
-		}
+        .eval-hover {
+            background-color: yellow;
+            cursor: pointer;
+        }
 
-		#history {
-			border: 1px solid gray;
-		}
+        #history {
+            border: 1px solid gray;
+        }
 
-		.pop:hover {
-			background-color: yellow;
-			color: black;
-			cursor: pointer;
-		}
+        .pop:hover {
+            background-color: yellow;
+            color: black;
+            cursor: pointer;
+        }
 
-		#output {
-			margin: 1em;
-		}
-	</style>
+        #output {
+            margin: 1em;
+        }
+    </style>
 </head>
 
 <body>
-	<textarea id="env" rows="30" cols="80"></textarea>
-	<textarea id="input" rows="3" cols="80"></textarea>
-	<table id="history"></table>
-	<div id="output"></div>
-	<script src="src/lambdacalculus.js"></script>
-	<p>
-		keyboard shortcuts<br>
-		apply function: 1(inner left), 2(inner right), 3(outer left), 4(outer right)<br>
-		-: undo<br>
-		0: undo all<br>
-	</p>
+    <textarea id="env" rows="30" cols="80"></textarea>
+    <textarea id="input" rows="3" cols="80"></textarea>
+    <table id="history"></table>
+    <div id="output"></div>
+    <script src="src/lambdacalculus.js"></script>
+    <p>
+        keyboard shortcuts<br>
+        apply function: 1(inner left), 2(inner right), 3(outer left), 4(outer right)<br>
+        -: undo<br>
+        0: undo all<br>
+    </p>
 </body>
 
 </html>

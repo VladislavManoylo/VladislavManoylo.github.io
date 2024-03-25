@@ -2,46 +2,46 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <title>Linear Regression</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    canvas {
-      display: block;
-      margin: auto;
-    }
+    <meta charset="UTF-8" />
+    <title>Linear Regression</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        canvas {
+            display: block;
+            margin: auto;
+        }
 
-    body {
-      margin: auto;
-      margin-top: 1em;
-      max-width: 30em;
-    }
-  </style>
+        body {
+            margin: auto;
+            margin-top: 1em;
+            max-width: 30em;
+        }
+    </style>
 </head>
 
 <body>
-  <canvas id="canvas" width="700" height="500"></canvas>
-  <button type="button" id="clear">clear</button>
-  <div>
-    <label for="phi">basis expansion</label>
-    <input id="phi" type="number" size="1" min="0" step="1" value="2" />
-    φ(x) =
-    <span id="phiLabel"> </span>
-  </div>
-  <select id="solve" required>
-    <option>closed form</option>
-    <option value="gd">gradient descent</option>
-  </select>
-  <div class="gd">
-    <label for="lr">learning rate =</label>
-    <input type="number" id="lr" value="0.001" />
-  </div>
-  <div class="gd">
-    <label for="iterations">iterations =</label>
-    <input type="number" id="iterations" step="1" min="0" value="10000" />
-  </div>
-  <span id="function"></span>
-  <script type="module" src="dist/regression.js"></script>
+    <canvas id="canvas" width="700" height="500"></canvas>
+    <button type="button" id="clear">clear</button>
+    <div>
+        <label for="phi">basis expansion</label>
+        <input id="phi" type="number" size="1" min="0" step="1" value="2" />
+        φ(x) =
+        <span id="phiLabel"> </span>
+    </div>
+    <select id="solve" required>
+        <option>closed form</option>
+        <option value="gd">gradient descent</option>
+    </select>
+    <div class="gd">
+        <label for="lr">learning rate =</label>
+        <input type="number" id="lr" value="0.001" />
+    </div>
+    <div class="gd">
+        <label for="iterations">iterations =</label>
+        <input type="number" id="iterations" step="1" min="0" value="10000" />
+    </div>
+    <span id="function"></span>
+    <script type="module" src="dist/regression.js"></script>
 </body>
 
 </html>
