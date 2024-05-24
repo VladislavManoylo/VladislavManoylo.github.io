@@ -109,6 +109,9 @@ function toLambda(s) {
  * @returns {Lambda}
  */
 function parse(str) {
+    if (str.includes("\\")) {
+        console.log("found backslash");
+    }
     return toLambda(toSexpr(str));
 }
 
@@ -575,5 +578,6 @@ iota (lambda (x) (x S K))
 // newInput("(lambda (f) (lambda (x) (f (f x))))");
 // newInput("((lambda (f) (lambda (x) x)) (lambda (f) (lambda (x) (f (f x)))))");
 // newInput("(lambda (x x' x'') x' x'') x'");
-newInput("(lambda (cell) (+ (Car cell) (Cdr cell))) (Cons (^ 2 3) (+ 2 3))");
+// newInput("(lambda (cell) (+ (Car cell) (Cdr cell))) (Cons (^ 2 3) (+ 2 3))");
+newInput("* 2 3");
 // evalLast("");
