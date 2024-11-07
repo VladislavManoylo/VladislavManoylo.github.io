@@ -4,8 +4,17 @@ const keyboardButtons = [ // skipping some keys so all columns have 4 rows
     "asdfghjkl;", // skip '
     "zxcvbnm,./",
 ];
+const circleOfFifths = ["B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#"];
+const keyboardOffset = 6;
+let rowDiv = document.getElementById("row0");
+for (let i = 0; i < 10; i++) {
+    let ele = document.createElement("div");
+    ele.classList.add("accordion-note");
+    ele.textContent = circleOfFifths[(keyboardOffset + i) % 10];
+    rowDiv.appendChild(ele);
+}
 for (let i = 0; i < 4; i++) {
-    let rowDiv = document.getElementById(`row${i}`);
+    let rowDiv = document.getElementById(`row${i+1}`);
     for (let j = 0; j < 10; j++) {
         let ele = document.createElement("div");
         ele.classList.add("accordion");
@@ -78,10 +87,8 @@ for (const x of frequencies) {
 }
 
 // keyboard -> accordion
-const circleOfFifths = ["B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#"];
 const stradellaroots = ["A#", "D#", "G#", "C#", "F#", "B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#", "B", "E", "A"];
 const chords = { "counterbass": [4], "root": [0], "major": [0, 4, 7], "minor": [0, 3, 7], "7": [0, 4, 11], "dim7": [0, 4, 10] };
-const keyboardOffset = 6;
 const keyboardRows = ["root", "major", "minor", "7"];
 function keypos(k) {
     for (let i = 0; i < 4; i++) {
