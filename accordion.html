@@ -6,15 +6,55 @@
     <link rel="stylesheet" href="style.css" />
     <title>Accordion</title>
     <style>
-    </style>
-</head>
+        .accordion {
+            text-align: center;
+            vertical-align: middle;
+            background: darkblue;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid blue;
+        }
 
-<script src="src/accordion.js"></script>
+        .row {
+            display: flex;
+            flex-direction: row;
+            width: 80%;
+            justify-content: space-between;
+        }
+
+        #row1 {
+            margin-left: 3%;
+        }
+
+        #row2 {
+            margin-left: 6%;
+        }
+
+        #row3 {
+            margin-left: 9%;
+        }
+
+        #row {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+
+</head>
 
 <body>
     <div id="offset">offset</div>
     <div id="note range">range</div>
     <div id="rows">rows 1-4</div>
     <div id="sound">sound</div>
-    <div id="keyboard"> keyboard</div>
+    <div id="keyboard">
+        <div class="row" id="row0"></div>
+        <div class="row" id="row1"></div>
+        <div class="row" id="row2"></div>
+        <div class="row" id="row3"></div>
+    </div>
 </body>
+
+<script src="src/accordion.js"></script>

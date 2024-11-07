@@ -1,6 +1,16 @@
-// screen keys
-for (let i = 0; i < 10; i++) {
-    for (let j = 0; j < 4; j++) {
+const keyboardButtons = [ // skipping some keys so all columns have 4 rows
+    "1234567890", // skip `-=
+    "qwertyuiop", // skip []\
+    "asdfghjkl;", // skip '
+    "zxcvbnm,./",
+];
+for (let i = 0; i < 4; i++) {
+    let rowDiv = document.getElementById(`row${i}`);
+    for (let j = 0; j < 10; j++) {
+        let ele = document.createElement("div");
+        ele.classList.add("accordion");
+        ele.textContent = keyboardButtons[i][j];
+        rowDiv.appendChild(ele);
     }
 }
 
@@ -71,12 +81,6 @@ for (const x of frequencies) {
 const circleOfFifths = ["B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#"];
 const stradellaroots = ["A#", "D#", "G#", "C#", "F#", "B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#", "B", "E", "A"];
 const chords = { "counterbass": [4], "root": [0], "major": [0, 4, 7], "minor": [0, 3, 7], "7": [0, 4, 11], "dim7": [0, 4, 10] };
-const keyboardButtons = [ // skipping some keys so all columns have 4 rows
-    "`1234567890", // skip -=
-    "qwertyuiop", // skip []\
-    "asdfghjkl;", // skip '
-    "zxcvbnm,./",
-];
 const keyboardOffset = 6;
 const keyboardRows = ["root", "major", "minor", "7"];
 function keypos(k) {
