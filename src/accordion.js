@@ -4,6 +4,8 @@ const keyboardButtons = [ // skipping some keys so all columns have 4 rows
     "asdfghjkl;", // skip '
     "zxcvbnm,./",
 ];
+/** @type {HTMLDivElement[][]}*/
+const buttonDivs = [[], [], [], []];
 const circleOfFifths = ["B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#"];
 const keyboardOffset = 6;
 let rowDiv = document.getElementById("row0");
@@ -14,11 +16,12 @@ for (let i = 0; i < 10; i++) {
     rowDiv.appendChild(ele);
 }
 for (let i = 0; i < 4; i++) {
-    let rowDiv = document.getElementById(`row${i+1}`);
+    let rowDiv = document.getElementById(`row${i + 1}`);
     for (let j = 0; j < 10; j++) {
         let ele = document.createElement("div");
         ele.classList.add("accordion");
         ele.textContent = keyboardButtons[i][j];
+        buttonDivs[i].push(ele);
         rowDiv.appendChild(ele);
     }
 }
@@ -100,6 +103,18 @@ function keypos(k) {
 
 const heldKeys = new Set();
 function updatePlayers() {
+    // press down screen buttons
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 10; j++) {
+            const k = keyboardButtons[i][j];
+            const button = buttonDivs[i][j];
+            if (heldKeys.has(k))
+                button.classList.add("pressed");
+            else
+                button.classList.remove("pressed");
+        }
+    }
+    // find all notes being held
     const heldNotes = new Set();
     for (const k of heldKeys) {
         const kp = keypos(k);
@@ -111,6 +126,7 @@ function updatePlayers() {
         for (const x of intervals)
             heldNotes.add((rootI + x) % 12);
     }
+    // play held notes
     for (let i = 0; i < 12; i++) {
         if (heldNotes.has(i))
             notePlayers[i].play()
