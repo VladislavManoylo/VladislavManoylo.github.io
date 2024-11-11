@@ -68,67 +68,85 @@ for (let i = 0; i < 4; i++) {
     }
 }
 
-// note players
-// C4 - B4, A4=440
-// window.AudioContext = window.AudioContext || window.webkitAudioContext;
 /** @type {AudioContext} */
 const audioCtx = new AudioContext();
-class MultiPlayer {
-    constructor(players) {
-        this.players = players;
+class Reed {
+    /** @param {Note[]} notes  */
+    constructor(notes) {
+        this.notes = notes;
     }
     play() {
-        for (const x of this.players) {
-            x.start();
+        for (const x of this.notes) {
             x.play();
         }
     }
     pause() {
-        for (const x of this.players) x.pause();
+        for (const x of this.notes) x.pause();
     }
 };
 
-class NotePlayer {
-    constructor(frequency) {
+class Note {
+    constructor(frequency, type = "square") {
+        this.set(frequency, type);
+    }
+    set(frequency, type) {
         this.playing = false;
         this.signal = audioCtx.createOscillator();
         this.signal.frequency.value = frequency
-        this.signal.type = "sine";
+        this.signal.type = type;
         this.decayer = audioCtx.createGain();
         this.signal.connect(this.decayer).connect(audioCtx.destination);
         this.started = false;
     }
-    start() {
-        if (this.started) return;
-        audioCtx.resume();
-        this.signal.start();
-        this.started = true;
+    reset(frequency, type) {
+        if (this.signal.frequency.value == frequency && this.signal.type == type)
+            return;
+        this.decayer.disconnect();
+        this.signal.disconnect();
+        this.set(frequency, type);
     }
     play() {
-        if (this.playing) return;
-        const t = audioCtx.currentTime;
-        this.decayer.gain.linearRampToValueAtTime(1, t + 0.1);
-        this.playing = true;
+        if (!this.started) {
+            audioCtx.resume();
+            this.signal.start();
+            this.started = true;
+        }
+        if (!this.playing) {
+            const t = audioCtx.currentTime;
+            this.decayer.gain.linearRampToValueAtTime(1, t + 0.1);
+            this.playing = true;
+        }
     }
     pause() {
-        if (!this.playing) return;
-        const t = audioCtx.currentTime;
-        this.decayer.gain.linearRampToValueAtTime(0, t + 0.1);
-        this.playing = false;
+        if (this.playing) {
+            const t = audioCtx.currentTime;
+            this.decayer.gain.linearRampToValueAtTime(0, t + 0.1);
+            this.playing = false;
+        }
     }
 };
 
 const range = [260, 1000];
 const frequencies = [261.63, 277.18, 293.66, 311.13, 329.63, 348.23, 369.99, 392, 415.3, 440, 466.16, 493.88];
 const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const notePlayers = [];
+/** @type{Reed[]} */
+const Reeds = [];
 for (const x of frequencies) {
     const ar = []
     for (let f = x; f > range[0]; f /= 2)
-        ar.push(new NotePlayer(f));
+        ar.push(new Note(f));
     for (let f = x * 2; f < range[1]; f *= 2)
-        ar.push(new NotePlayer(f));
-    notePlayers.push(new MultiPlayer(ar));
+        ar.push(new Note(f));
+    Reeds.push(new Reed(ar));
+}
+
+function changeSound() {
+    const sound = document.getElementById("selectsound").value;
+    for (let x of Reeds) {
+        for (let y of x.notes) {
+            y.reset(y.signal.frequency.value, sound);
+        }
+    }
 }
 
 // keyboard -> accordion
@@ -167,9 +185,9 @@ function updatePlayers() {
     // play held notes
     for (let i = 0; i < 12; i++) {
         if (heldNotes.has(i))
-            notePlayers[i].play()
+            Reeds[i].play()
         else
-            notePlayers[i].pause()
+            Reeds[i].pause()
     }
 }
 document.addEventListener("keydown", (e) => {

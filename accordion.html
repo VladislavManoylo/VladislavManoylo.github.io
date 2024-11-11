@@ -97,8 +97,16 @@
 <body>
     <div id="offset">offset</div>
     <div id="note range">range</div>
-    <div id="sound">sound</div>
-    <div id="chords">set chord rows
+    <div id="sound">
+        <label for="selectsound">Set sound: </label>
+        <select name="selectsound" id="selectsound" onchange="changeSound()">
+            <option value="square">square</option>
+            <option value="sine">sine</option>
+            <option value="triangle">triangle</option>
+            <option value="sawtooth">sawtooth</option>
+        </select>
+    </div>
+    <div id="chords">Set chord rows
         <div class="chordrow"></div>
         <div class="chordrow"></div>
         <div class="chordrow"></div>
