@@ -134,19 +134,31 @@ class Note {
     }
 };
 
-const range = [260, 1000];
-const frequencies = [261.63, 277.18, 293.66, 311.13, 329.63, 348.23, 369.99, 392, 415.3, 440, 466.16, 493.88];
-const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 /** @type{Reed[]} */
-const Reeds = [];
-for (const x of frequencies) {
-    const ar = []
-    for (let f = x; f > range[0]; f /= 2)
-        ar.push(new Note(f));
-    for (let f = x * 2; f < range[1]; f *= 2)
-        ar.push(new Note(f));
-    Reeds.push(new Reed(ar));
+let Reeds = [];
+/** @param {[number, number]} range
+ * @return {Reed[]} 12 reeds C-B
+ * */
+function makeReeds(range) {
+    // C - B, A=440
+    const frequencies = [261.63, 277.18, 293.66, 311.13, 329.63, 348.23, 369.99, 392, 415.3, 440, 466.16, 493.88];
+    ret = []
+    for (const x of frequencies) {
+        const ar = []
+        for (let f = x; f > range[0]; f /= 2)
+            ar.push(new Note(f));
+        for (let f = x * 2; f < range[1]; f *= 2)
+            ar.push(new Note(f));
+        ret.push(new Reed(ar));
+    }
+    return ret;
 }
+function updateRange() {
+    const lownote = document.getElementById("lownote").value;
+    const highnote = document.getElementById("highnote").value;
+    Reeds = makeReeds([lownote, highnote]);
+}
+updateRange();
 
 function changeSound() {
     const sound = document.getElementById("selectsound").value;
@@ -158,7 +170,6 @@ function changeSound() {
 }
 
 // keyboard -> accordion
-const stradellaroots = ["A#", "D#", "G#", "C#", "F#", "B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#", "B", "E", "A"];
 function keypos(k) {
     for (let i = 0; i < 4; i++) {
         const j = keyboardButtons[i].indexOf(k);
@@ -181,12 +192,13 @@ function updatePlayers() {
         }
     }
     // find all notes being held
+    const frequencyOrder = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     const heldNotes = new Set();
     for (const k of heldKeys) {
         const kp = keypos(k);
         if (kp == null) continue;
         const root = circleOfFifths[(kp[1] + keyboardOffset) % 12];
-        const rootI = notes.indexOf(root);
+        const rootI = frequencyOrder.indexOf(root);
         for (const x of keyboardRows[kp[0]])
             heldNotes.add((rootI + x) % 12);
     }

@@ -11,6 +11,10 @@
             width: 50vmin;
         }
 
+        input[type="number"] {
+            width: 5em;
+        }
+
         .chordrow {
             display: flex;
             flex-direction: row;
@@ -95,7 +99,13 @@
 </head>
 
 <body>
-    <div id="note range">range</div>
+    <div id="note range">
+        Set note range:
+        <label for="lownote">Min</label>
+        <input type="number" id="lownote" value="260" onchange="updateRange()">
+        <label for="highnote">Max</label>
+        <input type="number" id="highnote" value="1000" onchange="updateRange()">
+    </div>
     <div id="sound">
         <label for="selectsound">Set sound: </label>
         <select name="selectsound" id="selectsound" onchange="changeSound()">
