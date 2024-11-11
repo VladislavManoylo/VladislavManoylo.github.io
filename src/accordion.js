@@ -1,3 +1,38 @@
+// intervals
+// root, major, minor, 7
+const keyboardRows = [[0], [0, 4, 7], [0, 3, 7], [4, 11]];
+for (let i = 0; i < 4; i++) {
+    const rowDiv = document.getElementById(`row${i + 1}-keys`);
+    const key = '<input type="checkbox" checked="checked" onchange="updateIntervals()">';
+    rowDiv.innerHTML = key.repeat(12);
+}
+
+/** @param {number[][]| undefined} [assign]
+ * set the row checkboxes to the intervals passed in,
+ * or set the keyboard rows to the values from the checkboxes
+ * */
+function updateIntervals(assign) {
+    for (let i = 0; i < 4; i++) {
+        const rowDiv = document.getElementById(`row${i + 1}-keys`);
+        if (assign) {
+            for (let j = 0; j < 12; j++) {
+                const x = rowDiv.children[j];
+                if (assign[i].includes(j))
+                    x.checked = true;
+                else
+                    x.checked = false;
+            }
+        } else {
+            const row = [];
+            for (let j = 0; j < 12; j++)
+                if (rowDiv.children[j].checked) row.push(j);
+            keyboardRows[i] = row;
+        }
+    }
+}
+updateIntervals(keyboardRows);
+
+// buttons
 const keyboardButtons = [ // skipping some keys so all columns have 4 rows
     "1234567890", // skip `-=
     "qwertyuiop", // skip []\
@@ -7,7 +42,7 @@ const keyboardButtons = [ // skipping some keys so all columns have 4 rows
 /** @type {HTMLDivElement[][]}*/
 const buttonDivs = [[], [], [], []];
 const circleOfFifths = ["B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#"];
-const keyboardOffset = 6;
+const keyboardOffset = 8;
 let rowDiv = document.getElementById("row0");
 for (let i = 0; i < 10; i++) {
     let ele = document.createElement("div");
@@ -91,8 +126,6 @@ for (const x of frequencies) {
 
 // keyboard -> accordion
 const stradellaroots = ["A#", "D#", "G#", "C#", "F#", "B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#", "B", "E", "A"];
-const chords = { "counterbass": [4], "root": [0], "major": [0, 4, 7], "minor": [0, 3, 7], "7": [0, 4, 11], "dim7": [0, 4, 10] };
-const keyboardRows = ["root", "major", "minor", "7"];
 function keypos(k) {
     for (let i = 0; i < 4; i++) {
         const j = keyboardButtons[i].indexOf(k);
@@ -121,9 +154,7 @@ function updatePlayers() {
         if (kp == null) continue;
         const root = circleOfFifths[(kp[1] + keyboardOffset) % 12];
         const rootI = notes.indexOf(root);
-        const chord = keyboardRows[kp[0]];
-        const intervals = chords[chord];
-        for (const x of intervals)
+        for (const x of keyboardRows[kp[0]])
             heldNotes.add((rootI + x) % 12);
     }
     // play held notes
