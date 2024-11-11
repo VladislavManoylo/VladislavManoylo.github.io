@@ -53,7 +53,7 @@ const keyboardOffset = 8;
 let rowDiv = document.getElementById("row0");
 for (let i = 0; i < 10; i++) {
     let ele = document.createElement("div");
-    ele.classList.add("accordion-note");
+    ele.classList.add("accordion-column-label");
     ele.textContent = circleOfFifths[(keyboardOffset + i) % 10];
     rowDiv.appendChild(ele);
 }
@@ -61,7 +61,7 @@ for (let i = 0; i < 4; i++) {
     let rowDiv = document.getElementById(`row${i + 1}`);
     for (let j = 0; j < 10; j++) {
         let ele = document.createElement("div");
-        ele.classList.add("accordion");
+        ele.classList.add("accordion-button");
         ele.textContent = keyboardButtons[i][j];
         buttonDivs[i].push(ele);
         rowDiv.appendChild(ele);

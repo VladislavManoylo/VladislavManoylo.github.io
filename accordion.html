@@ -6,15 +6,16 @@
     <link rel="stylesheet" href="style.css" />
     <title>Accordion</title>
     <style>
-        .accordion-note {
-            text-align: center;
-            width: 7vw;
-            height: 3vh;
+        #chords {
+            margin: 20px;
+            width: 50vmin;
         }
 
         .chordrow {
             display: flex;
             flex-direction: row;
+            height: 4vh;
+            margin: 2vh;
         }
 
         .chordrow input {
@@ -23,31 +24,41 @@
 
         .chordrow input+label {
             display: inline-block;
-            width: 12px;
-            height: 25px;
+            width: 100%;
+            height: 100%;
         }
 
-        .chordrow input:not(:checked)+label {
-            border: 2px solid grey;
+        .chordrow input:not(:checked)+label.whitekey {
+            background: grey;
+            border: 5px dotted white;
         }
 
-        .chordrow input:checked+label {
-            border: 2px solid red;
-        }
-        .whitekey {
+        .chordrow input:checked+label.whitekey {
             background: white;
-        }
-        .blackkey {
-            background: black;
+            border: 5px solid blue;
         }
 
-        .accordion {
+        .chordrow input:not(:checked)+label.blackkey {
+            background: grey;
+            border: 5px dotted black;
+        }
+
+        .chordrow input:checked+label.blackkey {
+            background: black;
+            border: 5px solid blue;
+        }
+
+        #keyboard {
+            margin: 20px;
+        }
+
+        .accordion-button {
             text-align: center;
             vertical-align: middle;
             background: darkblue;
             color: white;
-            width: 7vw;
-            height: 7vw;
+            width: 7vmin;
+            height: 7vmin;
             border-radius: 50%;
             border: 3px solid blue;
         }
@@ -55,20 +66,20 @@
         .row {
             display: flex;
             flex-direction: row;
-            width: 80%;
+            width: 80vmin;
             justify-content: space-between;
         }
 
         #row2 {
-            margin-left: 3vw;
+            margin-left: 3vmin;
         }
 
         #row3 {
-            margin-left: 6vw;
+            margin-left: 6vmin;
         }
 
         #row4 {
-            margin-left: 9vw;
+            margin-left: 9vmin;
         }
 
         #row {
