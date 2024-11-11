@@ -49,14 +49,22 @@ const keyboardButtons = [ // skipping some keys so all columns have 4 rows
 /** @type {HTMLDivElement[][]}*/
 const buttonDivs = [[], [], [], []];
 const circleOfFifths = ["B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#"];
-const keyboardOffset = 8;
-let rowDiv = document.getElementById("row0");
-for (let i = 0; i < 10; i++) {
-    let ele = document.createElement("div");
-    ele.classList.add("accordion-column-label");
-    ele.textContent = circleOfFifths[(keyboardOffset + i) % 10];
-    rowDiv.appendChild(ele);
+let keyboardOffset = 8;
+function slide() {
+    keyboardOffset++;
+    relabel();
 }
+function relabel() {
+    let rowDiv = document.getElementById("row0");
+    rowDiv.innerHTML = "";
+    for (let i = 0; i < 10; i++) {
+        let ele = document.createElement("div");
+        ele.classList.add("accordion-column-label");
+        ele.textContent = circleOfFifths[(keyboardOffset + i) % 10];
+        rowDiv.appendChild(ele);
+    }
+}
+relabel();
 for (let i = 0; i < 4; i++) {
     let rowDiv = document.getElementById(`row${i + 1}`);
     for (let j = 0; j < 10; j++) {
