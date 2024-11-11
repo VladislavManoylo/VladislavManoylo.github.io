@@ -1,10 +1,16 @@
 // intervals
 // root, major, minor, 7
 const keyboardRows = [[0], [0, 4, 7], [0, 3, 7], [4, 11]];
+function noteCheckbox(i, j) { return `key_${i}_${j}`; }
 for (let i = 0; i < 4; i++) {
-    const rowDiv = document.getElementById(`row${i + 1}-keys`);
-    const key = '<input type="checkbox" checked="checked" onchange="updateIntervals()">';
-    rowDiv.innerHTML = key.repeat(12);
+    const key = '<input id="{0}" type="checkbox" onchange="updateIntervals()" /><label class="{1}" for="{0}"></label>';
+    const w = key.replace("{1}", "whitekey");
+    const b = key.replace("{1}", "blackkey");
+    const keys = [w, b, w, b, w, w, b, w, b, w, b, w];
+    for (let j = 0; j < 12; j++) {
+        keys[j] = keys[j].replaceAll("{0}", noteCheckbox(i, j));
+    }
+    document.getElementsByClassName("chordrow")[i].innerHTML = keys.join("");
 }
 
 /** @param {number[][]| undefined} [assign]
@@ -12,11 +18,11 @@ for (let i = 0; i < 4; i++) {
  * or set the keyboard rows to the values from the checkboxes
  * */
 function updateIntervals(assign) {
+    function noteDiv(i, j) { return document.getElementById(noteCheckbox(i, j)); }
     for (let i = 0; i < 4; i++) {
-        const rowDiv = document.getElementById(`row${i + 1}-keys`);
         if (assign) {
             for (let j = 0; j < 12; j++) {
-                const x = rowDiv.children[j];
+                const x = noteDiv(i, j);
                 if (assign[i].includes(j))
                     x.checked = true;
                 else
@@ -24,8 +30,9 @@ function updateIntervals(assign) {
             }
         } else {
             const row = [];
-            for (let j = 0; j < 12; j++)
-                if (rowDiv.children[j].checked) row.push(j);
+            for (let j = 0; j < 12; j++) {
+                if (noteDiv(i, j).checked) row.push(j);
+            }
             keyboardRows[i] = row;
         }
     }

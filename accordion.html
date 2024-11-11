@@ -17,6 +17,30 @@
             flex-direction: row;
         }
 
+        .chordrow input {
+            display: none;
+        }
+
+        .chordrow input+label {
+            display: inline-block;
+            width: 12px;
+            height: 25px;
+        }
+
+        .chordrow input:not(:checked)+label {
+            border: 2px solid grey;
+        }
+
+        .chordrow input:checked+label {
+            border: 2px solid red;
+        }
+        .whitekey {
+            background: white;
+        }
+        .blackkey {
+            background: black;
+        }
+
         .accordion {
             text-align: center;
             vertical-align: middle;
@@ -63,11 +87,11 @@
     <div id="offset">offset</div>
     <div id="note range">range</div>
     <div id="sound">sound</div>
-    <div id="chords">rows 1-4
-        <div class="chordrow" id="row1-keys"></div>
-        <div class="chordrow" id="row2-keys"></div>
-        <div class="chordrow" id="row3-keys"></div>
-        <div class="chordrow" id="row4-keys"></div>
+    <div id="chords">set chord rows
+        <div class="chordrow"></div>
+        <div class="chordrow"></div>
+        <div class="chordrow"></div>
+        <div class="chordrow"></div>
     </div>
     <div id="keyboard">
         <div class="row" id="row0"></div>
