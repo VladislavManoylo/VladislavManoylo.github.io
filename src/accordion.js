@@ -5,7 +5,7 @@ const uniqsort = (x) => numsort(uniq(x));
 
 // intervals
 // root, major, minor, 7
-const keyboardRows = [[0], [0, 4, 7], [0, 3, 7], [4, 11]];
+const keyboardRows = [[0], [0, 4, 7], [0, 3, 7], [0, 4, 11]];
 function noteCheckbox(i, j) { return `key_${i}_${j}`; }
 for (let i = 0; i < 4; i++) {
     const key = '<input id="{0}" type="checkbox" onchange="updateIntervals()" /><label class="{1}" for="{0}"></label>';
@@ -46,6 +46,8 @@ function chordName(intervals) {
         "04810": "Augmented Seventh",
         "04811": "Augmented Major Seventh",
         "0369": "Diminished Seventh",
+        "0411": "7th", // accordion only
+        "0310": "dim 7th", // accordion only
     }[uniqsort(intervals).join("")] ?? "-";
 }
 
