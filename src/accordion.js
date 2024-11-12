@@ -213,6 +213,8 @@ function updatePlayers() {
 }
 document.addEventListener("keydown", (e) => {
     heldKeys.add(e.key);
+    if (e.key == "[") slide(-1);
+    if (e.key == "]") slide(1);
     updatePlayers();
 })
 document.addEventListener("keyup", (e) => {
