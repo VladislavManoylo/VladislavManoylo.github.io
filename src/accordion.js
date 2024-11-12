@@ -75,7 +75,6 @@ function updateIntervals(assign) {
         }
     }
     const labels = document.getElementsByClassName("chordname");
-    uniqsortn = (x) => [new Set(x)].sort((a, b) => a - b);
     for (let i = 0; i < 4; i++) {
         labels[i].innerHTML = chordName(keyboardRows[i]);
     }
