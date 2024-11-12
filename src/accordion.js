@@ -161,8 +161,11 @@ function updateRange() {
 }
 updateRange();
 
-function changeSound() {
-    const sound = document.getElementById("selectsound").value;
+let sound = "sine";
+function nextsound() {
+    const sounds = ["sine", "square", "triangle", "sawtooth"];
+    sound = sounds[(sounds.indexOf(sound) + 1) % sounds.length];
+    document.getElementById("soundtype").innerHTML = sound;
     for (let x of Reeds) {
         for (let y of x.notes) {
             y.reset(y.signal.frequency.value, sound);
@@ -215,6 +218,7 @@ document.addEventListener("keydown", (e) => {
     heldKeys.add(e.key);
     if (e.key == "[") slide(-1);
     if (e.key == "]") slide(1);
+    if (e.key == "\\") nextsound();
     updatePlayers();
 })
 document.addEventListener("keyup", (e) => {

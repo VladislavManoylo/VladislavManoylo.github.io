@@ -139,13 +139,7 @@
         <input type="number" id="highnote" value="1000" onchange="updateRange()">
     </div>
     <div id="sound">
-        <label for="selectsound">Set sound: </label>
-        <select name="selectsound" id="selectsound" onchange="changeSound()">
-            <option value="square">square</option>
-            <option value="sine">sine</option>
-            <option value="triangle">triangle</option>
-            <option value="sawtooth">sawtooth</option>
-        </select>
+        <button type="button" onclick="nextsound()"><span id="soundtype">sine</span><sub>\</sub></button>
     </div>
     <div id="chords">Set chord rows
         <div class="chordrow"></div>
