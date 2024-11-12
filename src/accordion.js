@@ -51,8 +51,8 @@ const buttonDivs = [[], [], [], []];
 // const circleOfFifths = ["B", "E", "A", "D", "G", "C", "F", "A#", "D#", "G#", "C#", "F#"];
 const circleOfFifths = ["F", "C", "G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#"];
 let keyboardOffset = 11;
-function slide() {
-    keyboardOffset = (keyboardOffset + 1) % 12;
+function slide(n) {
+    keyboardOffset = (keyboardOffset + n) % 12;
     relabel();
 }
 function relabel() {
