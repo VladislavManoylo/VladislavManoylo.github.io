@@ -15,6 +15,29 @@
             width: 5em;
         }
 
+        #chords {
+            display: grid;
+            width: 60vw;
+            grid-template-columns: 50vw 10vw;
+            grid-template-areas: "rows names";
+        }
+
+        #chordrows {
+            grid-area: rows;
+        }
+
+        #chordnames {
+            grid-area: names;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chordname {
+            margin: 1em;
+            text-align: center;
+            vertical-align: middle;
+        }
+
         .chordrow {
             display: flex;
             flex-direction: row;
@@ -142,10 +165,18 @@
         <button type="button" onclick="nextsound()"><span id="soundtype">sine</span><sub>\</sub></button>
     </div>
     <div id="chords">Set chord rows
-        <div class="chordrow"></div>
-        <div class="chordrow"></div>
-        <div class="chordrow"></div>
-        <div class="chordrow"></div>
+        <div id="chordrows">
+            <div class="chordrow"></div>
+            <div class="chordrow"></div>
+            <div class="chordrow"></div>
+            <div class="chordrow"></div>
+        </div>
+        <div id="chordnames">
+            <div class="chordname"></div>
+            <div class="chordname"></div>
+            <div class="chordname"></div>
+            <div class="chordname"></div>
+        </div>
     </div>
     <button type="button" onclick="slide(1)">slideup <sub>[</sub></button>
     <button type="button" onclick="slide(-1)">slidedown <sub>]</sub></button>

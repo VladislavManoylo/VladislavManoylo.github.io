@@ -1,3 +1,8 @@
+// util
+const numsort = (x) => x.sort((a, b) => a - b);
+const uniq = (x) => [...new Set(x)];
+const uniqsort = (x) => numsort(uniq(x));
+
 // intervals
 // root, major, minor, 7
 const keyboardRows = [[0], [0, 4, 7], [0, 3, 7], [4, 11]];
@@ -11,6 +16,37 @@ for (let i = 0; i < 4; i++) {
         keys[j] = keys[j].replaceAll("{0}", noteCheckbox(i, j));
     }
     document.getElementsByClassName("chordrow")[i].innerHTML = keys.join("");
+}
+
+function chordName(intervals) {
+    return {
+        "0": "root",
+        "1": "-",
+        "2": "M2",
+        "3": "m3",
+        "4": "M3",
+        "5": "P4",
+        "6": "TT",
+        "7": "P5",
+        "8": "m6",
+        "9": "M6",
+        "10": "m7",
+        "11": "M7",
+        "037": "Minor",
+        "047": "Major",
+        "0479": "Major Sixth",
+        "036": "Diminished",
+        "048": "Augmented",
+        "057": "Sus4",
+        "027": "Sus2",
+        "067": "Sus#4",
+        "03710": "Minor Seventh",
+        "04711": "Major Seventh",
+        "04710": "Dominant Seventh",
+        "04810": "Augmented Seventh",
+        "04811": "Augmented Major Seventh",
+        "0369": "Diminished Seventh",
+    }[uniqsort(intervals).join("")] ?? "-";
 }
 
 /** @param {number[][]| undefined} [assign]
@@ -35,6 +71,11 @@ function updateIntervals(assign) {
             }
             keyboardRows[i] = row;
         }
+    }
+    const labels = document.getElementsByClassName("chordname");
+    uniqsortn = (x) => [new Set(x)].sort((a, b) => a - b);
+    for (let i = 0; i < 4; i++) {
+        labels[i].innerHTML = chordName(keyboardRows[i]);
     }
 }
 updateIntervals(keyboardRows);
