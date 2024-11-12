@@ -52,8 +52,40 @@
             border: 5px solid blue;
         }
 
+        #accordion-layout {
+            display: grid;
+            grid-template-columns: 10vmin 90vmin 10vmin;
+            grid-template-areas:
+                ".     bellows ."
+                "floor keys    ceiling"
+                ".     hand    .";
+        }
+
+        #accordion-layout>div {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #hand {
+            grid-area: hand;
+        }
+
+        #bellows {
+            grid-area: bellows;
+        }
+
+        #floor {
+            grid-area: floor;
+            writing-mode: vertical-lr;
+        }
+
+        #ceiling {
+            grid-area: ceiling;
+            writing-mode: vertical-lr;
+        }
+
         #keyboard {
-            margin: 20px;
+            grid-area: keys;
         }
 
         .accordion-button {
@@ -121,12 +153,18 @@
         <div class="chordrow"></div>
         <div class="chordrow"></div>
     </div>
-    <div id="keyboard">
-        <div class="row" id="row0"></div>
-        <div class="row" id="row1"></div>
-        <div class="row" id="row2"></div>
-        <div class="row" id="row3"></div>
-        <div class="row" id="row4"></div>
+    <div id="accordion-layout">
+        <div id="bellows">bellows</div>
+        <div id="hand">hand</div>
+        <div id="floor">floor</div>
+        <div id="ceiling">ceiling</div>
+        <div id="keyboard">
+            <div class="row" id="row0"></div>
+            <div class="row" id="row1"></div>
+            <div class="row" id="row2"></div>
+            <div class="row" id="row3"></div>
+            <div class="row" id="row4"></div>
+        </div>
     </div>
     <button type="button" onclick="slide()">slide</button>
 </body>
