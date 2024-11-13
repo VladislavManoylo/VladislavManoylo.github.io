@@ -7,29 +7,40 @@ const denomInput = document.getElementById("maxdenom");
 /** @type{HTMLTableElement} */
 const outputTable = document.getElementById("output");
 
-function row(a, b, c) {
+// load url
+const url = new URL(window.location.href);
+const params = new URLSearchParams(url.search);
+equationInput.value = params.get("equation") ?? equationInput.value;
+denomInput.value = params.get("denom") ?? denomInput.value;
+
+
+/** adds row to output table */
+function row(...cells) {
     const r = outputTable.insertRow();
-    r.insertCell().innerHTML = a;
-    r.insertCell().innerHTML = b;
-    r.insertCell().innerHTML = c;
+    for (const x of cells)
+        r.insertCell().innerHTML = x;
 }
 
 /** @param {String | undefined} value */
 function input(value) {
     equationInput.value = value ?? equationInput.value;
+    url.searchParams.set("equation", equationInput.value);
     updateOutput();
 }
 
 /** @param {String | undefined} value */
 function denom(value) {
     denomInput.value = value ?? denomInput.value;
+    url.searchParams.set("denom", denomInput.value);
     updateOutput();
 }
 
 function updateOutput() {
+    history.replaceState(null, '', url);
     const precision = 17;
     const val = parseFloat(Number(eval(equationInput.value)).toPrecision(precision));
     evalDiv.innerHTML = `<div>= ${val}</div>`;
+    outputTable.innerHTML = "";
     row("fraction", "value", "diff");
     for (let [[n, denom], value, diff] of
         nearestFractions(val, denomInput.value, precision))
