@@ -36,6 +36,11 @@ function updateOutput() {
         row(`${n} / ${denom}`, value, diff);
 }
 
+/** @param {number} value
+ *  @param {number} maxDenominator
+ *  @param {number} precision
+ *  @returns {[[number, number], number, number][]}
+ * */
 function nearestFractions(value, maxDenominator, precision) {
     let diff = Infinity;
     const ret = [];
