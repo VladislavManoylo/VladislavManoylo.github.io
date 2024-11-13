@@ -1,5 +1,5 @@
 /** @type{HTMLInputElement} */
-const inputInput = document.getElementById("input");
+const equationInput = document.getElementById("equation");
 /** @type{HTMLDivElement} */
 const evalDiv = document.getElementById("eval");
 /** @type{HTMLInputElement} */
@@ -14,27 +14,42 @@ function row(a, b, c) {
     r.insertCell().innerHTML = c;
 }
 
-/** @param {String | null} str */
-function input(str) {
-    str = str ?? inputInput.value;
-    inputInput.value = str;
-    const p = 16;
-    const val = parseFloat(Number(eval(str)).toPrecision(p));
-    evalDiv.innerHTML = `<div>= ${val}</div>`;
-    let diff = Infinity;
-    outputTable.innerHTML = "";
-    row("fraction", "value", "diff");
-    const max = denomInput.value;
-    for (let denom = 1; denom < max; denom++) {
-        if (diff == 0) break;
-        n = Math.round(val * denom);
-        let v = parseFloat((n / denom).toPrecision(p));
-        let d = parseFloat(Math.abs(val - v).toPrecision(p));
-        if (d < diff) {
-            diff = d;
-            row(`${n} / ${denom}`, v, diff);
-        }
-    }
+/** @param {String | undefined} value */
+function input(value) {
+    equationInput.value = value ?? equationInput.value;
+    updateOutput();
 }
 
-input("Math.PI");
+/** @param {String | undefined} value */
+function denom(value) {
+    denomInput.value = value ?? denomInput.value;
+    updateOutput();
+}
+
+function updateOutput() {
+    const precision = 17;
+    const val = parseFloat(Number(eval(equationInput.value)).toPrecision(precision));
+    evalDiv.innerHTML = `<div>= ${val}</div>`;
+    row("fraction", "value", "diff");
+    for (let [[n, denom], value, diff] of
+        nearestFractions(val, denomInput.value, precision))
+        row(`${n} / ${denom}`, value, diff);
+}
+
+function nearestFractions(value, maxDenominator, precision) {
+    let diff = Infinity;
+    const ret = [];
+    for (let denom = 1; denom < maxDenominator; denom++) {
+        if (diff == 0) break;
+        n = Math.round(value * denom);
+        let v = parseFloat((n / denom).toPrecision(precision));
+        let d = parseFloat(Math.abs(value - v).toPrecision(precision));
+        if (d < diff) {
+            diff = d;
+            ret.push([[n, denom], v, diff]);
+        }
+    }
+    return ret;
+}
+
+updateOutput()

@@ -15,11 +15,11 @@
 
 <body>
     <div>
-        <input type="text" id="input" onchange="input(this.value)">
-        <label for="input">input</label>
+        <input type="text" id="equation" value="Math.PI" onchange="input(this.value)">
+        <label for="equation">equation</label>
     </div>
     <div>
-        <input id="maxdenom" type="number" value="17000" min="1" onchange="input()">
+        <input id="maxdenom" type="number" value="17000" min="1" onchange="denom(this.value)">
         <label for="maxdenom">max denominator</label>
     </div>
     <div id="eval"></div>
