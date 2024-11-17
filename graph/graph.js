@@ -1,4 +1,4 @@
-import { Pencil } from "./pencil.js";
+import { Pencil } from "../pencil.js";
 export class Graph {
     constructor() {
         this.vertices = 0;

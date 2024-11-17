@@ -1,37 +1,27 @@
-import { Pencil, v2, polarToPoint } from "./pencil.js";
-
-let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+import { Pencil, polarToPoint } from "../pencil.js";
+let canvas = document.getElementById("canvas");
 let pencil = new Pencil(canvas);
-
-function randColor(): string {
-    return (
-        "#" +
+function randColor() {
+    return ("#" +
         Math.floor(Math.random() * 0xffffff)
             .toString(16)
-            .padStart(6, "0")
-    );
+            .padStart(6, "0"));
 }
-
-function plus(a: v2, b: v2): v2 {
+function plus(a, b) {
     return [a[0] + b[0], a[1] + b[1]];
 }
-
-function times(a: v2, b: number): v2 {
+function times(a, b) {
     return [a[0] * b, a[1] * b];
 }
-
-function squeeze(x: number, low: number, high: number): number {
+function squeeze(x, low, high) {
     return Math.max(low, Math.min(high, x));
 }
-
 class Eye {
-    pos: v2;
-    look: v2;
-    i = 0;
-    c: number = Math.floor(10 * Math.random());
-    iris: string = randColor();
-    wander: number = Math.random() * 30;
-    constructor(pos: v2) {
+    constructor(pos) {
+        this.i = 0;
+        this.c = Math.floor(10 * Math.random());
+        this.iris = randColor();
+        this.wander = Math.random() * 30;
         this.pos = pos;
         this.look = [0, 0];
     }
@@ -61,11 +51,8 @@ class Eye {
         pencil.circle(plus(this.pos, times(this.look, 35)), 10, "black");
     }
 }
-
-let mouse: v2 = [Math.random() * canvas.width, Math.random() * canvas.height];
-
-let eyes: Eye[];
-
+let mouse = [Math.random() * canvas.width, Math.random() * canvas.height];
+let eyes;
 function resetEyes() {
     eyes = [];
     let d = 150;
@@ -75,7 +62,6 @@ function resetEyes() {
         }
     }
 }
-
 function drawEyes() {
     pencil.clear();
     for (let it of eyes) {
@@ -83,12 +69,9 @@ function drawEyes() {
         it.draw();
     }
 }
-
 function draw() {
-    if (
-        canvas.width != window.innerWidth ||
-        canvas.height != window.innerHeight
-    ) {
+    if (canvas.width != window.innerWidth ||
+        canvas.height != window.innerHeight) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         resetEyes();

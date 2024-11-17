@@ -2,6 +2,13 @@
 const numsort = (x) => x.sort((a, b) => a - b);
 const uniq = (x) => [...new Set(x)];
 const uniqsort = (x) => numsort(uniq(x));
+/** `%` operator, but returns positive values
+ * e.g. -1 % 10 => 9
+ * */
+function posmod(x, n) {
+    x %= n;
+    return (x < 0) ? x + n : x;
+}
 
 // intervals
 // root, major, minor, 7
@@ -94,7 +101,7 @@ const buttonDivs = [[], [], [], []];
 const circleOfFifths = ["F", "C", "G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#"];
 let keyboardOffset = 11;
 function slide(n) {
-    keyboardOffset = (keyboardOffset + n) % 12;
+    keyboardOffset = posmod(keyboardOffset + n, 12);
     relabel();
 }
 function relabel() {
@@ -137,7 +144,7 @@ class Reed {
 };
 
 class Note {
-    constructor(frequency, type = "square") {
+    constructor(frequency, type) {
         this.set(frequency, type);
     }
     set(frequency, type) {
@@ -205,7 +212,7 @@ updateRange();
 
 let sound = "sine";
 function nextsound() {
-    const sounds = ["sine", "square", "triangle", "sawtooth"];
+    const sounds = ["sine", "triangle", "sawtooth", "square"];
     sound = sounds[(sounds.indexOf(sound) + 1) % sounds.length];
     document.getElementById("soundtype").innerHTML = sound;
     for (let x of Reeds) {
