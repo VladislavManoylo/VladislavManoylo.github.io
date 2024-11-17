@@ -1,32 +1,32 @@
-/** @type{HTMLInputElement} */
-const dial1 = document.getElementById("dial1");
-/** @type{HTMLInputElement} */
-const dial2 = document.getElementById("dial2");
+/** @type{HTMLInputElement[]} */
+const phaseDials = document.getElementsByClassName("phase");
+/** @type{HTMLInputElement[]} */
+const hzDials = document.getElementsByClassName("hz");
 
 const audioCtx = new AudioContext();
+let nodes = [null, null];
+
 function synctime(phase, hz) {
     const p = 1 / hz;
     const t = audioCtx.currentTime + 0.1; // extra time to get sync correct
     return t - (t % p) + phase * p;
 }
-function makeNode() {
+
+function makeNode(hz = 440) {
     const node = audioCtx.createOscillator();
+    node.frequency.value = hz;
     node.connect(audioCtx.destination);
     return node;
 }
-let n1 = null;
-let n2 = null;
 
 function change() {
-    if (n1 !== null)
-        n1.stop();
-    if (n2 !== null)
-        n2.stop();
-    n1 = makeNode();
-    n2 = makeNode();
-    const d1 = dial1.value;
-    const d2 = dial2.value;
-    console.log(d1, d2);
-    n1.start(synctime(d1, 440));
-    n2.start(synctime(d2, 440));
+    for (let i = 0; i < 2; i++) {
+        if (nodes[i] !== null)
+            nodes[i].stop();
+        const phase = phaseDials[i].value;
+        const hz = hzDials[i].value;
+        console.log(i, phase, hz);
+        nodes[i] = makeNode(hz);
+        nodes[i].start(synctime(phase, hz));
+    }
 }

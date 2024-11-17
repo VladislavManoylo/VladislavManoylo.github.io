@@ -11,8 +11,10 @@
 </head>
 
 <body>
-    <input type="range" min="0" max="1" step="0.1" id="dial1" onchange="change()">
-    <input type="range" min="0" max="1" step="0.1" id="dial2" onchange="change()">
+    <input class="phase" type="range" min="0" max="1" step="0.1" onchange="change()">
+    <input class="phase" type="range" min="0" max="1" step="0.1" onchange="change()">
+    <input class="hz" type="number" value="440" onchange="change()">
+    <input class="hz" type="number" value="440" onchange="change()">
 </body>
 
 <script src="script.js"></script>
