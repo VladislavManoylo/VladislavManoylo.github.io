@@ -2,8 +2,6 @@
 const equationInput = document.getElementById("equation");
 /** @type{HTMLDivElement} */
 const evalDiv = document.getElementById("eval");
-/** @type{HTMLInputElement} */
-const denomInput = document.getElementById("maxdenom");
 /** @type{HTMLTableElement} */
 const outputTable = document.getElementById("output");
 
@@ -11,7 +9,6 @@ const outputTable = document.getElementById("output");
 const url = new URL(window.location.href);
 const params = new URLSearchParams(url.search);
 equationInput.value = params.get("equation") ?? equationInput.value;
-denomInput.value = params.get("denom") ?? denomInput.value;
 
 
 /** adds row to output table */
@@ -28,13 +25,6 @@ function input(value) {
     updateOutput();
 }
 
-/** @param {String | undefined} value */
-function denom(value) {
-    denomInput.value = value ?? denomInput.value;
-    url.searchParams.set("denom", denomInput.value);
-    updateOutput();
-}
-
 function updateOutput() {
     history.replaceState(null, '', url);
     const precision = 17;
@@ -43,7 +33,7 @@ function updateOutput() {
     outputTable.innerHTML = "";
     row("fraction", "value", "diff");
     for (let [[n, denom], value, diff] of
-        nearestFractions(val, denomInput.value, precision))
+        nearestFractions(val, 100000, precision))
         row(`${n} / ${denom}`, value, diff);
 }
 
