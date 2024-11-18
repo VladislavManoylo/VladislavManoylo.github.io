@@ -4,7 +4,9 @@ const nodeContainer = document.getElementById("nodes");
 /** @type{OscillatorNode[]} */
 const nodes = [];
 
-function makeNodeDiv(i) {
+function makeNodeDiv() {
+    makeNodeDiv.i = (makeNodeDiv.i || 0) + 1;
+    i = makeNodeDiv.i;
     return `
     <div>
         <label for="phase${i}" title="set phase of wave- two identical waves with opposite phase wil cancel out">phase
@@ -16,22 +18,23 @@ function makeNodeDiv(i) {
         <label for="detune${i}" title="detune note by cents (100 cents per 12 EDO semitone)">detune
             <input id="detune${i}" class="detune" type="number" value="0" onchange="change()">
         </label>
-        <button class="x" type="button" onclick="rmNode(${i})" title="remove note">x</button>
+        <button class="x" type="button" onclick="rmNode(this.parentElement)" title="remove note">x</button>
     </div>
         `
 }
 
 function addNode() {
-    nodeContainer.insertAdjacentHTML("beforeend", makeNodeDiv(nodes.length));
+    nodeContainer.insertAdjacentHTML("beforeend", makeNodeDiv());
     nodes.push(makeNode());
     change();
 }
 
-function rmNode(i) {
-    console.log(i, nodes);
-    nodeContainer.removeChild(nodeContainer.children[i]);
+function rmNode(div) {
+    const i = [...nodeContainer.children].indexOf(div);
+    console.log("rm", i, div, nodes);
     nodes[i].stop();
     nodes.splice(i, 1);
+    nodeContainer.removeChild(div);
 }
 
 function synctime(phase, hz) {
