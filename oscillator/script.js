@@ -13,6 +13,9 @@ function makeNodeDiv(i) {
         <label for="hz${i}">hz
             <input id="hz${i}" class="hz" type="number" value="440" onchange="change()">
         </label>
+        <label for="detune${i}">detune
+            <input id="detune${i}" class="detune" type="number" value="0" onchange="change()">
+        </label>
         <button class="x" type="button" onclick="rmNode(${i})">x</button>
     </div>
         `
@@ -37,9 +40,10 @@ function synctime(phase, hz) {
     return t - (t % p) + phase * p;
 }
 
-function makeNode(phase = 0, hz = 440) {
+function makeNode(phase = 0, hz = 440, detune = 0) {
     const node = audioCtx.createOscillator();
     node.frequency.value = hz;
+    node.detune.value = detune;
     node.connect(audioCtx.destination);
     node.start(synctime(phase, hz));
     return node;
@@ -48,11 +52,13 @@ function makeNode(phase = 0, hz = 440) {
 function change() {
     const phaseDials = document.getElementsByClassName("phase");
     const hzDials = document.getElementsByClassName("hz");
+    const detuneDials = document.getElementsByClassName("detune");
     for (let i = 0; i < nodes.length; i++) {
         nodes[i].stop();
         const phase = phaseDials[i].value;
         const hz = hzDials[i].value;
+        const detune = detuneDials[i].value;
         console.log(i, phase, hz);
-        nodes[i] = makeNode(phase, hz);
+        nodes[i] = makeNode(phase, hz, detune);
     }
 }
