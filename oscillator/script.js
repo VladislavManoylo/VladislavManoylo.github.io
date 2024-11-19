@@ -19,7 +19,7 @@ function tablerow(...cells) {
 class Note {
     constructor() {
         this.phase = 0;
-        this.hz = 440;
+        this.hz = 220;
         this.detune = 0;
         this.wavetype = "sine";
         this.real = [0, 0];
@@ -188,7 +188,7 @@ function change(div, cls, val) {
         case "real": notes[i][cls] = nums(val); break;
         case "imag": notes[i][cls] = nums(val); break;
     }
-    console.log("change", i, cls, val, notes[i]);
+    // console.log("change", i, cls, val, notes[i]);
     notePlayers[i].stop()
     notePlayers[i] = notes[i].makePlayer();
     display();
@@ -219,13 +219,15 @@ function display() {
     let html = "<thead><th>frequency</th><th>phase</th></thead><tbody>";
     const funcs = [];
     const frequencies = [];
+    const xrange = [0, 1 / 220];
+    const yrange = [-2, 2];
     for (let i = 0; i < notes.length; i++) {
         frequencies.push(notes[i].frequency());
         funcs.push(notes[i].getFunc());
-        plotfunc(funcs[i], [0, 1 / 440], [-2, 2]);
+        plotfunc(funcs[i], xrange, yrange);
         html += tablerow(frequencies[i], notes[i].phase);
     }
-    plotfunc(sumFunctions(funcs), [0, 1 / 440], [-2, 2]);
+    plotfunc(sumFunctions(funcs), xrange, yrange);
     html += "</tbody>";
     wavetableContainer.innerHTML = html
 }
