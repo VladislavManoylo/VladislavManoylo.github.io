@@ -123,7 +123,7 @@ function makeNotePlayer(note) {
     const ret = audioCtx.createOscillator();
     ret.frequency.value = note.hz;
     ret.detune.value = note.detune;
-    if (note.type == "custom") {
+    if (note.wavetype == "custom") {
         ret.setPeriodicWave(audioCtx.createPeriodicWave(note.real, note.imag));
     } else {
         ret.type = note.wavetype;
