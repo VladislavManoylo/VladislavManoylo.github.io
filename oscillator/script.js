@@ -4,8 +4,8 @@
  *  @property {number} hz
  *  @property {number} detune
  *  @property {wavetype} wavetype
- *  @property {number[]} real - for periodic wave
- *  @property {number[]} imag - for periodic wave
+ *  @property {number[]} real - coefficients for custom wavetype
+ *  @property {number[]} imag - coefficients for custom wavetype
  * */
 
 /** @type{node} */
@@ -28,10 +28,20 @@ const nodes = [];
 /** @type{node[]} */
 const nodeVals = []
 
-function labeledInput(type, value, help, content, label=null) {
+/**
+ * create input with a label
+ *
+ * @param {string} label - label text
+ * @param {string} value - default input value
+ * @param {string} help - hover text for element
+ * @param {string} content - tags inside the input element
+ * @param {string|null} [labelOverwrite] - optionally used inside onchange function in place of label
+ * @returns {string} html text
+ */
+function labeledInput(label, value, help, content, labelOverwrite = null) {
     return `
-        <label title=${help}>${type}
-            <input class="${type}" ${content} value="${value}" onchange="change(this, '${label??type}', this.value)">
+        <label title=${help}>${label}
+            <input ${content} value="${value}" onchange="change(this, '${labelOverwrite ?? label}', this.value)">
         </label>
     `
 }
@@ -86,7 +96,6 @@ function addNode() {
     nodeContainer.appendChild(makeNodeDiv(n));
     nodes.push(makeNodePlayer(n));
     nodeVals.push(n);
-    reset();
 }
 
 function rmNode(div) {
@@ -94,6 +103,7 @@ function rmNode(div) {
     console.log("rm", i, div, nodes);
     nodes[i].stop();
     nodes.splice(i, 1);
+    nodeVals.splice(i, 1);
     nodeContainer.removeChild(div);
 }
 
@@ -163,21 +173,6 @@ function change(div, cls, val) {
         case "real": nodeVals[i][cls] = nums(val); break;
         case "imag": nodeVals[i][cls] = nums(val); break;
     }
-}
-
-function reset() {
-    return;
-    const phaseDials = document.getElementsByClassName("phase");
-    const hzDials = document.getElementsByClassName("hz");
-    const detuneDials = document.getElementsByClassName("detune");
-    const wavetypeRadio = document.getElementsByClassName("wavetype");
-    for (let i = 0; i < nodes.length; i++) {
-        nodes[i].stop();
-        const phase = phaseDials[i].value;
-        const hz = hzDials[i].value;
-        const detune = detuneDials[i].value;
-        const wavetype = wavetypeRadio[i].value;
-        console.log(i, phase, hz, detune, wavetype);
-        nodes[i] = makeNodePlayer(phase, hz, detune);
-    }
+    node[i].stop()
+    node[i] = makeNodePlayer(nodeVals[i]);
 }
