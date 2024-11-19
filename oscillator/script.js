@@ -1,3 +1,14 @@
+const detuned = (hz, detune) => hz * Math.pow(2, detune / 1200);
+const nums = (s) => s.split(",").map(Number);
+function tablerow(...cells) {
+    let ret = "<tr>"
+    for (const x of cells) {
+        ret += `<td>${x}</td>`;
+    }
+    ret += "</tr>";
+    return ret;
+}
+
 /** @typedef {"sine" | "square" | "triangle" | "sawtooth" | "custom" } wavetype */
 /** @typedef {Object} note
  *  @property {number} phase
@@ -18,11 +29,11 @@ const defaultNote = {
     imag: [0, 1],
 };
 
-const nums = (s) => s.split(",").map(Number);
-
 const audioCtx = new AudioContext();
 /** @type{HTMLDivElement} */
 const noteContainer = document.getElementById("notes");
+/** @type{HTMLTableElement} */
+const wavetableContainer = document.getElementById("table");
 /** @type{OscillatorNode[]} */
 const notePlayers = [];
 /** @type{note[]} */
@@ -75,7 +86,7 @@ function makeNoteDiv(note) {
     makeNoteDiv.i = (makeNoteDiv.i || 0) + 1;
     i = makeNoteDiv.i;
     ret.innerHTML =
-        '<button class="x" type="button" onclick="rmNode(this.parentElement)" title="remove note">x</button>' +
+        '<button class="x" type="button" onclick="rmNote(this.parentElement)" title="remove note">x</button>' +
         labeledInput("phase", note.phase, "set phase of wave- two identical waves with opposite phase wil cancel out", 'type="range" min="0" max="1" step="0.1"') +
         labeledInput("hz", note.hz, "frequency of note", 'type="number"') +
         labeledInput("detune", note.detune, "detune note by cents (100 cents per 12 EDO semitone)", 'type="number"');
@@ -96,6 +107,7 @@ function addNote() {
     noteContainer.appendChild(makeNoteDiv(n));
     notePlayers.push(makeNotePlayer(n));
     notes.push(n);
+    display();
 }
 
 function rmNote(div) {
@@ -105,6 +117,7 @@ function rmNote(div) {
     notePlayers.splice(i, 1);
     notes.splice(i, 1);
     noteContainer.removeChild(div);
+    display();
 }
 
 function synctime(phase, hz) {
@@ -175,4 +188,17 @@ function change(div, cls, val) {
     }
     notePlayers[i].stop()
     notePlayers[i] = makeNotePlayer(notes[i]);
+    display();
 }
+
+
+function display() {
+    let html = "<thead><th>frequency</th><th>phase</th></thead><tbody>";
+    for (let i = 0; i < notes.length; i++) {
+        const f = detuned(notes[i].hz, notes[i].detune);
+        html += tablerow(f, notes[i].phase);
+    }
+    html += "</tbody>";
+    wavetableContainer.innerHTML = html
+}
+display();
