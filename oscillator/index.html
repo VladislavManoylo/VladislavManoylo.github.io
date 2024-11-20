@@ -20,6 +20,11 @@
             grid-template-columns: 1fr 1fr;
         }
 
+        .note,
+        #add {
+            margin: 0.5em;
+        }
+
         #controls {
             grid-area: controls;
         }
@@ -34,7 +39,9 @@
 <body>
     <div id="controls">
         <div id="notes"></div>
-        <button type="button" onclick="addNote()">+</button>
+        <div id="add">
+            <button type="button" onclick="addNote()">+</button>
+        </div>
     </div>
     <div id="waves">
         <canvas id="plot"></canvas>
