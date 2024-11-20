@@ -1,5 +1,9 @@
 const detuned = (hz, detune) => hz * Math.pow(2, detune / 1200);
-const nums = (s) => s.split(",").map(Number);
+const parseFraction = (s) => {
+    const [a, b] = s.split('/');
+    return b ? parseFloat(a) / parseFloat(b) : parseFloat(a);
+}
+const nums = (s) => s.split(",").map(parseFraction);
 function sumFunctions(functions) {
     return function(...args) {
         return functions.reduce((sum, func) => sum + func(...args), 0);
