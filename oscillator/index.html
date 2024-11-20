@@ -39,7 +39,12 @@
     <div id="waves">
         <canvas id="plot"></canvas>
         <div id="plot controls">
-            <input id="" type="number" 
+            <label title="length of plot in seconds">period
+                <input id="period" type="text" value="1/220" onchange="changePeriod(parseFraction(this.value))">
+            </label>
+            <label title="height of plot above and below x axis">amplitude
+                <input id="amplitude" type="number" min="1" value="2" onchange="changeAmplitude(this.value)">
+            </label>
         </div>
         <table id="table"></table>
     </div>

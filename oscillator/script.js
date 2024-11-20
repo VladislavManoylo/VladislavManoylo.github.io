@@ -293,14 +293,36 @@ function plotfunc(f, xrange, yrange, color) {
     ctx.stroke();
 }
 
+let xrange = [0, 1 / 220];
+let yrange = [-2, 2];
+
+/**
+ * called from html input to change period of plot
+ *
+ * @param {number} n - length of plot in seconds
+ */
+function changePeriod(n) {
+    console.log("changing", xrange);
+    xrange = [0, n];
+    display();
+}
+
+/**
+ * called from html input to change amplitude of plot
+ *
+ * @param {number} n - height of plot above and below axis
+ */
+function changeAmplitude(n) {
+    yrange = [-n, n];
+    display();
+}
+
 
 function display() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let html = "<thead><th>frequency</th><th>phase</th></thead><tbody>";
     const funcs = [];
     const frequencies = [];
-    const xrange = [0, 1 / 220];
-    const yrange = [-2, 2];
     plotline([0, 0.5], [1, 0.5], "black");
     plotline([0, 0], [0, 1], "black");
     for (let i = 0; i < notes.length; i++) {
