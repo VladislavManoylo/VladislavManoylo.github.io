@@ -22,8 +22,9 @@ class Note {
         this.hz = 220;
         this.detune = 0;
         this.wavetype = "sine";
-        this.real = [0, 0];
-        this.imag = [0, 1];
+        this.dcoffset = 0;
+        this.real = [0];
+        this.imag = [1];
     }
 
     frequency() {
@@ -41,12 +42,23 @@ class Note {
         const wavetype = makeRadioDiv(`wavetype`, ["sine", "triangle", "square", "sawtooth", "custom"]);
         wavetype.innerHTML += `
         <div>
-        ${labeledInput('real', this.real, 'real coefficients', 'type="text"')}
-        ${labeledInput('imag', this.imag, 'imaginary coefficients', 'type="text"')}
+        ${labeledInput("dc offset", this.dcoffset, "dcoffset", 'type="number"')}
+        ${labeledInput("real", this.real, "cos coefficients of harmonics", 'type="text"')}
+        ${labeledInput("imag", this.imag, "sin coefficients of harmonics", 'type="text"')}
         </div>
         `
         ret.appendChild(wavetype);
         return ret;
+    }
+
+    getHarmonics() {
+        const dl = this.real.length - this.imag.length;
+        if (dl > 0) {
+            this.imag = [...this.imag, ...Array(dl).fill(0)];
+        } else if (dl < 0) {
+            this.real = [...this.real, ...Array(-dl).fill(0)];
+        }
+        return [this.real, this.imag];
     }
 
     makePlayer() {
@@ -54,15 +66,8 @@ class Note {
         ret.frequency.value = this.hz;
         ret.detune.value = this.detune;
         if (this.wavetype == "custom") {
-            let r = this.real;
-            let i = this.imag;
-            const dl = r.length - i.length;
-            if (dl > 0) {
-                i = [...i, ...Array(dl).fill(0)];
-            } else if (dl < 0) {
-                r = [...r, ...Array(-dl).fill(0)];
-            }
-            ret.setPeriodicWave(audioCtx.createPeriodicWave(r, i));
+            const [r, i] = this.getHarmonics();
+            ret.setPeriodicWave(audioCtx.createPeriodicWave([this.dcoffset, ...r], [0, ...i]));
         } else {
             ret.type = this.wavetype;
         }
@@ -88,20 +93,31 @@ class Note {
                     // peak/trough should match sine wave peak/trough
                     t = (t + 0.25) % 1;
                     return 1 - 4 * Math.abs(t - 0.5);
-                }
+                };
             case "square":
                 return (t) => {
                     t = inphase(t);
                     // t = (t + 0.25) % 1;
                     return t < 0.5 ? 1 : -1;
-                }
+                };
             case "sawtooth":
                 return (t) => {
                     t = inphase(t);
                     // peak should match end of square wave peak
                     t = (t + 0.25) % 1;
                     return 2 * t - 1;
-                }
+                };
+            case "custom":
+                let [real, imag] = this.getHarmonics();
+                return (t) => {
+                    t = inphase(t);
+                    let ret = this.dcoffset;
+                    for (let i = 0; i < real.length; i++) {
+                        ret += real[i] * Math.cos(2 * Math.PI * (i + 1) * t);
+                        ret += imag[i] * Math.sin(2 * Math.PI * (i + 1) * t);
+                    }
+                    return ret;
+                };
         }
     }
 }
@@ -213,6 +229,7 @@ function change(div, cls, val) {
         case "hz": notes[i][cls] = parseFloat(val); break;
         case "detune": notes[i][cls] = parseFloat(val); break;
         case "wavetype": notes[i][cls] = val; break;
+        case "dc offset": notes[i].dcoffset = parseFloat(val); break;
         case "real": notes[i][cls] = nums(val); break;
         case "imag": notes[i][cls] = nums(val); break;
     }
