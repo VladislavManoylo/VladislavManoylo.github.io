@@ -1,14 +1,18 @@
 const detuned = (hz, detune) => hz * Math.pow(2, detune / 1200);
+
 const parseFraction = (s) => {
     const [a, b] = s.split('/');
     return b ? parseFloat(a) / parseFloat(b) : parseFloat(a);
 }
+
 const nums = (s) => s.split(",").map(parseFraction);
+
 function sumFunctions(functions) {
     return function(...args) {
         return functions.reduce((sum, func) => sum + func(...args), 0);
     };
 }
+
 function tablerow(...cells) {
     let ret = "<tr>"
     for (const x of cells) {
@@ -17,10 +21,53 @@ function tablerow(...cells) {
     ret += "</tr>";
     return ret;
 }
+
 function counter() {
     counter.i ??= 0;
     counter.i += 1;
     return counter.i;
+}
+
+function reverseSawtooth(n) {
+    const ret = [];
+    for (let i = 1; i <= n; i++) {
+        let x = i % 2 == 0 ? 1 : -1;
+        ret.push(x / i);
+    }
+    return ret;
+}
+
+function sawtooth(n) {
+    const ret = [];
+    for (let i = 1; i <= n; i++) {
+        ret.push(-1 / i);
+    }
+    return ret;
+}
+
+function square(n) {
+    const ret = [];
+    for (let i = 1; i <= n; i++) {
+        if (i % 2 == 0) {
+            ret.push(0);
+        } else {
+            ret.push(1 / i);
+        }
+    }
+    return ret;
+}
+
+function triangle(n) {
+    const ret = [];
+    for (let i = 1; i <= n; i++) {
+        if (i % 2 == 0) {
+            ret.push(0);
+        } else {
+            let x = i % 4 == 1 ? 1 : -1;
+            ret.push(x / (i * i));
+        }
+    }
+    return ret;
 }
 
 /** @typedef {"sine" | "square" | "triangle" | "sawtooth" | "custom" } wavetype */
@@ -118,11 +165,13 @@ class Note {
                 return (t) => {
                     t = inphase(t);
                     // peak should match end of square wave peak
-                    t = (t + 0.25) % 1;
+                    t = (t + 0.5) % 1;
                     return 2 * t - 1;
                 };
             case "custom":
-                let [s, c] = this.getHarmonics();
+                let [c, s] = this.getHarmonics();
+                // for (let i = 0; i < c.length; i++)
+                //     console.log('terms', (i + 1), s[i]);
                 return (t) => {
                     t = inphase(t);
                     let ret = this.dcoffset;
@@ -186,11 +235,29 @@ function makeRadioDiv(name, values, check = "") {
     return ret;
 }
 
-function addNote() {
-    const n = new Note();
-    noteContainer.appendChild(n.makeDiv());
-    notePlayers.push(n.makePlayer());
-    notes.push(n);
+function addNote(preset = null) {
+    const note = new Note();
+    switch (preset) {
+        case "square":
+            note.wavetype = "custom";
+            note.sin = square(99);
+            break;
+        case "reverse sawtooth":
+            note.wavetype = "custom";
+            note.sin = reverseSawtooth(199);
+            break;
+        case "sawtooth":
+            note.wavetype = "custom";
+            note.sin = sawtooth(99);
+            break;
+        case "triangle":
+            note.wavetype = "custom";
+            note.sin = triangle(9);
+            break;
+    }
+    noteContainer.appendChild(note.makeDiv());
+    notePlayers.push(note.makePlayer());
+    notes.push(note);
     display();
 }
 
@@ -298,8 +365,8 @@ function plotfunc(f, xrange, yrange, color) {
     ctx.stroke();
 }
 
-let xrange = [0, 1 / 220];
-let yrange = [-2, 2];
+let xrange = [0, 1 / 110];
+let yrange = [-4, 4];
 
 /**
  * called from html input to change period of plot
