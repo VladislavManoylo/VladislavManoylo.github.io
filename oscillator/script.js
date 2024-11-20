@@ -35,7 +35,7 @@ class Note {
         ret.classList.add("note");
         ret.innerHTML =
             '<button class="x" type="button" onclick="rmNote(this.parentElement)" title="remove note">x</button>' +
-            labeledInput("phase", this.phase, "set phase of wave- two identical waves with opposite phase wil cancel out", 'type="range" min="0" max="1" step="0.1"') +
+            labeledInput("phase", this.phase, "set phase of wave- two identical waves with opposite phase wil cancel out", 'type="range" min="0" max="1" step="0.05"') +
             labeledInput("hz", this.hz, "frequency of note", 'type="number"') +
             labeledInput("detune", this.detune, "detune note by cents (100 cents per 12 EDO semitone)", 'type="number"');
         const wavetype = makeRadioDiv(`wavetype`, ["sine", "triangle", "square", "sawtooth", "custom"]);
@@ -72,9 +72,37 @@ class Note {
     }
 
     getFunc() {
-        const p = this.phase / this.frequency();
+        const period = 1 / this.frequency();
+        const inphase = (t) => {
+            t = t % period / period; // 0-1 phase
+            t -= this.phase; // include phase
+            return t < 0 ? t + 1 : t;
+        }
         // console.log("phase", this.phase, this.frequency());
-        return (t) => Math.sin(2 * Math.PI * this.frequency() * (t - p));
+        switch (this.wavetype) {
+            case "sine":
+                return (t) => Math.sin(2 * Math.PI * inphase(t));
+            case "triangle":
+                return (t) => {
+                    t = inphase(t);
+                    // peak/trough should match sine wave peak/trough
+                    t = (t + 0.25) % 1;
+                    return 1 - 4 * Math.abs(t - 0.5);
+                }
+            case "square":
+                return (t) => {
+                    t = inphase(t);
+                    // t = (t + 0.25) % 1;
+                    return t < 0.5 ? 1 : -1;
+                }
+            case "sawtooth":
+                return (t) => {
+                    t = inphase(t);
+                    // peak should match end of square wave peak
+                    t = (t + 0.25) % 1;
+                    return 2 * t - 1;
+                }
+        }
     }
 }
 
@@ -200,11 +228,14 @@ function change(div, cls, val) {
  * @param {Function} f - function to plot
  * @param {[number, number]} [xrange] - range of x values to plot
  * @param {[number, number]} [yrange] - range of y values to plot
+ * @param {string} [color] - line color
  */
-function plotfunc(f, xrange, yrange) {
+function plotfunc(f, xrange, yrange, color = "black") {
+    yrange = [yrange[1], yrange[0]]; // because canvas (0,0) is top left
     const xscale = canvas.width / (xrange[1] - xrange[0]);
     const yscale = canvas.height / (yrange[1] - yrange[0]);
     const cf = (x) => (f(x / xscale + xrange[0]) - yrange[0]) * yscale;
+    ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.moveTo(0, cf(0));
     for (let x = 1; x < canvas.width; x++) {
@@ -221,13 +252,14 @@ function display() {
     const frequencies = [];
     const xrange = [0, 1 / 220];
     const yrange = [-2, 2];
+    plotfunc((t) => 0, [0, 1], [-1, 1]);
     for (let i = 0; i < notes.length; i++) {
         frequencies.push(notes[i].frequency());
         funcs.push(notes[i].getFunc());
-        plotfunc(funcs[i], xrange, yrange);
+        plotfunc(funcs[i], xrange, yrange, "blue");
         html += tablerow(frequencies[i], notes[i].phase);
     }
-    plotfunc(sumFunctions(funcs), xrange, yrange);
+    plotfunc(sumFunctions(funcs), xrange, yrange, "white");
     html += "</tbody>";
     wavetableContainer.innerHTML = html
 }
