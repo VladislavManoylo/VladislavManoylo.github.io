@@ -32,8 +32,8 @@ class Note {
         this.detune = 0;
         this.wavetype = "sine";
         this.dcoffset = 0;
-        this.real = [0];
-        this.imag = [1];
+        this.cos = [0];
+        this.sin = [1];
     }
 
     frequency() {
@@ -52,22 +52,27 @@ class Note {
         wavetype.innerHTML += `
         <div>
         ${labeledInput("dc offset", this.dcoffset, "dcoffset", 'type="number"')}
-        ${labeledInput("real", this.real, "cos coefficients of harmonics", 'type="text"')}
-        ${labeledInput("imag", this.imag, "sin coefficients of harmonics", 'type="text"')}
+        ${labeledInput("cos", this.cos, "cos coefficients of harmonics", 'type="text"')}
+        ${labeledInput("sin", this.sin, "sin coefficients of harmonics", 'type="text"')}
         </div>
         `
         ret.appendChild(wavetype);
         return ret;
     }
 
+    /**
+     * even/cos and odd/sin coefficients of harmonics
+     *
+     * @returns {[number[], number[]}
+     */
     getHarmonics() {
-        const dl = this.real.length - this.imag.length;
+        const dl = this.cos.length - this.sin.length;
         if (dl > 0) {
-            this.imag = [...this.imag, ...Array(dl).fill(0)];
+            this.sin = [...this.sin, ...Array(dl).fill(0)];
         } else if (dl < 0) {
-            this.real = [...this.real, ...Array(-dl).fill(0)];
+            this.cos = [...this.cos, ...Array(-dl).fill(0)];
         }
-        return [this.real, this.imag];
+        return [this.cos, this.sin];
     }
 
     makePlayer() {
@@ -117,13 +122,13 @@ class Note {
                     return 2 * t - 1;
                 };
             case "custom":
-                let [real, imag] = this.getHarmonics();
+                let [s, c] = this.getHarmonics();
                 return (t) => {
                     t = inphase(t);
                     let ret = this.dcoffset;
-                    for (let i = 0; i < real.length; i++) {
-                        ret += real[i] * Math.cos(2 * Math.PI * (i + 1) * t);
-                        ret += imag[i] * Math.sin(2 * Math.PI * (i + 1) * t);
+                    for (let i = 0; i < c.length; i++) {
+                        ret += c[i] * Math.cos(2 * Math.PI * (i + 1) * t);
+                        ret += s[i] * Math.sin(2 * Math.PI * (i + 1) * t);
                     }
                     return ret;
                 };
@@ -241,10 +246,10 @@ function change(div, cls, val) {
         case "detune": notes[i][cls] = parseFloat(val); break;
         case "wavetype": notes[i][cls] = val; break;
         case "dc offset": notes[i].dcoffset = parseFloat(val); break;
-        case "real": notes[i][cls] = nums(val); break;
-        case "imag": notes[i][cls] = nums(val); break;
+        case "cos": notes[i][cls] = nums(val); break;
+        case "sin": notes[i][cls] = nums(val); break;
     }
-    if (["dc offset", "real", "imag"].includes(cls)) {
+    if (["dc offset", "cos", "sin"].includes(cls)) {
         notes[i].wavetype = "custom";
         noteContainer.replaceChild(notes[i].makeDiv(), noteContainer.children[i]);
     }
