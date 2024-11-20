@@ -48,7 +48,7 @@ class Note {
             labeledInput("phase", this.phase, "set phase of wave- two identical waves with opposite phase wil cancel out", 'type="range" min="0" max="1" step="0.05"') +
             labeledInput("hz", this.hz, "frequency of note", 'type="number"') +
             labeledInput("detune", this.detune, "detune note by cents (100 cents per 12 EDO semitone)", 'type="number"');
-        const wavetype = makeRadioDiv(`wavetype${counter()}`, ["sine", "triangle", "square", "sawtooth", "custom"]);
+        const wavetype = makeRadioDiv(`wavetype${counter()}`, ["sine", "triangle", "square", "sawtooth", "custom"], this.wavetype);
         wavetype.innerHTML += `
         <div>
         ${labeledInput("dc offset", this.dcoffset, "dcoffset", 'type="number"')}
@@ -167,14 +167,16 @@ function labeledInput(label, value, help, content, labelOverwrite = null) {
  *
  * @param {string} name - used for name of input elements and part of element ids
  * @param {string[]} values - values for radio buttons
+ * @param {string} check - checked value
  * @returns {HTMLDivElement}
  */
-function makeRadioDiv(name, values) {
+function makeRadioDiv(name, values, check = "") {
     const ret = document.createElement("div");
     ret.id = `${name}container`;
     ret.classList.add("radio");
     for (let i = 0; i < values.length; i++) {
-        ret.innerHTML += labeledInput(values[i], values[i], "type of wave", `type="radio" name=${name} ${i == 0 ? "checked" : ""}`, "wavetype");
+        const checked = values[i] == check ? "checked" : "";
+        ret.innerHTML += labeledInput(values[i], values[i], "type of wave", `type="radio" name=${name} ${checked}`, "wavetype");
     }
     return ret;
 }
@@ -241,6 +243,10 @@ function change(div, cls, val) {
         case "dc offset": notes[i].dcoffset = parseFloat(val); break;
         case "real": notes[i][cls] = nums(val); break;
         case "imag": notes[i][cls] = nums(val); break;
+    }
+    if (["dc offset", "real", "imag"].includes(cls)) {
+        notes[i].wavetype = "custom";
+        noteContainer.replaceChild(notes[i].makeDiv(), noteContainer.children[i]);
     }
     // console.log("change", i, cls, val, notes[i]);
     notePlayers[i].stop()
