@@ -255,6 +255,23 @@ function change(div, cls, val) {
 }
 
 /**
+ * plot line on canvas where [0,0] is bottom left and [1,1] is top right
+ *
+ * @param {[number, number]} start - start point
+ * @param {[number, number]} end - end point
+ * @param {string} color - line color
+ */
+function plotline(start, end, color) {
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.moveTo(start[0] * w, (1 - start[1]) * h);
+    ctx.lineTo(end[0] * w, (1 - end[1]) * h);
+    ctx.stroke();
+}
+
+/**
  * plot a function on the canvas
  *
  * @param {Function} f - function to plot
@@ -262,7 +279,7 @@ function change(div, cls, val) {
  * @param {[number, number]} [yrange] - range of y values to plot
  * @param {string} [color] - line color
  */
-function plotfunc(f, xrange, yrange, color = "black") {
+function plotfunc(f, xrange, yrange, color) {
     yrange = [yrange[1], yrange[0]]; // because canvas (0,0) is top left
     const xscale = canvas.width / (xrange[1] - xrange[0]);
     const yscale = canvas.height / (yrange[1] - yrange[0]);
@@ -284,7 +301,8 @@ function display() {
     const frequencies = [];
     const xrange = [0, 1 / 220];
     const yrange = [-2, 2];
-    plotfunc((t) => 0, [0, 1], [-1, 1]);
+    plotline([0, 0.5], [1, 0.5], "black");
+    plotline([0, 0], [0, 1], "black");
     for (let i = 0; i < notes.length; i++) {
         frequencies.push(notes[i].frequency());
         funcs.push(notes[i].getFunc());
