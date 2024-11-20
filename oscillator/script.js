@@ -17,6 +17,11 @@ function tablerow(...cells) {
     ret += "</tr>";
     return ret;
 }
+function counter() {
+    counter.i ??= 0;
+    counter.i += 1;
+    return counter.i;
+}
 
 /** @typedef {"sine" | "square" | "triangle" | "sawtooth" | "custom" } wavetype */
 
@@ -43,7 +48,7 @@ class Note {
             labeledInput("phase", this.phase, "set phase of wave- two identical waves with opposite phase wil cancel out", 'type="range" min="0" max="1" step="0.05"') +
             labeledInput("hz", this.hz, "frequency of note", 'type="number"') +
             labeledInput("detune", this.detune, "detune note by cents (100 cents per 12 EDO semitone)", 'type="number"');
-        const wavetype = makeRadioDiv(`wavetype`, ["sine", "triangle", "square", "sawtooth", "custom"]);
+        const wavetype = makeRadioDiv(`wavetype${counter()}`, ["sine", "triangle", "square", "sawtooth", "custom"]);
         wavetype.innerHTML += `
         <div>
         ${labeledInput("dc offset", this.dcoffset, "dcoffset", 'type="number"')}
