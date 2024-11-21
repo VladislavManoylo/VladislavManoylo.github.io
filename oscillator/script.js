@@ -28,45 +28,20 @@ function counter() {
     return counter.i;
 }
 
-function reverseSawtooth(n) {
+/**
+ * e.g. series(1, 5, ["1/n", "0"]) => [1, 0, 1/3, 0, 1/5]
+ *
+ * @param {number} start
+ * @param {number} end
+ * @param {string[]} patterns
+ * @returns {number[]}
+ */
+function series(start, end, patterns) {
+    const l = end - start + 1;
+    if (patterns.length === 0) return Array(l).fill(0);
     const ret = [];
-    for (let i = 1; i <= n; i++) {
-        let x = i % 2 == 0 ? 1 : -1;
-        ret.push(x / i);
-    }
-    return ret;
-}
-
-function sawtooth(n) {
-    const ret = [];
-    for (let i = 1; i <= n; i++) {
-        ret.push(-1 / i);
-    }
-    return ret;
-}
-
-function square(n) {
-    const ret = [];
-    for (let i = 1; i <= n; i++) {
-        if (i % 2 == 0) {
-            ret.push(0);
-        } else {
-            ret.push(1 / i);
-        }
-    }
-    return ret;
-}
-
-function triangle(n) {
-    const ret = [];
-    for (let i = 1; i <= n; i++) {
-        if (i % 2 == 0) {
-            ret.push(0);
-        } else {
-            let x = i % 4 == 1 ? 1 : -1;
-            ret.push(x / (i * i));
-        }
-    }
+    for (let i = 0; i < l; i++)
+        ret.push(patterns[i % patterns.length].replace(/n/g, i + start));
     return ret;
 }
 
@@ -79,8 +54,9 @@ class Note {
         this.detune = 0;
         this.wavetype = "sine";
         this.dcoffset = 0;
-        this.cos = [0];
-        this.sin = [1];
+        this.cos = [];
+        this.sin = [];
+        this.terms = 0;
     }
 
     frequency() {
@@ -99,15 +75,14 @@ class Note {
         wavetype.innerHTML += `
         <div>
         ${labeledInput("dc offset", this.dcoffset, "dcoffset", 'type="number"')}
+        </div>
+        <div>
+        ${labeledInput("terms", this.terms, "number of terms to use for expansions", 'type="number" min="1"')}
         ${labeledInput("cos", this.cos, "cos coefficients of harmonics", 'type="text"')}
         ${labeledInput("sin", this.sin, "sin coefficients of harmonics", 'type="text"')}
         </div>
         `
         ret.appendChild(wavetype);
-        let fourier = "";
-        for (let x of ["square", "triangle", "sawtooth", "reverse sawtooth"])
-            fourier += labeledInput(`fourier ${x}`, 0, `number of terms for ${x} wave fourier series`, 'type="number" min="0"')
-        ret.innerHTML += `<div>${fourier}</div>`;
         return ret;
     }
 
@@ -117,13 +92,7 @@ class Note {
      * @returns {[number[], number[]}
      */
     getHarmonics() {
-        const dl = this.cos.length - this.sin.length;
-        if (dl > 0) {
-            this.sin = [...this.sin, ...Array(dl).fill(0)];
-        } else if (dl < 0) {
-            this.cos = [...this.cos, ...Array(-dl).fill(0)];
-        }
-        return [this.cos, this.sin];
+        return [series(1, this.terms, this.cos).map(eval), series(1, this.terms, this.sin).map(eval)]
     }
 
     makePlayer() {
@@ -132,6 +101,7 @@ class Note {
         ret.detune.value = this.detune;
         if (this.wavetype == "custom") {
             const [r, i] = this.getHarmonics();
+            console.log("R", r, "I", i);
             ret.setPeriodicWave(audioCtx.createPeriodicWave([this.dcoffset, ...r], [0, ...i]));
         } else {
             ret.type = this.wavetype;
@@ -241,6 +211,12 @@ function makeRadioDiv(name, values, check = "") {
 
 function addNote(preset = null) {
     const note = new Note();
+    switch (preset) {
+        case "reverse sawtooth": note.sin = ["-1/n", "1/n"]; break;
+        case "sawtooth": note.sin = ["-1/n"]; break;
+        case "square": note.sin = ["1/n", "0"]; break;
+        case "triangle": note.sin = ["1/(n*n)", "0", "-1/(n*n)", "0"]; break;
+    }
     noteContainer.appendChild(note.makeDiv());
     notePlayers.push(note.makePlayer());
     notes.push(note);
@@ -295,13 +271,14 @@ function change(div, cls, val) {
     }
     let refresh = false;
     switch (cls) {
-        case "phase": notes[i][cls] = parseFloat(val); break;
-        case "hz": notes[i][cls] = parseFloat(val); break;
-        case "detune": notes[i][cls] = parseFloat(val); break;
+        case "phase": notes[i][cls] = Number(val); break;
+        case "hz": notes[i][cls] = Number(val); break;
+        case "detune": notes[i][cls] = Number(val); break;
         case "wavetype": notes[i][cls] = val; break;
-        case "dc offset": notes[i].dcoffset = parseFloat(val); refresh = true; break;
-        case "cos": notes[i][cls] = nums(val); refresh = true; break;
-        case "sin": notes[i][cls] = nums(val); refresh = true; break;
+        case "dc offset": notes[i].dcoffset = Number(val); refresh = true; break;
+        case "cos": notes[i][cls] = val.split(","); refresh = true; break;
+        case "sin": notes[i][cls] = val.split(","); refresh = true; break;
+        case "terms": notes[i][cls] = parseInt(val); refresh = true; break;
         case "fourier square": notes[i].sin = square(val); refresh = true; break;
         case "fourier triangle": notes[i].sin = triangle(val); refresh = true; break;
         case "fourier sawtooth": notes[i].sin = sawtooth(val); refresh = true; break;
