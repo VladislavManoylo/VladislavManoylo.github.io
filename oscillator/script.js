@@ -54,8 +54,8 @@ class Note {
         this.detune = 0;
         this.wavetype = "sine";
         this.dcoffset = 0;
-        this.cos = [];
-        this.sin = [];
+        this.cos = ["0"];
+        this.sin = ["1"];
         this.terms = 0;
     }
 
@@ -75,12 +75,9 @@ class Note {
         wavetype.innerHTML += `
         <div>
         ${labeledInput("dc offset", this.dcoffset, "dcoffset", 'type="number"')}
-        </div>
-        <div>
-        ${labeledInput("terms", this.terms, "number of terms to use for expansions", 'type="number" min="1"')}
-        ${labeledInput("cos", this.cos, "cos coefficients of harmonics", 'type="text"')}
-        ${labeledInput("sin", this.sin, "sin coefficients of harmonics", 'type="text"')}
-        </div>
+        <div>${labeledInput("terms", this.terms, "number of terms to use for expansions", 'type="number" min="1"')}</div>
+        <div>${labeledInput("cos", this.cos, "cos coefficients of harmonics", 'class="series" type="text"')}</div>
+        <div>${labeledInput("sin", this.sin, "sin coefficients of harmonics", 'class="series" type="text"')}</div>
         `
         ret.appendChild(wavetype);
         return ret;
@@ -101,7 +98,7 @@ class Note {
         ret.detune.value = this.detune;
         if (this.wavetype == "custom") {
             const [r, i] = this.getHarmonics();
-            console.log("R", r, "I", i);
+            // console.log("R", r, "I", i);
             ret.setPeriodicWave(audioCtx.createPeriodicWave([this.dcoffset, ...r], [0, ...i]));
         } else {
             ret.type = this.wavetype;
@@ -211,11 +208,16 @@ function makeRadioDiv(name, values, check = "") {
 
 function addNote(preset = null) {
     const note = new Note();
-    switch (preset) {
-        case "reverse sawtooth": note.sin = ["-1/n", "1/n"]; break;
-        case "sawtooth": note.sin = ["-1/n"]; break;
-        case "square": note.sin = ["1/n", "0"]; break;
-        case "triangle": note.sin = ["1/(n*n)", "0", "-1/(n*n)", "0"]; break;
+    const presets = {
+        "reverse sawtooth": ["-1/n", "1/n"],
+        "sawtooth": ["-1/n"],
+        "square": ["1/n", "0"],
+        "triangle": ["1/(n*n)", "0", "-1/(n*n)", "0"]
+    }
+    if (preset in presets) {
+        note.sin = presets[preset];
+        note.wavetype = "custom";
+        note.terms = 5;
     }
     noteContainer.appendChild(note.makeDiv());
     notePlayers.push(note.makePlayer());
