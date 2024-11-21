@@ -104,6 +104,10 @@ class Note {
         </div>
         `
         ret.appendChild(wavetype);
+        let fourier = "";
+        for (let x of ["square", "triangle", "sawtooth", "reverse sawtooth"])
+            fourier += labeledInput(`fourier ${x}`, 0, `number of terms for ${x} wave fourier series`, 'type="number" min="0"')
+        ret.innerHTML += `<div>${fourier}</div>`;
         return ret;
     }
 
@@ -210,7 +214,7 @@ const notes = []
  */
 function labeledInput(label, value, help, content, labelOverwrite = null) {
     return `
-        <label title=${help}>${label}
+        <label title="${help}">${label}
             <input ${content} value="${value}" onchange="change(this, '${labelOverwrite ?? label}', this.value)">
         </label>
     `
@@ -237,24 +241,6 @@ function makeRadioDiv(name, values, check = "") {
 
 function addNote(preset = null) {
     const note = new Note();
-    switch (preset) {
-        case "square":
-            note.wavetype = "custom";
-            note.sin = square(99);
-            break;
-        case "reverse sawtooth":
-            note.wavetype = "custom";
-            note.sin = reverseSawtooth(199);
-            break;
-        case "sawtooth":
-            note.wavetype = "custom";
-            note.sin = sawtooth(99);
-            break;
-        case "triangle":
-            note.wavetype = "custom";
-            note.sin = triangle(9);
-            break;
-    }
     noteContainer.appendChild(note.makeDiv());
     notePlayers.push(note.makePlayer());
     notes.push(note);
@@ -307,16 +293,24 @@ function change(div, cls, val) {
     if (i === null) {
         return
     }
+    let refresh = false;
     switch (cls) {
         case "phase": notes[i][cls] = parseFloat(val); break;
         case "hz": notes[i][cls] = parseFloat(val); break;
         case "detune": notes[i][cls] = parseFloat(val); break;
         case "wavetype": notes[i][cls] = val; break;
-        case "dc offset": notes[i].dcoffset = parseFloat(val); break;
-        case "cos": notes[i][cls] = nums(val); break;
-        case "sin": notes[i][cls] = nums(val); break;
+        case "dc offset": notes[i].dcoffset = parseFloat(val); refresh = true; break;
+        case "cos": notes[i][cls] = nums(val); refresh = true; break;
+        case "sin": notes[i][cls] = nums(val); refresh = true; break;
+        case "fourier square": notes[i].sin = square(val); refresh = true; break;
+        case "fourier triangle": notes[i].sin = triangle(val); refresh = true; break;
+        case "fourier sawtooth": notes[i].sin = sawtooth(val); refresh = true; break;
+        case "fourier reverse sawtooth": notes[i].sin = reverseSawtooth(val); refresh = true; break;
     }
-    if (["dc offset", "cos", "sin"].includes(cls)) {
+    switch (cls) {
+
+    }
+    if (refresh) {
         notes[i].wavetype = "custom";
         noteContainer.replaceChild(notes[i].makeDiv(), noteContainer.children[i]);
     }
