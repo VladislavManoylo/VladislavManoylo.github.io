@@ -163,6 +163,8 @@ const noteContainer = document.getElementById("notes");
 const wavetableContainer = document.getElementById("table");
 /** @type{HTMLCanvasElement} */
 const canvas = document.getElementById("plot");
+/** @type{HTMLDivElement} */
+const plotControlsContainer = document.getElementById("plot controls");
 const ctx = canvas.getContext("2d");
 /** @type{OscillatorNode[]} */
 const notePlayers = [];
@@ -338,46 +340,71 @@ function plotfunc(f, xrange, yrange, color) {
     ctx.stroke();
 }
 
-let xrange = [0, 1 / 110];
-let yrange = [-4, 4];
 
-/**
- * called from html input to change period of plot
- *
- * @param {number} n - length of plot in seconds
- */
-function changePeriod(n) {
-    console.log("changing", xrange);
-    xrange = [0, n];
+const plotvals = {
+    xrange: function() { return [0, parseFraction(this.width)] },
+    yrange: function() { return [-this.height, this.height] },
+    width: "1/110",
+    height: 4,
+    fourier: false,
+    makeDiv: function() {
+        return `
+<label title="change plot to fourier transform">fourier
+    <input type="checkbox" ${this.fourier ? "checked" : ""}onchange="changePlot(this.id, this.checked)">
+</label>
+<label title="length of plot in seconds">period
+    <input type="text" value="${this.width}" onchange="changePlot('width', this.value)">
+</label>
+<label title="height of plot above and below x axis">amplitude
+    <input type="number" min="1" value="${this.height}" onchange="changePlot('height', this.value)">
+</label>
+            `
+    }
+}
+
+function changePlot(id, val) {
+    console.log(id, val);
+    switch (id) {
+        case "width":
+            plotvals.width = val;
+            break;
+        case "height":
+            plotvals.height = val;
+            break;
+        case "fourier":
+            if (val) {
+            } else {
+            }
+            break;
+    }
     display();
 }
 
-/**
- * called from html input to change amplitude of plot
- *
- * @param {number} n - height of plot above and below axis
- */
-function changeAmplitude(n) {
-    yrange = [-n, n];
-    display();
-}
-
-
-function display() {
+function display(fourier = false) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let html = "<thead><th>frequency</th><th>phase</th></thead><tbody>";
     const funcs = [];
     const frequencies = [];
-    plotline([0, 0.5], [1, 0.5], "black");
-    plotline([0, 0], [0, 1], "black");
     for (let i = 0; i < notes.length; i++) {
         frequencies.push(notes[i].frequency());
         funcs.push(notes[i].getFunc());
-        plotfunc(funcs[i], xrange, yrange, "blue");
         html += tablerow(frequencies[i], notes[i].phase);
     }
-    plotfunc(sumFunctions(funcs), xrange, yrange, "white");
+    const total = sumFunctions(funcs);
+    if (fourier) {
+    }
+    else {
+        const xr = plotvals.xrange();
+        const yr = plotvals.yrange();
+        plotline([0, 0.5], [1, 0.5], "black");
+        plotline([0, 0], [0, 1], "black");
+        for (let i = 0; i < funcs.length; i++) {
+            plotfunc(funcs[i], xr, yr, "blue");
+        }
+        plotfunc(total, xr, yr, "white");
+    }
     html += "</tbody>";
     wavetableContainer.innerHTML = html
 }
+plotControlsContainer.innerHTML = plotvals.makeDiv();
 display();
