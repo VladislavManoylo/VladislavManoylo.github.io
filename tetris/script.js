@@ -1,4 +1,12 @@
-const controlDiv = document.getElementById("controls");
+const heldKeys = {
+    keys: new Set(),
+    /** @param {str} x @returns {boolean} */
+    has: function(x) { return this.keys.has(x); },
+    press: function(x) { this.keys.add(x); },
+    release: function(x) { this.keys.delete(x); },
+};
+document.addEventListener("keydown", (e) => heldKeys.press(e.key));
+document.addEventListener("keyup", (e) => heldKeys.release(e.key));
 
 function makeButton(id) {
     const ret = document.createElement("div");
@@ -7,48 +15,37 @@ function makeButton(id) {
     return ret;
 }
 
-const bindings = {
-    "ArrowUp": "up",
-    "w": "up",
-    "ArrowLeft": "left",
-    "a": "left",
-    "ArrowDown": "down",
-    "s": "down",
-    "ArrowRight": "right",
-    "d": "right",
-    " ": "a",
-}
-
-const held = {
-    up: true,
-    down: false,
-    left: false,
-    right: false,
-    a: false,
-}
-
-const buttonDivs = {
-    up: makeButton("up"),
-    down: makeButton("down"),
-    left: makeButton("left"),
-    right: makeButton("right"),
-    a: makeButton("a"),
-}
-
-function press(k, val) {
-    if (!(k in bindings)) return;
-    const b = bindings[k];
-    held[b] = val;
-    if (val) {
-        buttonDivs[b].classList.add("held");
-    } else {
-        buttonDivs[b].classList.remove("held");
+const controls = {
+    div: document.getElementById("controls"),
+    buttons: ["up", "down", "left", "right", "a"],
+    buttonDivs: undefined,
+    get up() { return heldKeys.has("ArrowUp") || heldKeys.has("w") },
+    get down() { return heldKeys.has("ArrowDown") || heldKeys.has("s") },
+    get left() { return heldKeys.has("ArrowLeft") || heldKeys.has("a") },
+    get right() { return heldKeys.has("ArrowRight") || heldKeys.has("d") },
+    get a() { return heldKeys.has(" "); },
+    render: function() {
+        if (this.buttonDivs === undefined) {
+            this.buttonDivs = [];
+            for (const x of this.buttons) {
+                const b = makeButton(x);
+                this.buttonDivs.push(b);
+                this.div.appendChild(b);
+            }
+        }
+        for (let i = 0; i < this.buttons.length; i++) {
+            if (this[this.buttons[i]])
+                this.buttonDivs[i].classList.add("held");
+            else
+                this.buttonDivs[i].classList.remove("held");
+        }
     }
 }
-
-for (const v of Object.values(buttonDivs)) {
-    controlDiv.appendChild(v);
-}
-
-document.addEventListener("keydown", (e) => press(e.key, true));
-document.addEventListener("keyup", (e) => press(e.key, false));
+controls.render();
+const controlkeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", " "];
+document.addEventListener("keydown", (e) => {
+    if (controlkeys.includes(e.key)) controls.render();
+});
+document.addEventListener("keyup", (e) => {
+    if (controlkeys.includes(e.key)) controls.render();
+});
