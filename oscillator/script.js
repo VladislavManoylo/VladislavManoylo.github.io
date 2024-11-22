@@ -303,13 +303,16 @@ function change(div, cls, val) {
 /**
  * plot path on canvas
  *
- * @param {number[]} xs
+ * @param {number[]|null} xs - give null to use evenly spaced ys
  * @param {number[]} ys
  * @param {string} color
  * @param {[number, number]} [xview]
  * @param {[number, number]} [yview]
  */
 function plotpath(xs, ys, color, xview = [0, 1], yview = [0, 1]) {
+    if (xs === null) {
+        xs = xrange(xview[0], xview[1], ys.length);
+    }
     const l = xs.length;
     if (l !== ys.length) {
         console.error("bad lengths", xs.length, ys.length);
@@ -334,6 +337,7 @@ function plotpath(xs, ys, color, xview = [0, 1], yview = [0, 1]) {
  * @param {number} start
  * @param {number} end
  * @param {number} samples
+ * @returns {number[]}
  */
 function xrange(start, end, samples) {
     const ret = [];
