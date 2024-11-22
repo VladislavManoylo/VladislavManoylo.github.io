@@ -48,7 +48,7 @@ class Note {
         this.dcoffset = 0;
         this.cos = ["0"];
         this.sin = ["1"];
-        this.terms = 0;
+        this.terms = 1;
     }
 
     frequency() {
@@ -273,13 +273,6 @@ function change(div, cls, val) {
         case "cos": notes[i][cls] = val.split(","); refresh = true; break;
         case "sin": notes[i][cls] = val.split(","); refresh = true; break;
         case "terms": notes[i][cls] = parseInt(val); refresh = true; break;
-        case "fourier square": notes[i].sin = square(val); refresh = true; break;
-        case "fourier triangle": notes[i].sin = triangle(val); refresh = true; break;
-        case "fourier sawtooth": notes[i].sin = sawtooth(val); refresh = true; break;
-        case "fourier reverse sawtooth": notes[i].sin = reverseSawtooth(val); refresh = true; break;
-    }
-    switch (cls) {
-
     }
     if (refresh) {
         notes[i].wavetype = "custom";
