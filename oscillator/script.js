@@ -295,7 +295,6 @@ function change(div, cls, val) {
         notes[i].wavetype = "custom";
         noteContainer.replaceChild(notes[i].makeDiv(), noteContainer.children[i]);
     }
-    // console.log("change", i, cls, val, notes[i]);
     notePlayers[i].stop()
     notePlayers[i] = notes[i].makePlayer();
     display();
@@ -350,7 +349,7 @@ const plotvals = {
     makeDiv: function() {
         return `
 <label title="change plot to fourier transform">fourier
-    <input type="checkbox" ${this.fourier ? "checked" : ""}onchange="changePlot(this.id, this.checked)">
+    <input type="checkbox" ${this.fourier ? "checked" : ""}onchange="changePlot('fourier', this.checked)">
 </label>
 <label title="length of plot in seconds">period
     <input type="text" value="${this.width}" onchange="changePlot('width', this.value)">
@@ -363,7 +362,7 @@ const plotvals = {
 }
 
 function changePlot(id, val) {
-    console.log(id, val);
+    console.log('change', id, val);
     switch (id) {
         case "width":
             plotvals.width = val;
@@ -372,15 +371,13 @@ function changePlot(id, val) {
             plotvals.height = val;
             break;
         case "fourier":
-            if (val) {
-            } else {
-            }
+            plotvals.fourier = val;
             break;
     }
     display();
 }
 
-function display(fourier = false) {
+function display() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let html = "<thead><th>frequency</th><th>phase</th></thead><tbody>";
     const funcs = [];
@@ -391,7 +388,9 @@ function display(fourier = false) {
         html += tablerow(frequencies[i], notes[i].phase);
     }
     const total = sumFunctions(funcs);
-    if (fourier) {
+    if (plotvals.fourier) {
+        plotline([0, 0], [1, 0], "black");
+        plotline([0, 0], [0, 1], "black");
     }
     else {
         const xr = plotvals.xrange();
