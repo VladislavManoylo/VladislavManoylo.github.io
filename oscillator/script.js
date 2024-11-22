@@ -329,16 +329,16 @@ function plotpath(xs, ys, color, xview = [0, 1], yview = [0, 1]) {
 }
 
 /**
- * generate values from a to b using step size
+ * generate samples values from a to b
  *
  * @param {number} start
  * @param {number} end
- * @param {number} step
+ * @param {number} samples
  */
-function xrange(start, end, step) {
+function xrange(start, end, samples) {
     const ret = [];
-    for (let n = start; n <= end; n += step) {
-        ret.push(n);
+    for (let i = 0; i < samples; i++) {
+        ret.push((i / samples) * (end - start) - start);
     }
     return ret;
 }
@@ -352,7 +352,7 @@ function xrange(start, end, step) {
  * @param {string} [color] - line color
  */
 function plotfunc(f, xview, yview, color) {
-    const xs = xrange(xview[0], xview[1], (xview[1] - xview[0]) / 1000);
+    const xs = xrange(xview[0], xview[1], 1000);
     const ys = xs.map(f);
     plotpath(xs, ys, color, xview, yview);
 }
