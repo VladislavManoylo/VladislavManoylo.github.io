@@ -5,14 +5,6 @@ const parseFraction = (s) => {
     return b ? parseFloat(a) / parseFloat(b) : parseFloat(a);
 }
 
-const nums = (s) => s.split(",").map(parseFraction);
-
-function sumFunctions(functions) {
-    return function(...args) {
-        return functions.reduce((sum, func) => sum + func(...args), 0);
-    };
-}
-
 function tablerow(...cells) {
     let ret = "<tr>"
     for (const x of cells) {
@@ -98,7 +90,6 @@ class Note {
         ret.detune.value = this.detune;
         if (this.wavetype == "custom") {
             const [r, i] = this.getHarmonics();
-            // console.log("R", r, "I", i);
             ret.setPeriodicWave(audioCtx.createPeriodicWave([this.dcoffset, ...r], [0, ...i]));
         } else {
             ret.type = this.wavetype;
@@ -115,7 +106,6 @@ class Note {
             t -= this.phase; // include phase
             return t < 0 ? t + 1 : t;
         }
-        // console.log("phase", this.phase, this.frequency());
         switch (this.wavetype) {
             case "sine":
                 return (t) => Math.sin(2 * Math.PI * inphase(t));
@@ -141,8 +131,6 @@ class Note {
                 };
             case "custom":
                 let [c, s] = this.getHarmonics();
-                // for (let i = 0; i < c.length; i++)
-                //     console.log('terms', (i + 1), s[i]);
                 return (t) => {
                     t = inphase(t);
                     let ret = this.dcoffset;
@@ -229,7 +217,6 @@ function addNote(preset = null) {
 
 function rmNote(div) {
     const i = [...noteContainer.children].indexOf(div);
-    // console.log("rm", i, div, notePlayers);
     notePlayers[i].stop();
     notePlayers.splice(i, 1);
     notes.splice(i, 1);
@@ -363,8 +350,8 @@ function plotfunc(f, xview, yview, color) {
 
 
 const plotvals = {
-    xrange: function() { return [0, parseFraction(this.width)] },
-    yrange: function() { return [-this.height, this.height] },
+    xview: function() { return [0, parseFraction(this.width)] },
+    yview: function() { return [-this.height, this.height] },
     width: "1/110",
     height: 4,
     fourier: false,
@@ -384,7 +371,6 @@ const plotvals = {
 }
 
 function changePlot(id, val) {
-    console.log('change', id, val);
     switch (id) {
         case "width":
             plotvals.width = val;
@@ -399,32 +385,49 @@ function changePlot(id, val) {
     display();
 }
 
+/**
+ * @param {number[][]} ars
+ * @returns {number[]}
+ */
+function sumCols(ars) {
+    const ret = Array(ars[0].length).fill(0);
+    for (let i = 0; i < ars.length; i++) {
+        for (let j = 0; j < ret.length; j++) {
+            ret[j] += ars[i][j];
+        }
+    }
+    return ret;
+}
+
 function display() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let html = "<thead><th>frequency</th><th>phase</th></thead><tbody>";
-    const funcs = [];
+    const xview = plotvals.xview();
+    const yview = plotvals.yview();
+    const xs = xrange(xview[0], xview[1], 1000);
+    const yss = [];
+    let total = Array(xs.length).fill(0);
     const frequencies = [];
     for (let i = 0; i < notes.length; i++) {
         frequencies.push(notes[i].frequency());
-        funcs.push(notes[i].getFunc());
+        yss.push(xs.map(notes[i].getFunc()));
         html += tablerow(frequencies[i], notes[i].phase);
     }
-    const total = sumFunctions(funcs);
+    total = sumCols([total, ...yss]);
     if (plotvals.fourier) {
         plotpath([0, 0], [0, 1], "black");
         plotpath([0, 1], [0, 0], "black");
         plotfunc((x) => x, [0, 1], [0, 1]);
     }
     else {
-        const xr = plotvals.xrange();
-        const yr = plotvals.yrange();
         plotpath([0, 0], [0, 1], "black");
         plotpath([0, 1], [0.5, 0.5], "black");
-        for (let i = 0; i < funcs.length; i++) {
-            plotfunc(funcs[i], xr, yr, "blue");
-        }
-        plotfunc(total, xr, yr, "white");
     }
+    for (let i = 0; i < yss.length; i++) {
+        plotpath(xs, yss[i], "blue", xview, yview);
+    }
+    plotpath(xs, total, "white", xview, yview);
+
     html += "</tbody>";
     wavetableContainer.innerHTML = html
 }
