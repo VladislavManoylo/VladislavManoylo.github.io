@@ -301,19 +301,30 @@ function change(div, cls, val) {
 }
 
 /**
- * plot line on canvas where [0,0] is bottom left and [1,1] is top right
+ * plot path on canvas
  *
- * @param {[number, number]} start - start point
- * @param {[number, number]} end - end point
- * @param {string} color - line color
+ * @param {number[]} xs
+ * @param {number[]} ys
+ * @param {string} color
+ * @param {[number, number]} [xview]
+ * @param {[number, number]} [yview]
  */
-function plotline(start, end, color) {
+function plotpath(xs, ys, color, xview = [0, 1], yview = [0, 1]) {
+    const l = xs.length;
+    if (l !== ys.length) {
+        console.error("bad lengths", xs.length, ys.length);
+    }
+    yview = [yview[1], yview[0]]; // because canvas (0,0) is top left
+    const xscale = canvas.width / (xview[1] - xview[0]);
+    const yscale = canvas.height / (yview[1] - yview[0]);
+    const canvasx = (x) => (x - xview[0]) * xscale;
+    const canvasy = (y) => (y - yview[0]) * yscale;
     ctx.strokeStyle = color;
     ctx.beginPath();
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.moveTo(start[0] * w, (1 - start[1]) * h);
-    ctx.lineTo(end[0] * w, (1 - end[1]) * h);
+    ctx.moveTo(canvasx(xs[0]), canvasy(ys[0]));
+    for (let i = 1; i < l; i++) {
+        ctx.lineTo(canvasx(xs[i]), canvasy(ys[i]));
+    }
     ctx.stroke();
 }
 
@@ -321,15 +332,15 @@ function plotline(start, end, color) {
  * plot a function on the canvas
  *
  * @param {Function} f - function to plot
- * @param {[number, number]} [xrange] - range of x values to plot
- * @param {[number, number]} [yrange] - range of y values to plot
+ * @param {[number, number]} [xview] - range of x values to plot
+ * @param {[number, number]} [yview] - range of y values to plot
  * @param {string} [color] - line color
  */
-function plotfunc(f, xrange, yrange, color) {
-    yrange = [yrange[1], yrange[0]]; // because canvas (0,0) is top left
-    const xscale = canvas.width / (xrange[1] - xrange[0]);
-    const yscale = canvas.height / (yrange[1] - yrange[0]);
-    const cf = (x) => (f(x / xscale + xrange[0]) - yrange[0]) * yscale;
+function plotfunc(f, xview, yview, color) {
+    yview = [yview[1], yview[0]]; // because canvas (0,0) is top left
+    const xscale = canvas.width / (xview[1] - xview[0]);
+    const yscale = canvas.height / (yview[1] - yview[0]);
+    const cf = (x) => (f(x / xscale + xview[0]) - yview[0]) * yscale;
     ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.moveTo(0, cf(0));
@@ -389,14 +400,14 @@ function display() {
     }
     const total = sumFunctions(funcs);
     if (plotvals.fourier) {
-        plotline([0, 0], [1, 0], "black");
-        plotline([0, 0], [0, 1], "black");
+        plotpath([0, 0], [0, 1], "black");
+        plotpath([0, 1], [0, 0], "black");
     }
     else {
         const xr = plotvals.xrange();
         const yr = plotvals.yrange();
-        plotline([0, 0.5], [1, 0.5], "black");
-        plotline([0, 0], [0, 1], "black");
+        plotpath([0, 0], [0, 1], "black");
+        plotpath([0, 1], [0.5, 0.5], "black");
         for (let i = 0; i < funcs.length; i++) {
             plotfunc(funcs[i], xr, yr, "blue");
         }
