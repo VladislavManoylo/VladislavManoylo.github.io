@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="../style.css" />
+    <title>Brick Games</title>
+    <style>
+        html,
+        body {
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #game {
+            height: 95vmin;
+            width: 50vmin;
+            padding: 2%;
+            border: 1px solid white;
+            box-sizing: border-box;
+        }
+
+        #screen {
+            height: 45%;
+            margin: 5%;
+            border: 1px solid white;
+        }
+
+        #controls {
+            height: 45%;
+            margin: 5%;
+            border: 1px solid white;
+            position: relative;
+        }
+
+        .button {
+            width: 15%;
+            height: 15%;
+            border-radius: 50%;
+            background: orange;
+            /* relative to center */
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+        #up {
+            top: 20%;
+            left: 25%;
+        }
+
+        #left {
+            top: 35%;
+            left: 10%;
+        }
+
+        #right {
+            top: 35%;
+            left: 40%;
+        }
+
+        #down {
+            top: 50%;
+            left: 25%;
+        }
+
+
+        #a {
+            width: 30%;
+            height: 30%;
+            top: 50%;
+            left: 80%;
+        }
+
+        .held {
+            background: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game">
+        <div id="screen"></div>
+        <div id="controls"></div>
+    </div>
+</body>
+
+<script src="script.js"></script>
