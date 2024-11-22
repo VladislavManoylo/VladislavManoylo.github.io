@@ -144,16 +144,19 @@ class Note {
     }
 }
 
+const view = {
+    /** @type{HTMLDivElement} */
+    notes: document.getElementById("notes"),
+    /** @type{HTMLTableElement} */
+    wavetable: document.getElementById("table"),
+    /** @type{HTMLCanvasElement} */
+    canvas: document.getElementById("plot"),
+    /** @type{HTMLDivElement} */
+    plotControls: document.getElementById("plot controls"),
+}
+
 const audioCtx = new AudioContext();
-/** @type{HTMLDivElement} */
-const noteContainer = document.getElementById("notes");
-/** @type{HTMLTableElement} */
-const wavetableContainer = document.getElementById("table");
-/** @type{HTMLCanvasElement} */
-const canvas = document.getElementById("plot");
-/** @type{HTMLDivElement} */
-const plotControlsContainer = document.getElementById("plot controls");
-const ctx = canvas.getContext("2d");
+const ctx = view.canvas.getContext("2d");
 /** @type{OscillatorNode[]} */
 const notePlayers = [];
 /** @type{Note[]} */
@@ -209,18 +212,18 @@ function addNote(preset = null) {
         note.wavetype = "custom";
         note.terms = 5;
     }
-    noteContainer.appendChild(note.makeDiv());
+    view.notes.appendChild(note.makeDiv());
     notePlayers.push(note.makePlayer());
     notes.push(note);
     display();
 }
 
 function rmNote(div) {
-    const i = [...noteContainer.children].indexOf(div);
+    const i = [...view.notes.children].indexOf(div);
     notePlayers[i].stop();
     notePlayers.splice(i, 1);
     notes.splice(i, 1);
-    noteContainer.removeChild(div);
+    view.notes.removeChild(div);
     display();
 }
 
@@ -280,7 +283,7 @@ function change(div, cls, val) {
     }
     if (refresh) {
         notes[i].wavetype = "custom";
-        noteContainer.replaceChild(notes[i].makeDiv(), noteContainer.children[i]);
+        view.notes.replaceChild(notes[i].makeDiv(), view.notes.children[i]);
     }
     notePlayers[i].stop()
     notePlayers[i] = notes[i].makePlayer();
@@ -305,8 +308,8 @@ function plotpath(xs, ys, color, xview = [0, 1], yview = [0, 1]) {
         console.error("bad lengths", xs.length, ys.length);
     }
     yview = [yview[1], yview[0]]; // because canvas (0,0) is top left
-    const xscale = canvas.width / (xview[1] - xview[0]);
-    const yscale = canvas.height / (yview[1] - yview[0]);
+    const xscale = view.canvas.width / (xview[1] - xview[0]);
+    const yscale = view.canvas.height / (yview[1] - yview[0]);
     const canvasx = (x) => (x - xview[0]) * xscale;
     const canvasy = (y) => (y - yview[0]) * yscale;
     ctx.strokeStyle = color;
@@ -400,7 +403,7 @@ function sumCols(ars) {
 }
 
 function display() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, view.canvas.width, view.canvas.height);
     let html = "<thead><th>frequency</th><th>phase</th></thead><tbody>";
     const xview = plotvals.xview();
     const yview = plotvals.yview();
@@ -429,7 +432,7 @@ function display() {
     plotpath(xs, total, "white", xview, yview);
 
     html += "</tbody>";
-    wavetableContainer.innerHTML = html
+    view.wavetable.innerHTML = html
 }
-plotControlsContainer.innerHTML = plotvals.makeDiv();
+view.plotControls.innerHTML = plotvals.makeDiv();
 display();
