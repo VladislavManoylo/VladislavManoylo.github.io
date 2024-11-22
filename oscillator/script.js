@@ -329,25 +329,32 @@ function plotpath(xs, ys, color, xview = [0, 1], yview = [0, 1]) {
 }
 
 /**
+ * generate values from a to b using step size
+ *
+ * @param {number} start
+ * @param {number} end
+ * @param {number} step
+ */
+function xrange(start, end, step) {
+    const ret = [];
+    for (let n = start; n <= end; n += step) {
+        ret.push(n);
+    }
+    return ret;
+}
+
+/**
  * plot a function on the canvas
  *
  * @param {Function} f - function to plot
- * @param {[number, number]} [xview] - range of x values to plot
- * @param {[number, number]} [yview] - range of y values to plot
+ * @param {[number, number]} [xview] - domain to plot
+ * @param {[number, number]} [yview] - range to plot
  * @param {string} [color] - line color
  */
 function plotfunc(f, xview, yview, color) {
-    yview = [yview[1], yview[0]]; // because canvas (0,0) is top left
-    const xscale = canvas.width / (xview[1] - xview[0]);
-    const yscale = canvas.height / (yview[1] - yview[0]);
-    const cf = (x) => (f(x / xscale + xview[0]) - yview[0]) * yscale;
-    ctx.strokeStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(0, cf(0));
-    for (let x = 1; x < canvas.width; x++) {
-        ctx.lineTo(x, cf(x));
-    }
-    ctx.stroke();
+    const xs = xrange(xview[0], xview[1], (xview[1] - xview[0]) / 1000);
+    const ys = xs.map(f);
+    plotpath(xs, ys, color, xview, yview);
 }
 
 
@@ -402,6 +409,7 @@ function display() {
     if (plotvals.fourier) {
         plotpath([0, 0], [0, 1], "black");
         plotpath([0, 1], [0, 0], "black");
+        plotfunc((x) => x, [0, 1], [0, 1]);
     }
     else {
         const xr = plotvals.xrange();
