@@ -350,12 +350,8 @@ const plotvals = {
     yview: function() { return [-this.height, this.height] },
     width: "1/110",
     height: 4,
-    fourier: false,
     makeDiv: function() {
         return `
-<label title="change plot to fourier transform">fourier
-    <input type="checkbox" ${this.fourier ? "checked" : ""}onchange="changePlot('fourier', this.checked)">
-</label>
 <label title="length of plot in seconds">period
     <input type="text" value="${this.width}" onchange="changePlot('width', this.value)">
 </label>
@@ -373,9 +369,6 @@ function changePlot(id, val) {
             break;
         case "height":
             plotvals.height = val;
-            break;
-        case "fourier":
-            plotvals.fourier = val;
             break;
     }
     display();
@@ -402,28 +395,19 @@ function display() {
     const yview = plotvals.yview();
     const xs = xrange(xview[0], xview[1], 1000);
     const yss = [];
-    let total = Array(xs.length).fill(0);
     const frequencies = [];
     for (let i = 0; i < notes.length; i++) {
         frequencies.push(notes[i].frequency());
         yss.push(xs.map(notes[i].getFunc()));
         html += tablerow(frequencies[i], notes[i].phase);
     }
-    total = sumCols([total, ...yss]);
-    if (plotvals.fourier) {
-        plotpath([0, 0], [0, 1], "black");
-        plotpath([0, 1], [0, 0], "black");
-        plotfunc((x) => x, [0, 1], [0, 1]);
-    }
-    else {
-        plotpath([0, 0], [0, 1], "black");
-        plotpath([0, 1], [0.5, 0.5], "black");
-    }
+    const total = sumCols([Array(xs.length).fill(0), ...yss]);
+    plotpath([0, 0], [0, 1], "black");
+    plotpath([0, 1], [0.5, 0.5], "black");
     for (let i = 0; i < yss.length; i++) {
         plotpath(xs, yss[i], "blue", xview, yview);
     }
     plotpath(xs, total, "white", xview, yview);
-
     html += "</tbody>";
     view.wavetable.innerHTML = html
 }
