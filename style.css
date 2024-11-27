@@ -1,17 +1,25 @@
+:root {
+  color-scheme: light dark;
+}
+
 body {
-  background-color: rgb(30, 30, 30);
-  color: white;
+  color: light-dark(#333b3c, #efefec);
+  background-color: light-dark(#efedea, #303030);
   font-size: 1em;
 }
+
 a:link {
-    color: rgb(50, 90, 250);
+    color: light-dark(blue, #528AFA);
+    text-decoration: none;
 }
 a:visited {
-    color: rgb(150, 90, 150);
+    color: light-dark(purple, #a66aa6);
+    text-decoration: none;
 }
 a:hover {
-    color: rgb(200, 200, 255);
+    text-decoration: underline;
 }
+
 .header {
   display: inline-block;
   font-family: monospace;
