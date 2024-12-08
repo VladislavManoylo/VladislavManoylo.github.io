@@ -78,11 +78,11 @@ const autorangeInput = document.getElementById("autorange");
 const funList = document.getElementById("funlist");
 
 function redraw() {
-    let x0 = +x0Input.value;
-    let x1 = +x1Input.value;
+    const x0 = +x0Input.value;
+    const x1 = +x1Input.value;
     const paths = [];
     for (let input of document.getElementsByClassName("fun")) {
-        let str = input.value;
+        const str = input.value;
         if (str !== "") {
             let coef = str.split(/\s+/).map(Number);
             input.labels[0].innerHTML = coefLabel(coef);
@@ -106,7 +106,7 @@ function redraw() {
     {
         // axes
         const left = margin - 5;
-        const bottom = canvas.height - margin;
+        let bottom = canvas.height - margin;
         pencil.text(y1.toFixed(0), [left, 20], "1em Arial", "right");
         pencil.text(y0.toFixed(0), [left, bottom], "1em Arial", "right");
         bottom += 20;
@@ -118,7 +118,7 @@ function redraw() {
     pencil.ctx.strokeRect(0, 0, canvas.width - margin, canvas.height - margin);
     const height = y1 - y0;
     if (height === 0) {
-        let y = canvas.height / 2;
+        const y = canvas.height / 2;
         pencil.path([
             [0, y],
             [canvas.width, y],
@@ -127,7 +127,7 @@ function redraw() {
     }
     const dy = (canvas.height - margin) / height;
     for (const ys of paths) {
-        let dx = (canvas.width - margin) / (ys.length - 1);
+        const dx = (canvas.width - margin) / (ys.length - 1);
         // max - y, because y=0 is the top of the canvas
         pencil.path(ys.map((y, x) => [dx * x, dy * (y - y0)]));
     }

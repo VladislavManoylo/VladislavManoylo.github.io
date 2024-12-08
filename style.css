@@ -9,11 +9,11 @@ body {
 }
 
 a:link {
-    color: light-dark(blue, #528AFA);
+    color: light-dark(blue, #0077aa);
     text-decoration: none;
 }
 a:visited {
-    color: light-dark(purple, #a66aa6);
+    color: light-dark(purple, #aa77aa);
     text-decoration: none;
 }
 a:hover {

@@ -13,9 +13,16 @@
             max-width: 30em;
         }
 
+        #plot {
+            width: 70vmin;
+            height: 70vmin;
+        }
+
         canvas {
             display: block;
             margin: auto;
+            width: 100%;
+            height: 100%;
         }
 
         div {
@@ -29,7 +36,9 @@
 </head>
 
 <body>
-    <canvas id="canvas" width="700," height="500"></canvas>
+    <div id="plot">
+        <canvas id="canvas"></canvas>
+    </div>
     <div id="domain">
         <input type="number" size="8" id="x0" value="-1" />
         <input type="number" size="8" id="x1" value="1" />
