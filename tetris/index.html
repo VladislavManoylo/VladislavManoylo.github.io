@@ -17,9 +17,12 @@
             justify-content: center;
         }
 
-        #game {
+        div {
             max-height: 100%;
             max-width: 100%;
+        }
+
+        #game {
             height: 97%;
             aspect-ratio: 1/2;
             padding: 2%;
@@ -27,34 +30,45 @@
             box-sizing: border-box;
         }
 
-        #screen {
-            height: 45%;
+        #controls {
+            height: 40%;
             margin: 5%;
-            padding: 5%;
+            border: 1px solid white;
+            position: relative;
+        }
+
+        #screen {
+            margin: 5%;
+            padding: 1em;
             border: 1px solid white;
             display: grid;
-            grid-template-columns: 60% 40%;
+            grid-template-columns: 60% 35%;
             grid-template-areas: "grid score";
+            grid-column-gap: 1em;
         }
 
         #grid {
             grid-area: grid;
-            max-height: 100%;
-            max-width: 100%;
             aspect-ratio: 1/2;
             border: 1px solid white;
+            padding: 0.1em;
+            justify-content: center;
+            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(10, 10%);
+            grid-template-rows: repeat(20, 5%);
         }
 
         #score {
             grid-area: score;
+            height: 100%;
             border: 1px solid white;
         }
 
-        #controls {
-            height: 45%;
-            margin: 5%;
+        .cell {
+            height: 80%;
+            width: 80%;
             border: 1px solid white;
-            position: relative;
         }
 
         .button {
@@ -112,3 +126,4 @@
 </body>
 
 <script src="script.js"></script>
+

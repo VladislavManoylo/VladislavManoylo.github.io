@@ -49,3 +49,21 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => {
     if (controlkeys.includes(e.key)) controls.render();
 });
+
+const view = {
+    grid: Array.from({ length: 20 }, () => "          "),
+    /** @type{HTMLDivElement[]} */
+    cells: Array.from({ length: 200 }).map(() => {
+        res = document.createElement("div");
+        res.className = 'cell';
+        return res;
+    }),
+    /** @type{HTMLCanvasElement} */
+    griddiv: document.getElementById("grid"),
+    /** @type{HTMLDivElement} */
+    scorediv: document.getElementById("score"),
+}
+for (let i = 0; i < 200; i++) {
+    view.griddiv.appendChild(view.cells[i]);
+}
+
