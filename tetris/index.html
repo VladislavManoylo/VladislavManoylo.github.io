@@ -30,6 +30,23 @@
         #screen {
             height: 45%;
             margin: 5%;
+            padding: 5%;
+            border: 1px solid white;
+            display: grid;
+            grid-template-columns: 60% 40%;
+            grid-template-areas: "grid score";
+        }
+
+        #grid {
+            grid-area: grid;
+            max-height: 100%;
+            max-width: 100%;
+            aspect-ratio: 1/2;
+            border: 1px solid white;
+        }
+
+        #score {
+            grid-area: score;
             border: 1px solid white;
         }
 
@@ -86,7 +103,10 @@
 
 <body>
     <div id="game">
-        <div id="screen"></div>
+        <div id="screen">
+            <div id="grid"></div>
+            <div id="score"></div>
+        </div>
         <div id="controls"></div>
     </div>
 </body>
