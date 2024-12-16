@@ -8,7 +8,7 @@ const heldKeys = {
 document.addEventListener("keydown", (e) => heldKeys.press(e.key));
 document.addEventListener("keyup", (e) => heldKeys.release(e.key));
 
-function makeButton(id) {
+function createButton(id) {
     const ret = document.createElement("div");
     ret.id = id;
     ret.classList.add("button");
@@ -28,7 +28,7 @@ const controls = {
         if (this.buttonDivs === undefined) {
             this.buttonDivs = [];
             for (const x of this.buttons) {
-                const b = makeButton(x);
+                const b = createButton(x);
                 this.buttonDivs.push(b);
                 this.div.appendChild(b);
             }
@@ -50,7 +50,7 @@ document.addEventListener("keyup", (e) => {
     if (controlkeys.includes(e.key)) controls.render();
 });
 
-function createcell() {
+function createCell() {
     const div = document.createElement("div");
     div.className = 'cell';
     return div;
@@ -58,7 +58,7 @@ function createcell() {
 
 const view = {
     /** @type{HTMLDivElement[]} */
-    cells: Array.from({ length: 200 }, createcell),
+    cells: Array.from({ length: 200 }, createCell),
     /** @type{HTMLDivElement} */
     griddiv: document.getElementById("grid"),
     /** @type{HTMLDivElement} */
