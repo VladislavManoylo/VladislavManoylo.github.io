@@ -50,20 +50,29 @@ document.addEventListener("keyup", (e) => {
     if (controlkeys.includes(e.key)) controls.render();
 });
 
+function createcell() {
+    const div = document.createElement("div");
+    div.className = 'cell';
+    return div;
+}
+
 const view = {
-    grid: Array.from({ length: 20 }, () => "          "),
     /** @type{HTMLDivElement[]} */
-    cells: Array.from({ length: 200 }).map(() => {
-        res = document.createElement("div");
-        res.className = 'cell';
-        return res;
-    }),
-    /** @type{HTMLCanvasElement} */
+    cells: Array.from({ length: 200 }, createcell),
+    /** @type{HTMLDivElement} */
     griddiv: document.getElementById("grid"),
     /** @type{HTMLDivElement} */
     scorediv: document.getElementById("score"),
 }
-for (let i = 0; i < 200; i++) {
-    view.griddiv.appendChild(view.cells[i]);
-}
+
+for (let i = 0; i < 200; i++) view.griddiv.appendChild(view.cells[i]);
+for (let i = 0; i < 50; i++) view.cells[i].classList.add(`on${i % 10}`)
+for (let i = 50; i < 100; i++) view.cells[i].classList.add(`on-${i % 10}`)
+for (let i = 100; i < 150; i++) view.cells[i].classList.add(`on_${i % 10}`)
+for (let i = 150; i < 200; i++) view.cells[i].classList.add(`on_-${i % 10}`)
+
+// function gameloop() {
+//     requestAnimationFrame(gameloop);
+// }
+// gameloop();
 

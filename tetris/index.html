@@ -68,7 +68,63 @@
         .cell {
             height: 80%;
             width: 80%;
-            border: 1px solid white;
+            /* border: 1px solid white; */
+        }
+
+        .on, .on0, .on_0 { background-color: black; }
+        .on-0, .on_-0 { background-color: transparent; }
+        .on1 { animation: blink 1000ms steps(1, start) infinite; }
+        .on2 { animation: blink 500ms steps(1, start) infinite; }
+        .on3 { animation: blink 333ms steps(1, start) infinite; }
+        .on4 { animation: blink 250ms steps(1, start) infinite; }
+        .on5 { animation: blink 200ms steps(1, start) infinite; }
+        .on6 { animation: blink 167ms steps(1, start) infinite; }
+        .on7 { animation: blink 143ms steps(1, start) infinite; }
+        .on8 { animation: blink 125ms steps(1, start) infinite; }
+        .on9 { animation: blink 111ms steps(1, start) infinite; }
+        .on-1 { animation: blink-odd 1000ms steps(1, start) infinite; }
+        .on-2 { animation: blink-odd 500ms steps(1, start) infinite; }
+        .on-3 { animation: blink-odd 333ms steps(1, start) infinite; }
+        .on-4 { animation: blink-odd 250ms steps(1, start) infinite; }
+        .on-5 { animation: blink-odd 200ms steps(1, start) infinite; }
+        .on-6 { animation: blink-odd 167ms steps(1, start) infinite; }
+        .on-7 { animation: blink-odd 143ms steps(1, start) infinite; }
+        .on-8 { animation: blink-odd 125ms steps(1, start) infinite; }
+        .on-9 { animation: blink-odd 111ms steps(1, start) infinite; }
+        .on_1 { animation: blink-dark 1000ms steps(1, start) infinite; }
+        .on_2 { animation: blink-dark 500ms steps(1, start) infinite; }
+        .on_3 { animation: blink-dark 333ms steps(1, start) infinite; }
+        .on_4 { animation: blink-dark 250ms steps(1, start) infinite; }
+        .on_5 { animation: blink-dark 200ms steps(1, start) infinite; }
+        .on_6 { animation: blink-dark 167ms steps(1, start) infinite; }
+        .on_7 { animation: blink-dark 143ms steps(1, start) infinite; }
+        .on_8 { animation: blink-dark 125ms steps(1, start) infinite; }
+        .on_9 { animation: blink-dark 111ms steps(1, start) infinite; }
+        .on_-1 { animation: blink-light 1000ms steps(1, start) infinite; }
+        .on_-2 { animation: blink-light 500ms steps(1, start) infinite; }
+        .on_-3 { animation: blink-light 333ms steps(1, start) infinite; }
+        .on_-4 { animation: blink-light 250ms steps(1, start) infinite; }
+        .on_-5 { animation: blink-light 200ms steps(1, start) infinite; }
+        .on_-6 { animation: blink-light 167ms steps(1, start) infinite; }
+        .on_-7 { animation: blink-light 143ms steps(1, start) infinite; }
+        .on_-8 { animation: blink-light 125ms steps(1, start) infinite; }
+        .on_-9 { animation: blink-light 111ms steps(1, start) infinite; }
+
+        @keyframes blink {
+            50% { background-color: black; }
+            100% { background-color: transparent; }
+        }
+        @keyframes blink-odd {
+            100% { background-color: black; }
+            50% { background-color: transparent; }
+        }
+        @keyframes blink-dark {
+            70% { background-color: black; }
+            100% { background-color: transparent; }
+        }
+        @keyframes blink-light {
+            100% { background-color: black; }
+            70% { background-color: transparent; }
         }
 
         .button {
@@ -126,4 +182,3 @@
 </body>
 
 <script src="script.js"></script>
-
