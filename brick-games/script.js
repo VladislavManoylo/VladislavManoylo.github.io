@@ -50,29 +50,75 @@ document.addEventListener("keyup", (e) => {
     if (controlkeys.includes(e.key)) controls.render();
 });
 
-function createCell() {
-    const div = document.createElement("div");
-    div.className = 'cell';
-    return div;
-}
-
 const view = {
     /** @type{HTMLDivElement[]} */
-    cells: Array.from({ length: 200 }, createCell),
+    cells: Array.from({ length: 200 }, () => document.createElement("div")),
     /** @type{HTMLDivElement} */
     griddiv: document.getElementById("grid"),
     /** @type{HTMLDivElement} */
     scorediv: document.getElementById("score"),
+    /** @param {str} frame */
+    drawFrame: function(frame) {
+        const z = '0'.charCodeAt(0);
+        const a = 'a'.charCodeAt(0);
+        const A = 'A'.charCodeAt(0);
+        const k = 'k'.charCodeAt(0);
+        for (let i = 0; i < 200; i++) {
+            const j = frame.charCodeAt(i);
+            let on = j - z;
+            if (on >= 0 && on < 10) {
+                this.cells[i].className = `on${on}`;
+                continue;
+            }
+            on = j - a;
+            if (on >= 0 && on < 10) {
+                this.cells[i].className = `on_${on}`;
+                continue;
+            }
+            on = j - A;
+            if (on >= 0 && on < 10) {
+                this.cells[i].className = `on_-${on}`;
+                continue;
+            }
+            on = j - k;
+            if (on >= 0 && on < 10) {
+                this.cells[i].className = `on-${on}`;
+                continue;
+            }
+        }
+    },
 }
 
 for (let i = 0; i < 200; i++) view.griddiv.appendChild(view.cells[i]);
-for (let i = 0; i < 50; i++) view.cells[i].classList.add(`on${i % 10}`)
-for (let i = 50; i < 100; i++) view.cells[i].classList.add(`on-${i % 10}`)
-for (let i = 100; i < 150; i++) view.cells[i].classList.add(`on_${i % 10}`)
-for (let i = 150; i < 200; i++) view.cells[i].classList.add(`on_-${i % 10}`)
 
-// function gameloop() {
-//     requestAnimationFrame(gameloop);
-// }
-// gameloop();
+
+/** @type{string} */
+const frame = `
+0123456789
+0123456789
+0123456789
+0123456789
+..........
+klmnopqrst
+klmnopqrst
+klmnopqrst
+klmnopqrst
+..........
+abcdefghij
+abcdefghij
+abcdefghij
+abcdefghij
+..........
+ABCDEFGHIJ
+ABCDEFGHIJ
+ABCDEFGHIJ
+ABCDEFGHIJ
+..........
+`.replaceAll('\n', '');
+view.drawFrame(frame);
+
+function gameloop() {
+    requestAnimationFrame(gameloop);
+}
+gameloop();
 
