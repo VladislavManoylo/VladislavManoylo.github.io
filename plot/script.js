@@ -11,6 +11,7 @@
  *        | ( EXPR )
  *        | sin|cos|... EXPR
  */
+
 /*
 type Expr = Sum;
 type Sum = Product | { op: "+" | "-"; lhs: Sum; rhs: Product };
@@ -40,6 +41,7 @@ function coefLabel(coefficients) {
         .filter((s) => s.length > 0)
         .join(" + ");
 }
+
 /** given an input [1,2,3], returns the function (x) => (x^2 + 2x + 3) */
 function coefToPolynomial(coefficients) {
     coefficients.reverse();
@@ -53,12 +55,22 @@ function coefToPolynomial(coefficients) {
         return sum;
     };
 }
-//console.log("139=", coefToPolynomial([1,10,100])(3));
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 ctx.lineWidth = 0.05;
 ctx.translate(0, canvas.height);
 ctx.scale(canvas.width, -canvas.height);
+/** @param{number[][]} ps */
+function path(ps) {
+    ctx.beginPath();
+    ctx.moveTo(ps[0][0], ps[0][1]);
+    for (let p of ps) {
+        ctx.lineTo(p[0], p[1]);
+    }
+    ctx.stroke();
+}
+
 /** take samples of the function f between x0 and x1
  * should have at least 2 samples to work as expected
  */
@@ -72,6 +84,7 @@ function sampleFunction(f, x0, x1, samples) {
     }
     return ys;
 }
+
 const x0Input = document.getElementById("x0");
 const x1Input = document.getElementById("x1");
 const y0Input = document.getElementById("y0");
@@ -105,14 +118,6 @@ function redraw() {
     // plot paths
     ctx.clearRect(0, 0, 1, 1);
     ctx.strokeRect(0, 0, 1, 1);
-    function path(ps) {
-        ctx.beginPath();
-        ctx.moveTo(ps[0][0], ps[0][1]);
-        for (let p of ps) {
-            ctx.lineTo(p[0], p[1]);
-        }
-        ctx.stroke();
-    }
     const height = y1 - y0;
     if (height === 0) {
         path([
