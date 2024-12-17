@@ -1,10 +1,13 @@
 :root {
   color-scheme: light dark;
+  --bg-color: light-dark(#efedea, #303030);
+  --fg-color: light-dark(#333b3c, #efefec);
+  --bg-color2: light-dark(purple, SlateBlue);
 }
 
 body {
-  color: light-dark(#333b3c, #efefec);
-  background-color: light-dark(#efedea, #303030);
+  background-color: var(--bg-color);
+  color: var(--fg-color);
   font-size: 1em;
 }
 

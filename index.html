@@ -10,6 +10,28 @@
         li {
             font-family: monospace;
         }
+
+        ul {
+            position: relative;
+        }
+
+        .preview {
+            display: none;
+            padding: 1em;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        li:hover {
+            background-color: var(--bg-color2);
+        }
+
+        li:hover+.preview {
+            display: flex;
+            flex-flow: column nowrap;
+            background-color: var(--bg-color2);
+        }
     </style>
 </head>
 
@@ -32,6 +54,10 @@
         <!-- <li>&gt; <a href="graph/">Graph</a></li> -->
         <!-- li>&gt; <a href="kmeans.html">kmeans</a></li -->
         <li>&gt; <a href="plot/">Plot</a></li>
+        <div class="preview">
+            <span>plot polynomials</span>
+            <img src="preview/plot.png">
+        </div>
         <li>&gt; <a href="borscht/">Soup</a></li>
     </ul>
 
