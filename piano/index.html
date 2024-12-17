@@ -7,13 +7,8 @@
     <link rel="stylesheet" href="../style.css" />
     <title>Piano</title>
     <style>
-        .output {
-            font-size: xx-large;
-            margin: auto;
-        }
-
         .hidden {
-            display: none;
+            visibility: hidden;
         }
 
         sub {
@@ -21,24 +16,16 @@
         }
 
         input {
-            font-size: x-large;
             width: 4em;
-            margin: 0.1em;
-        }
-
-        label {
-            display: block;
-            font-size: x-large;
         }
 
         button {
             background-color: DarkSlateBlue;
             border: none;
             color: white;
-            font-size: x-large;
+            font-size: large;
             padding: 0.5em;
             cursor: pointer;
-            float: left;
             user-select: none;
         }
 
@@ -54,163 +41,67 @@
             margin-bottom: 1em;
         }
 
-        /* clearfix */
-        div.button-group:after {
-            content: "";
-            clear: both;
-            display: table;
-        }
-
         #volume {
-            max-width: 100%;
-            width: 20em;
+            width: 50%;
             accent-color: turquoise;
         }
 
         #piano {
             max-width: 100%;
-            width: 60em;
-            height: 10em;
+            aspect-ratio: 3;
             position: relative;
-            margin-bottom: 1em;
+            margin: 1em;
             background: DarkSlateBlue;
         }
 
-        #black-keys-box>div,
-        #white-keys-box>div {
-            position: absolute;
-            float: left;
-            box-shadow: -0.2em 0.3em gray;
-            text-align: right;
-            cursor: pointer;
+        #white-keys-box {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            display: flex;
         }
 
-        #black-keys-box>div {
-            background-color: black;
-            width: calc(100% / 30);
+        #black-keys-box {
             height: 60%;
+            width: 100%;
+            position: absolute; /* overlaps white keys */
+            display: flex;
             z-index: 1;
         }
 
         #white-keys-box>div {
             background-color: white;
             width: calc(100% / 11);
-            height: 100%;
+            display: flex;
+            position: relative;
         }
 
-        #white-keys-box div * {
-            text-color: blue;
-            position: absolute;
-            bottom: 0.5em;
-            right: 0.5em;
-            user-select: none;
+        #black-keys-box>div {
+            background-color: black;
+            width: calc(100% / 11 / 2);
+            margin-right: calc(100% / 11 / 2);
+            display: flex;
+            position: relative;
+        }
+
+        #black-keys-box>div,
+        #white-keys-box>div {
+            box-shadow: -0.2em 0.3em gray;
         }
 
         #piano sub {
             position: absolute;
+            font-size: large;
             bottom: 0.5em;
             right: 0.5em;
-            user-select: none;
         }
 
         #piano div.A {
-            background: antiqueWhite;
+            background: lightblue;
         }
 
         #piano div.selected {
-            box-shadow: -0.2em 0.3em turquoise;
-        }
-
-        #black-keys-box :nth-child(1) {
-            left: calc(0 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(2) {
-            left: calc(1 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(3) {
-            left: calc(2 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(4) {
-            left: calc(3 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(5) {
-            left: calc(4 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(6) {
-            left: calc(5 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(7) {
-            left: calc(6 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(8) {
-            left: calc(7 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(9) {
-            left: calc(8 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(10) {
-            left: calc(9 * (100% / 11));
-        }
-
-        #black-keys-box :nth-child(11) {
-            left: calc(10 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(1) {
-            left: calc(0 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(2) {
-            left: calc(1 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(3) {
-            left: calc(2 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(4) {
-            left: calc(3 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(5) {
-            left: calc(4 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(6) {
-            left: calc(5 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(7) {
-            left: calc(6 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(8) {
-            left: calc(7 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(9) {
-            left: calc(8 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(10) {
-            left: calc(9 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(11) {
-            left: calc(10 * (100% / 11));
-        }
-
-        #white-keys-box :nth-child(12) {
-            left: calc(11 * (100% / 11));
+            background: turquoise;
         }
 
         tr.selected {
@@ -269,7 +160,7 @@
                 <sub>;</sub>
             </div>
             <div id="black-key-10" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
+                onmouseleave="releaseKey(this.id)" class="hidden">
                 <sub>"</sub>
             </div>
         </div>
