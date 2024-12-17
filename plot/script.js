@@ -81,10 +81,10 @@ function redraw() {
     const x0 = +x0Input.value;
     const x1 = +x1Input.value;
     const paths = [];
-    for (let input of document.getElementsByClassName("fun")) {
+    for (const input of document.getElementsByClassName("fun")) {
         const str = input.value;
         if (str !== "") {
-            let coef = str.split(/\s+/).map(Number);
+            const coef = str.trim().split(/\s+/).map(Number);
             input.labels[0].innerHTML = coefLabel(coef);
             paths.push(sampleFunction(coefToPolynomial(coef), x0, x1, 100));
         } else {
@@ -102,20 +102,9 @@ function redraw() {
     }
     // plot paths
     pencil.clear();
-    const margin = 50;
-    {
-        // axes
-        const left = margin - 5;
-        let bottom = canvas.height - margin;
-        pencil.text(y1.toFixed(0), [left, 20], "1em Arial", "right");
-        pencil.text(y0.toFixed(0), [left, bottom], "1em Arial", "right");
-        bottom += 20;
-        pencil.text(x0.toFixed(0), [left, bottom], "1em Arial", "left");
-        pencil.text(x1.toFixed(0), [canvas.width, bottom], "1em Arial", "right");
-    }
-    pencil.ctx.translate(margin, canvas.height - margin);
+    pencil.ctx.translate(0, canvas.height);
     pencil.ctx.scale(1, -1);
-    pencil.ctx.strokeRect(0, 0, canvas.width - margin, canvas.height - margin);
+    pencil.ctx.strokeRect(0, 0, canvas.width, canvas.height);
     const height = y1 - y0;
     if (height === 0) {
         const y = canvas.height / 2;
@@ -125,9 +114,9 @@ function redraw() {
         ]);
         return;
     }
-    const dy = (canvas.height - margin) / height;
+    const dy = canvas.height / height;
     for (const ys of paths) {
-        const dx = (canvas.width - margin) / (ys.length - 1);
+        const dx = canvas.width / (ys.length - 1);
         // max - y, because y=0 is the top of the canvas
         pencil.path(ys.map((y, x) => [dx * x, dy * (y - y0)]));
     }
