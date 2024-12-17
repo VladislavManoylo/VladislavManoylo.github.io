@@ -56,7 +56,9 @@ function coefToPolynomial(coefficients) {
 //console.log("139=", coefToPolynomial([1,10,100])(3));
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-ctx.lineWidth = 10;
+ctx.lineWidth = 0.05;
+ctx.translate(0, canvas.height);
+ctx.scale(canvas.width, -canvas.height);
 /** take samples of the function f between x0 and x1
  * should have at least 2 samples to work as expected
  */
@@ -101,11 +103,8 @@ function redraw() {
         y1Input.value = y1.toPrecision(5);
     }
     // plot paths
-    ctx.resetTransform();
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.translate(0, canvas.height);
-    ctx.scale(1, -1);
-    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.strokeRect(0, 0, 1, 1);
     function path(ps) {
         ctx.beginPath();
         ctx.moveTo(ps[0][0], ps[0][1]);
@@ -116,16 +115,15 @@ function redraw() {
     }
     const height = y1 - y0;
     if (height === 0) {
-        const y = canvas.height / 2;
         path([
-            [0, y],
-            [canvas.width, y],
+            [0, 0.5],
+            [1, 0.5],
         ]);
         return;
     }
-    const dy = canvas.height / height;
+    const dy = 1 / height;
     for (const ys of paths) {
-        const dx = canvas.width / (ys.length - 1);
+        const dx = 1 / (ys.length - 1);
         // max - y, because y=0 is the top of the canvas
         path(ys.map((y, x) => [dx * x, dy * (y - y0)]));
     }
