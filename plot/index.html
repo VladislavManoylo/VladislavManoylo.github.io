@@ -31,22 +31,23 @@
             height: 100%;
         }
 
+        #xlabels,
         #ylabels {
-            grid-area: ylabels;
+            margin: 0;
             display: flex;
             font-size: x-large;
-            flex-flow: column nowrap;
+            flex-wrap: nowrap;
             justify-content: space-between;
-            margin: 0;
+        }
+
+        #ylabels {
+            grid-area: ylabels;
+            flex-direction: column;
         }
 
         #xlabels {
             grid-area: xlabels;
-            display: flex;
-            font-size: x-large;
-            flex-flow: row nowrap;
-            justify-content: space-between;
-            margin: 0;
+            flex-direction: row;
         }
 
         div {
@@ -93,7 +94,7 @@
         <button type="button" id="+">+</button>
         <button type="button" id="-">-</button>
     </div>
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,3 @@
-import { Pencil } from "../pencil.js";
 /**
  * EXPR ::= SUM
  * SUM ::= SUM +/- PRODUCT
@@ -56,8 +55,8 @@ function coefToPolynomial(coefficients) {
 }
 //console.log("139=", coefToPolynomial([1,10,100])(3));
 const canvas = document.getElementById("canvas");
-const pencil = new Pencil(canvas);
-pencil.ctx.lineWidth = 10;
+const ctx = canvas.getContext("2d");
+ctx.lineWidth = 10;
 /** take samples of the function f between x0 and x1
  * should have at least 2 samples to work as expected
  */
@@ -102,14 +101,23 @@ function redraw() {
         y1Input.value = y1.toPrecision(5);
     }
     // plot paths
-    pencil.clear();
-    pencil.ctx.translate(0, canvas.height);
-    pencil.ctx.scale(1, -1);
-    pencil.ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    ctx.resetTransform();
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.translate(0, canvas.height);
+    ctx.scale(1, -1);
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    function path(ps) {
+        ctx.beginPath();
+        ctx.moveTo(ps[0][0], ps[0][1]);
+        for (let p of ps) {
+            ctx.lineTo(p[0], p[1]);
+        }
+        ctx.stroke();
+    }
     const height = y1 - y0;
     if (height === 0) {
         const y = canvas.height / 2;
-        pencil.path([
+        path([
             [0, y],
             [canvas.width, y],
         ]);
@@ -119,7 +127,7 @@ function redraw() {
     for (const ys of paths) {
         const dx = canvas.width / (ys.length - 1);
         // max - y, because y=0 is the top of the canvas
-        pencil.path(ys.map((y, x) => [dx * x, dy * (y - y0)]));
+        path(ys.map((y, x) => [dx * x, dy * (y - y0)]));
     }
 }
 redraw();
