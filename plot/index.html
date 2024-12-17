@@ -29,6 +29,10 @@
             margin: 1em;
         }
 
+        input {
+            width: 5em;
+        }
+
         ul {
             list-style-type: none;
         }
@@ -48,8 +52,10 @@
         <input type="number" size="8" id="y0" value="-1" />
         <input type="number" size="8" id="y1" value="1" />
         range
-        <input type="checkbox" id="autorange" checked="true" />
-        <label for="autorange">auto range</label>
+        <label title="automatically set range from minimum and maximum values of function in domain">
+            <input type="checkbox" id="autorange" checked="true" />
+            auto
+        </label>
     </div>
     <div id="functions">
         <ul id="funlist">
