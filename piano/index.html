@@ -76,8 +76,8 @@
             background: DarkSlateBlue;
         }
 
-        div.black-keys-box>div,
-        div.white-keys-box>div {
+        #black-keys-box>div,
+        #white-keys-box>div {
             position: absolute;
             float: left;
             box-shadow: -0.2em 0.3em gray;
@@ -85,20 +85,20 @@
             cursor: pointer;
         }
 
-        div.black-keys-box>div {
+        #black-keys-box>div {
             background-color: black;
             width: calc(100% / 30);
             height: 60%;
             z-index: 1;
         }
 
-        div.white-keys-box>div {
+        #white-keys-box>div {
             background-color: white;
             width: calc(100% / 11);
             height: 100%;
         }
 
-        div.white-keys-box div * {
+        #white-keys-box div * {
             text-color: blue;
             position: absolute;
             bottom: 0.5em;
@@ -121,95 +121,95 @@
             box-shadow: -0.2em 0.3em turquoise;
         }
 
-        div.black-keys-box :nth-child(1) {
+        #black-keys-box :nth-child(1) {
             left: calc(0 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(2) {
+        #black-keys-box :nth-child(2) {
             left: calc(1 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(3) {
+        #black-keys-box :nth-child(3) {
             left: calc(2 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(4) {
+        #black-keys-box :nth-child(4) {
             left: calc(3 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(5) {
+        #black-keys-box :nth-child(5) {
             left: calc(4 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(6) {
+        #black-keys-box :nth-child(6) {
             left: calc(5 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(7) {
+        #black-keys-box :nth-child(7) {
             left: calc(6 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(8) {
+        #black-keys-box :nth-child(8) {
             left: calc(7 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(9) {
+        #black-keys-box :nth-child(9) {
             left: calc(8 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(10) {
+        #black-keys-box :nth-child(10) {
             left: calc(9 * (100% / 11));
         }
 
-        div.black-keys-box :nth-child(11) {
+        #black-keys-box :nth-child(11) {
             left: calc(10 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(1) {
+        #white-keys-box :nth-child(1) {
             left: calc(0 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(2) {
+        #white-keys-box :nth-child(2) {
             left: calc(1 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(3) {
+        #white-keys-box :nth-child(3) {
             left: calc(2 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(4) {
+        #white-keys-box :nth-child(4) {
             left: calc(3 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(5) {
+        #white-keys-box :nth-child(5) {
             left: calc(4 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(6) {
+        #white-keys-box :nth-child(6) {
             left: calc(5 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(7) {
+        #white-keys-box :nth-child(7) {
             left: calc(6 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(8) {
+        #white-keys-box :nth-child(8) {
             left: calc(7 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(9) {
+        #white-keys-box :nth-child(9) {
             left: calc(8 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(10) {
+        #white-keys-box :nth-child(10) {
             left: calc(9 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(11) {
+        #white-keys-box :nth-child(11) {
             left: calc(10 * (100% / 11));
         }
 
-        div.white-keys-box :nth-child(12) {
+        #white-keys-box :nth-child(12) {
             left: calc(11 * (100% / 11));
         }
 
@@ -227,7 +227,7 @@
     </label>
 
     <div id="piano">
-        <div class="black-keys-box">
+        <div id="black-keys-box">
             <div id="black-key-0" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
                 onmouseleave="releaseKey(this.id)">
                 <sub>a</sub>
@@ -273,7 +273,7 @@
                 <sub>"</sub>
             </div>
         </div>
-        <div class="white-keys-box">
+        <div id="white-keys-box">
             <div id="white-key-0" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
                 onmouseleave="releaseKey(this.id)" class="A">
                 <sub>z</sub>
