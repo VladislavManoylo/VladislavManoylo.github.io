@@ -13,6 +13,7 @@
 
         sub {
             color: grey;
+            user-select: none;
         }
 
         input {
@@ -64,7 +65,8 @@
         #black-keys-box {
             height: 60%;
             width: 100%;
-            position: absolute; /* overlaps white keys */
+            position: absolute;
+            /* overlaps white keys */
             display: flex;
             z-index: 1;
         }
@@ -118,94 +120,8 @@
     </label>
 
     <div id="piano">
-        <div id="black-keys-box">
-            <div id="black-key-0" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>a</sub>
-            </div>
-            <div id="black-key-1" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)" class="">
-                <sub>s</sub>
-            </div>
-            <div id="black-key-2" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)" class="hidden">
-                <sub>d</sub>
-            </div>
-            <div id="black-key-3" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>f</sub>
-            </div>
-            <div id="black-key-4" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>g</sub>
-            </div>
-            <div id="black-key-5" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)" class="hidden">
-                <sub>h</sub>
-            </div>
-            <div id="black-key-6" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>j</sub>
-            </div>
-            <div id="black-key-7" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>k</sub>
-            </div>
-            <div id="black-key-8" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>l</sub>
-            </div>
-            <div id="black-key-9" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)" class="hidden">
-                <sub>;</sub>
-            </div>
-            <div id="black-key-10" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)" class="hidden">
-                <sub>"</sub>
-            </div>
-        </div>
-        <div id="white-keys-box">
-            <div id="white-key-0" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)" class="A">
-                <sub>z</sub>
-            </div>
-            <div id="white-key-1" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>x</sub>
-            </div>
-            <div id="white-key-2" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>c</sub>
-            </div>
-            <div id="white-key-3" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>v</sub>
-            </div>
-            <div id="white-key-4" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>b</sub>
-            </div>
-            <div id="white-key-5" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>n</sub>
-            </div>
-            <div id="white-key-6" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>m</sub>
-            </div>
-            <div id="white-key-7" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)" class="A">
-                <sub>,</sub>
-            </div>
-            <div id="white-key-8" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>.</sub>
-            </div>
-            <div id="white-key-9" onmousedown="playKey(this.id)" onmouseup="releaseKey(this.id)"
-                onmouseleave="releaseKey(this.id)">
-                <sub>/</sub>
-            </div>
-        </div>
+        <div id="black-keys-box"></div>
+        <div id="white-keys-box"></div>
     </div>
 
     <div class="button-group wavetype">
@@ -267,7 +183,7 @@
                 <td>B</td>
                 <td>493.88</td>
             </tr>
-            <tr class="black-key-2 hidden">
+            <tr class="black-key-2">
                 <td></td>
                 <td></td>
             </tr>
@@ -291,7 +207,7 @@
                 <td>E</td>
                 <td>659.26</td>
             </tr>
-            <tr class="black-key-5 hidden">
+            <tr class="black-key-5">
                 <td></td>
                 <td></td>
             </tr>
@@ -323,7 +239,7 @@
                 <td>B</td>
                 <td>987.77</td>
             </tr>
-            <tr class="black-key-9 hidden">
+            <tr class="black-key-9">
                 <td></td>
                 <td></td>
             </tr>
@@ -343,6 +259,33 @@
         const audioCtx = new AudioContext();
         const volumeGain = audioCtx.createGain();
         const notesPlaying = new Map();
+
+        const qwertyKeys = [
+            "`1234567890-=",
+            "qwertyuiop[]\\",
+            "asdfghjkl;'",
+            "zxcvbnm,./",
+        ];
+
+        const blackkeybox = document.getElementById("black-keys-box");
+        for (let i = 0; i < 11; i++) {
+            blackkeybox.innerHTML += `<div id="black-key-${i}"
+            onmousedown="playKey(this.id)"
+            ontouchstart="playKey(this.id)"
+            onmouseup="releaseKey(this.id)"
+            onmouseleave="releaseKey(this.id)">
+                <sub>${qwertyKeys[2][i]}</sub></div>`
+        }
+
+        const whitekeybox = document.getElementById("white-keys-box");
+        for (let i = 0; i < 10; i++) {
+            whitekeybox.innerHTML += `<div id="white-key-${i}"
+            onmousedown="playKey(this.id)"
+            ontouchstart="playKey(this.id)"
+            onmouseup="releaseKey(this.id)"
+            onmouseleave="releaseKey(this.id)">
+                <sub>${qwertyKeys[3][i]}</sub></div>`
+        }
 
         const screenKeys = [
             "black-key-0",
@@ -397,13 +340,6 @@
         };
         resetTuning();
         changeVolume(config.volume);
-
-        const qwertyKeys = [
-            "`1234567890-=",
-            "qwertyuiop[]\\",
-            "asdfghjkl;'",
-            "zxcvbnm,./",
-        ];
 
         function keyToScreenKey(a) {
             const keys = new Map([
@@ -706,6 +642,8 @@
             ).length;
             return [totalOffset, totalOffset + visibleKeys.length, visibleKeys];
         }
+        resetTuning();
+        resetKeys();
 
         function setTuning(a) {
             config.tuning = a;
