@@ -114,10 +114,52 @@ ABCDEFGHIJ
 ABCDEFGHIJ
 ABCDEFGHIJ
 ..........
+0123456789
+9012345678
+8901234567
+7890123456
+6789012345
+5678901234
+4567890123
+3456789012
+2345678901
+1234567890
+0123456789
+9012345678
+8901234567
+7890123456
+6789012345
+5678901234
+4567890123
+3456789012
+2345678901
+1234567890
 `.replaceAll('\n', '');
-view.drawFrame(frame);
+view.drawFrame(frame.slice(0, 200));
 
+const game = {
+    i: 0,
+    frame: 0,
+};
 function gameloop() {
+    game.frame++;
+    if (game.frame === 5) {
+        game.frame = 0;
+        if (controls.left) {
+            game.i -= 1;
+        }
+        if (controls.right) {
+            game.i += 1;
+        }
+        if (controls.up) {
+            game.i -= 10;
+        }
+        if (controls.down) {
+            game.i += 10;
+        }
+        view.drawFrame(frame.slice(game.i, 200 + game.i));
+        console.log("huh", game.i);
+    }
     requestAnimationFrame(gameloop);
 }
 gameloop();
