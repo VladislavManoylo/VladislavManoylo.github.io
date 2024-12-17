@@ -57,6 +57,7 @@ function coefToPolynomial(coefficients) {
 //console.log("139=", coefToPolynomial([1,10,100])(3));
 const canvas = document.getElementById("canvas");
 const pencil = new Pencil(canvas);
+pencil.ctx.lineWidth = 10;
 /** take samples of the function f between x0 and x1
  * should have at least 2 samples to work as expected
  */

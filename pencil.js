@@ -7,7 +7,9 @@ export function polarToPoint(a, r) {
     return [r * Math.cos(a), r * Math.sin(a)];
 }
 export class Pencil {
+    /** @param {HTMLCanvasElement} canvas */
     constructor(canvas) {
+        /** @type{CanvasRenderingContext2d} */
         this.ctx = canvas.getContext("2d");
     }
     clear() {
