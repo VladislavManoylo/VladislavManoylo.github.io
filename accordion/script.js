@@ -15,14 +15,14 @@ function posmod(x, n) {
 const keyboardRows = [[0], [0, 4, 7], [0, 3, 7], [0, 4, 11]];
 function noteCheckbox(i, j) { return `key_${i}_${j}`; }
 for (let i = 0; i < 4; i++) {
-    const key = '<input id="{0}" type="checkbox" onchange="updateIntervals()" /><label class="{1}" for="{0}"></label>';
+    const key = '<label class="{1}" for="{0}"><input id="{0}" type="checkbox" onchange="updateIntervals()" /></label>';
     const w = key.replace("{1}", "whitekey");
     const b = key.replace("{1}", "blackkey");
     const keys = [w, b, w, b, w, w, b, w, b, w, b, w];
     for (let j = 0; j < 12; j++) {
         keys[j] = keys[j].replaceAll("{0}", noteCheckbox(i, j));
     }
-    document.getElementsByClassName("chordrow")[i].innerHTML = keys.join("");
+    document.getElementsByClassName("chord-selector")[i].innerHTML = keys.join("");
 }
 
 function chordName(intervals) {
@@ -196,9 +196,9 @@ function makeReeds(range) {
     for (const x of frequencies) {
         const ar = []
         for (let f = x; f > range[0]; f /= 2)
-            ar.push(new Note(f));
+            ar.push(new Note(f, "sine"));
         for (let f = x * 2; f < range[1]; f *= 2)
-            ar.push(new Note(f));
+            ar.push(new Note(f, "sine"));
         ret.push(new Reed(ar));
     }
     return ret;

@@ -7,87 +7,80 @@
     <link rel="stylesheet" href="../style.css" />
     <title>Accordion</title>
     <style>
-        #chords {
-            margin: 20px;
-            width: 50vmin;
-        }
-
         input[type="number"] {
             width: 5em;
         }
 
+        body {
+            display: flex;
+            flex-flow: column;
+        }
+
+        #sound-settings {
+            margin: 1em;
+        }
+
         #chords {
             display: grid;
-            width: 60vw;
-            grid-template-columns: 50vw 10vw;
-            grid-template-areas: "rows names";
+            grid-row-gap: 0.2em;
+            width: 100%;
+            height: 35vh;
+            grid-template-columns: 3fr 1fr;
+            grid-template-rows: repeat(1fr, 4);
         }
 
-        #chordrows {
-            grid-area: rows;
-        }
-
-        #chordnames {
-            grid-area: names;
+        .chord-selector {
             display: flex;
-            flex-direction: column;
+            flex-flow: row nowrap;
+            background: var(--bg-color2);
+        }
+
+        .chord-selector label {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border: 0.1em solid var(--fg-color);
+        }
+
+        .chord-selector input {
+            display: none;
+        }
+
+        .chord-selector label.whitekey {
+            background: #ffffff20;
+        }
+
+        .chord-selector label.blackkey {
+            background: #00000020;
+        }
+
+        .chord-selector label.whitekey:has(input:checked) {
+            background: white;
+        }
+
+        .chord-selector label.blackkey:has(input:checked) {
+            background: black;
         }
 
         .chordname {
-            margin: 1em;
             text-align: center;
             vertical-align: middle;
         }
 
-        .chordrow {
-            display: flex;
-            flex-direction: row;
-            height: 4vh;
-            margin: 2vh;
-        }
-
-        .chordrow input {
-            display: none;
-        }
-
-        .chordrow input+label {
-            display: inline-block;
-            width: 100%;
-            height: 100%;
-        }
-
-        .chordrow input:not(:checked)+label.whitekey {
-            background: grey;
-            border: 5px dotted white;
-        }
-
-        .chordrow input:checked+label.whitekey {
-            background: white;
-            border: 5px solid blue;
-        }
-
-        .chordrow input:not(:checked)+label.blackkey {
-            background: grey;
-            border: 5px dotted black;
-        }
-
-        .chordrow input:checked+label.blackkey {
-            background: black;
-            border: 5px solid blue;
-        }
-
         #accordion-layout {
+            width: 100%;
             display: grid;
-            grid-template-columns: 10vmin 90vmin 10vmin;
+            grid-template-columns: 1fr 9fr 1fr;
             grid-template-areas:
                 ".     bellows ."
                 "floor keys    ceiling"
                 ".     hand    .";
         }
 
-        #accordion-layout>div {
+        #accordion-layout>span {
             text-align: center;
             vertical-align: middle;
+            font-size: large;
         }
 
         #hand {
@@ -100,12 +93,16 @@
 
         #floor {
             grid-area: floor;
-            writing-mode: vertical-lr;
         }
 
         #ceiling {
             grid-area: ceiling;
+        }
+
+        #floor,
+        #ceiling {
             writing-mode: vertical-lr;
+            text-orientation: upright;
         }
 
         #keyboard {
@@ -115,12 +112,14 @@
         .accordion-button {
             text-align: center;
             vertical-align: middle;
-            background: darkblue;
-            color: white;
+            background: var(--bg-color2);
+            color: var(--fg-color);
+            text-shadow: 1px 1px 1px var(--bg-color);
             width: 7vmin;
             height: 7vmin;
+            border: 0.1em transparent;
             border-radius: 50%;
-            border: 3px solid blue;
+            font-size: x-large;
         }
 
         .row {
@@ -148,44 +147,18 @@
         }
 
         .pressed {
-            background-color: blueviolet;
+            background-color: var(--fg-color);
         }
     </style>
 
 </head>
 
 <body>
-    <div id="note range">
-        Set note range:
-        <label for="lownote">Min</label>
-        <input type="number" id="lownote" value="260" onchange="updateRange()">
-        <label for="highnote">Max</label>
-        <input type="number" id="highnote" value="1000" onchange="updateRange()">
-    </div>
-    <div id="sound">
-        <button type="button" onclick="nextsound()"><span id="soundtype">sine</span><sub>\</sub></button>
-    </div>
-    <div id="chords">Set chord rows
-        <div id="chordrows">
-            <div class="chordrow"></div>
-            <div class="chordrow"></div>
-            <div class="chordrow"></div>
-            <div class="chordrow"></div>
-        </div>
-        <div id="chordnames">
-            <div class="chordname"></div>
-            <div class="chordname"></div>
-            <div class="chordname"></div>
-            <div class="chordname"></div>
-        </div>
-    </div>
-    <button type="button" onclick="slide(1)">slideup <sub>[</sub></button>
-    <button type="button" onclick="slide(-1)">slidedown <sub>]</sub></button>
     <div id="accordion-layout">
-        <div id="bellows">bellows</div>
-        <div id="hand">hand</div>
-        <div id="floor">floor</div>
-        <div id="ceiling">ceiling</div>
+        <span id="bellows">bellows</span>
+        <span id="hand">hand</span>
+        <span id="floor">floor</span>
+        <span id="ceiling">ceiling</span>
         <div id="keyboard">
             <div class="row" id="row0"></div>
             <div class="row" id="row1"></div>
@@ -193,6 +166,32 @@
             <div class="row" id="row3"></div>
             <div class="row" id="row4"></div>
         </div>
+    </div>
+
+    <div>
+        <button type="button" onclick="slide(1)">slideup <sub>[</sub></button>
+        <button type="button" onclick="slide(-1)">slidedown <sub>]</sub></button>
+    </div>
+
+    <div id="sound-settings">
+        <label>Low Note
+            <input type="number" id="lownote" value="260" onchange="updateRange()">
+        </label>
+        <label>High Note
+            <input type="number" id="highnote" value="1000" onchange="updateRange()">
+        </label>
+        <button type="button" onclick="nextsound()"><span id="soundtype">sine</span><sub>\</sub></button>
+    </div>
+
+    <div id="chords">
+        <div class="chord-selector"></div>
+        <div class="chordname"></div>
+        <div class="chord-selector"></div>
+        <div class="chordname"></div>
+        <div class="chord-selector"></div>
+        <div class="chordname"></div>
+        <div class="chord-selector"></div>
+        <div class="chordname"></div>
     </div>
 </body>
 
