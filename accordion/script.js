@@ -120,7 +120,16 @@ for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 10; j++) {
         let ele = document.createElement("div");
         ele.classList.add("accordion-button");
-        ele.textContent = keyboardButtons[i][j];
+        const k = keyboardButtons[i][j];
+        ele.addEventListener("touchstart", () => {
+            heldKeys.add(k);
+            updatePlayers();
+        });
+        ele.addEventListener("touchend", () => {
+            heldKeys.delete(k);
+            updatePlayers();
+        });
+        ele.textContent = k;
         buttonDivs[i].push(ele);
         rowDiv.appendChild(ele);
     }
