@@ -168,30 +168,32 @@
         </div>
     </div>
 
-    <div>
-        <button type="button" onclick="slide(1)">slideup <sub>[</sub></button>
-        <button type="button" onclick="slide(-1)">slidedown <sub>]</sub></button>
-    </div>
+    <div id="controls">
+        <div>
+            <button type="button" onclick="slide(1)">slideup <sub>[</sub></button>
+            <button type="button" onclick="slide(-1)">slidedown <sub>]</sub></button>
+        </div>
 
-    <div id="sound-settings">
-        <label>Low Note
-            <input type="number" id="lownote" value="260" onchange="updateRange()">
-        </label>
-        <label>High Note
-            <input type="number" id="highnote" value="1000" onchange="updateRange()">
-        </label>
-        <button type="button" onclick="nextsound()"><span id="soundtype">sine</span><sub>\</sub></button>
-    </div>
+        <div id="sound-settings">
+            <label>Low Note
+                <input type="number" id="lownote" value="260" onchange="updateRange()">
+            </label>
+            <label>High Note
+                <input type="number" id="highnote" value="1000" onchange="updateRange()">
+            </label>
+            <button type="button" onclick="nextsound()"><span id="soundtype">sine</span><sub>\</sub></button>
+        </div>
 
-    <div id="chords">
-        <div class="chord-selector"></div>
-        <div class="chordname"></div>
-        <div class="chord-selector"></div>
-        <div class="chordname"></div>
-        <div class="chord-selector"></div>
-        <div class="chordname"></div>
-        <div class="chord-selector"></div>
-        <div class="chordname"></div>
+        <div id="chords">
+            <div class="chord-selector"></div>
+            <div class="chordname"></div>
+            <div class="chord-selector"></div>
+            <div class="chordname"></div>
+            <div class="chord-selector"></div>
+            <div class="chordname"></div>
+            <div class="chord-selector"></div>
+            <div class="chordname"></div>
+        </div>
     </div>
 </body>
 
