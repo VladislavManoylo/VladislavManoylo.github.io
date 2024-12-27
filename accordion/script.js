@@ -9,6 +9,7 @@ function posmod(x, n) {
     x %= n;
     return (x < 0) ? x + n : x;
 }
+const touchscreen = window.matchMedia("(pointer: coarse)").matches;
 
 // intervals
 // root, major, minor, 7
@@ -121,14 +122,17 @@ for (let i = 0; i < 4; i++) {
         let ele = document.createElement("div");
         ele.classList.add("accordion-button");
         const k = keyboardButtons[i][j];
-        ele.addEventListener("touchstart", () => {
-            heldKeys.add(k);
-            updatePlayers();
-        });
-        ele.addEventListener("touchend", () => {
-            heldKeys.delete(k);
-            updatePlayers();
-        });
+        if (touchscreen) {
+            // touchscreen
+            ele.addEventListener("touchstart", () => {
+                heldKeys.add(k);
+                updatePlayers();
+            });
+            ele.addEventListener("touchend", () => {
+                heldKeys.delete(k);
+                updatePlayers();
+            });
+        }
         ele.textContent = k;
         buttonDivs[i].push(ele);
         rowDiv.appendChild(ele);
@@ -274,8 +278,8 @@ function updatePlayers() {
 }
 document.addEventListener("keydown", (e) => {
     heldKeys.add(e.key);
-    if (e.key == "[") slide(-1);
-    if (e.key == "]") slide(1);
+    if (e.key == "<") slide(-1);
+    if (e.key == ">") slide(1);
     if (e.key == "\\") nextsound();
     updatePlayers();
 })
