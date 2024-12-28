@@ -205,7 +205,7 @@ document.addEventListener("keyup", (e) => {
 })
 
 // rendering
-const p = [0, 30];
+const p = [0, 20];
 for (let r = 0; r < 4; r++) {
     for (let c = 0; c < 12; c++) {
         const note = document.createElement("div");
