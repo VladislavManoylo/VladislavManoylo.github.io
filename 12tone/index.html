@@ -117,11 +117,11 @@
                 <input type="radio" name="waveform" value="custom" onchange="updateSound()"> </label>
         </div>
         <label title="number of terms to expand to"># terms
-            <input type="number" id="terms" value="5" onchange="updateSound()"> </label>
+            <input type="number" id="numTerms" value="5" onchange="updateSound()"> </label>
         <label title="cos coefficients of harmonics">cos terms
-            <input type="text" name="waveform" value="" onchange="updateSound()"> </label>
+            <input type="text" id="cosTerms" value="0" onchange="updateSound()"> </label>
         <label title="sin coefficients of harmonics">sin terms
-            <input type="text" name="waveform" value="1/n,0" onchange="updateSound()"> </label>
+            <input type="text" id="sinTerms" value="1/n,0" onchange="updateSound()"> </label>
     </div>
 </body>
 

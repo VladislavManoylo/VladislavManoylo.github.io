@@ -1,8 +1,6 @@
 const webpage = {
     /** @type{HTMLDivElement[]} */
     keyboardRows: document.getElementsByClassName("row"),
-    /** @type{HTMLDivElement[]} */
-    noteDivs: [],
     audioCtx: new AudioContext(),
     get a4() {
         return document.getElementById("A4").value;
@@ -35,13 +33,13 @@ const webpage = {
         document.getElementById("numTerms").value = value;
     },
     get cosTerms() {
-        return document.getElementById("cosTerms").value;
+        return document.getElementById("cosTerms").value.split(",");
     },
     set cosTerms(value) {
         document.getElementById("cosTerms").value = value;
     },
     get sinTerms() {
-        return document.getElementById("sinTerms").value;
+        return document.getElementById("sinTerms").value.split(",");
     },
     set sinTerms(value) {
         document.getElementById("sinTerms").value = value;
@@ -53,11 +51,11 @@ function updateNumTerms(n) {
     updateSound();
 }
 
-const keyboard = // padded with spaces to make 4x14
-    "1234567890-=" +
-    "qwertyuiop[]" +
-    "asdfghjkl;' " +
-    "zxcvbnm,./  ";
+const keyboard = [// padded with spaces to make 4x12
+    "1234567890-=",
+    "qwertyuiop[]",
+    "asdfghjkl;' ",
+    "zxcvbnm,./  "]
 
 /**
  * @type {Object<string, (a: number, b: number) => number | null>}
@@ -84,22 +82,116 @@ const keyboardLayouts = {
 
 function toNoteName(i) {
     const letter = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][(i % 12 + 12) % 12];
-    const octave = Math.floor(i / 12);
+    const octave = Math.floor(i / 12) - 1;
     return [letter, octave];
 }
 
+/**
+ * e.g. series(1, 5, ["1/n", "0"]) => [1, 0, 1/3, 0, 1/5]
+ *
+ * @param {number} start
+ * @param {number} end
+ * @param {string[]} patterns
+ * @returns {number[]}
+ */
+function series(start, end, patterns) {
+    const l = end - start + 1;
+    if (patterns.length === 0) return Array(l).fill(0);
+    const ret = [];
+    for (let i = 0; i < l; i++)
+        ret.push(patterns[i % patterns.length].replace(/n/g, i + start));
+    return ret;
+}
+
+function getHarmonics() {
+    return [series(1, webpage.numTerms, webpage.cosTerms).map(eval), series(1, webpage.numTerms, webpage.sinTerms).map(eval)]
+}
+
+class Note {
+    constructor(frequency) {
+        this.playing = false;
+        this.signal = webpage.audioCtx.createOscillator();
+        this.signal.frequency.value = frequency
+        this.decayer = webpage.audioCtx.createGain();
+        this.signal.connect(this.decayer).connect(webpage.audioCtx.destination);
+        this.started = false;
+        const type = webpage.waveform;
+        if (type == "custom") { // cannot set type directly to custom
+            const [r, i] = getHarmonics();
+            this.signal.setPeriodicWave(webpage.audioCtx.createPeriodicWave([0, ...r], [0, ...i]));
+        } else {
+            this.signal.type = webpage.waveform
+        }
+    }
+    play() {
+        if (!this.started) {
+            webpage.audioCtx.resume();
+            this.signal.start();
+            this.started = true;
+        }
+        if (!this.playing) {
+            const t = webpage.audioCtx.currentTime;
+            this.decayer.gain.linearRampToValueAtTime(1, t + 0.1);
+            this.playing = true;
+        }
+    }
+    stop() {
+        if (this.started) {
+            this.signal.stop();
+        }
+    }
+    pause() {
+        if (this.playing) {
+            const t = webpage.audioCtx.currentTime;
+            this.decayer.gain.linearRampToValueAtTime(0, t + 0.1);
+            this.playing = false;
+        }
+    }
+};
+
+/**
+ * @type {Object<string, (i: number) => number}
+ */
+const tunings = {
+    edo: i => webpage.a4 * Math.pow(2, (i - 69) / 12),
+}
+
+/** @param{HTMLDivElement} div*/
+function createNote(div) {
+    let i = 0;
+    for (const c of div.classList) {
+        if (c.startsWith("noteI")) {
+            i = +c.substring(5);
+            break;
+        }
+    }
+    return new Note(tunings.edo(i));
+}
+
+const playNotes = {};
+const heldNotes = new Set();
 const heldKeys = new Set();
 function updatePlayers() {
     // press down screen buttons
-    for (let i in keyboard) {
-        const k = keyboard[i];
-        if (k == " ") continue;
-        const button = webpage.noteDivs[i];
-        if (heldKeys.has(k)) {
-            button.classList.add("pressed");
-        } else {
-            button.classList.remove("pressed");
+    heldNotes.clear()
+    for (let r in keyboard) {
+        for (let c in keyboard[r]) {
+            const k = keyboard[r][c];
+            if (k == " ") continue;
+            const button = webpage.keyboardRows[r].children[c];
+            if (heldKeys.has(k)) {
+                heldNotes.add(button.innerHTML);
+                button.classList.add("pressed");
+            } else {
+                button.classList.remove("pressed");
+            }
         }
+    }
+    for (const note in playNotes) {
+        if (heldNotes.has(note))
+            playNotes[note].play();
+        else
+            playNotes[note].pause();
     }
 }
 
@@ -113,17 +205,28 @@ document.addEventListener("keyup", (e) => {
 })
 
 // rendering
-const p = [0, 24];
+const p = [0, 30];
 for (let r = 0; r < 4; r++) {
     for (let c = 0; c < 12; c++) {
         const note = document.createElement("div");
         note.classList.add("note");
-        webpage.noteDivs.push(note);
         webpage.keyboardRows[r].appendChild(note);
     }
 }
 
 function updateSound() {
+    for (let note in playNotes) {
+        playNotes[note].stop();
+        delete playNotes[note];
+    }
+    for (let r in keyboard) {
+        for (let c in keyboard[r]) {
+            const k = keyboard[r][c];
+            if (k == " ") continue;
+            const button = webpage.keyboardRows[r].children[c];
+            playNotes[button.innerHTML] = playNotes[button.innerHTML] || createNote(button);
+        }
+    }
 }
 
 function updateLayout() {
@@ -136,6 +239,7 @@ function updateLayout() {
                 div.classList.add("null");
                 continue;
             }
+            div.classList.add(`noteI${note}`); // AWFUL hack to save the note
             const noteName = toNoteName(note);
             if (noteName[0].includes("#"))
                 div.classList.add("sharp");
@@ -144,5 +248,6 @@ function updateLayout() {
             div.innerHTML = noteName;
         }
     }
+    updateSound();
 }
 updateLayout();
