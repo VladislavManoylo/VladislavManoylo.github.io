@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css" />
+    <title>12 tone keyboards</title>
+    <style>
+        input[type="number"] {
+            width: 5em;
+        }
+
+        body {
+            display: flex;
+            flex-flow: column;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        #keyboard {
+            width: 100%;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: row;
+            width: 80vmin;
+            justify-content: space-between;
+        }
+
+        #row2 {
+            margin-left: 3vmin;
+        }
+
+        #row3 {
+            margin-left: 6vmin;
+        }
+
+        #row4 {
+            margin-left: 9vmin;
+        }
+
+        #row {
+            display: flex;
+            flex-direction: row;
+        }
+
+        /* Row 4 */
+        .note {
+            text-align: center;
+            vertical-align: middle;
+            background: white;
+            border-radius: 50%;
+            width: 6vmin;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            color: gray;
+            box-shadow: red 0.2em 0.2em 0.4em;
+        }
+
+        .sharp {
+            background-color: black;
+        }
+
+        .pressed {
+            opacity: 0.5;
+            box-shadow: none;
+        }
+
+        .null {
+            visibility: hidden;
+        }
+
+        #controls {
+            margin: 1em;
+            font-size: large;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="keyboard">
+        <div class="row" id="row1"></div>
+        <div class="row" id="row2"></div>
+        <div class="row" id="row3"></div>
+        <div class="row" id="row4"></div>
+    </div>
+
+    <div id="controls">
+        <div id="layouts" title="keyboard layouts">keyboard layouts<br>
+            <label>janko
+                <input type="radio" name="layout" value="janko" checked="" onchange="updateLayout(this.value)"> </label>
+            <label title="modified janko that changes octaves over rows">split janko
+                <input type="radio" name="layout" value="jankoSplit" onchange="updateLayout(this.value)"> </label>
+            <label>hayden
+                <input type="radio" name="layout" value="hayden" onchange="updateLayout(this.value)"> </label>
+            <label>moscow
+                <input type="radio" name="layout" value="moscow" onchange="updateLayout(this.value)"> </label>
+            <label>western
+                <input type="radio" name="layout" value="western" onchange="updateLayout(this.value)"> </label>
+            <label>piano
+                <input type="radio" name="layout" value="piano" onchange="updateLayout(this.value)"> </label>
+        </div>
+        <label>A4 = <input id="A4" type="number" value="440" onchange="updatea4(this.value)"></label>
+        <div id="sound">
+            <label>sine
+                <input type="radio" name="waveform" value="sine" checked onchange="updateWaveform(this.value)"> </label>
+            <label>square
+                <input type="radio" name="waveform" value="square" onchange="updateWaveform(this.value)"> </label>
+            <label>triangle
+                <input type="radio" name="waveform" value="triangle" onchange="updateWaveform(this.value)"> </label>
+            <label>sawtooth
+                <input type="radio" name="waveform" value="sawtooth" onchange="updateWaveform(this.value)"> </label>
+            <label>custom
+                <input type="radio" name="waveform" value="custom" onchange="updateWaveform(this.value)"> </label>
+        </div>
+        <label title="number of terms to expand to"># terms
+            <input type="number" id="terms" value="5" onchange="updateSound()"> </label>
+        <label title="cos coefficients of harmonics">cos terms
+            <input type="text" name="waveform" value="" onchange="updateSound()"> </label>
+        <label title="sin coefficients of harmonics">sin terms
+            <input type="text" name="waveform" value="1/n,0" onchange="updateSound()"> </label>
+    </div>
+</body>
+
+<script src="script.js"></script>
