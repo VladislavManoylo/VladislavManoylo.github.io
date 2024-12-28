@@ -136,6 +136,13 @@ class Note {
             this.signal.type = webpage.waveform
         }
     }
+    wavelength() {
+        return 1 / this.signal.frequency.value;
+    }
+    synctime() {
+        const t = webpage.audioCtx.currentTime + 0.2; // extra time to get sync correct
+        return t - (t % this.wavelength());
+    }
     play() {
         if (!this.started) {
             webpage.audioCtx.resume();
@@ -143,9 +150,11 @@ class Note {
             this.started = true;
         }
         if (!this.playing) {
-            const t = webpage.audioCtx.currentTime;
-            this.decayer.gain.linearRampToValueAtTime(1, t + 0.2);
-            this.decayer.gain.linearRampToValueAtTime(0.7, t + 0.8);
+            const t = this.synctime();
+            this.decayer.gain.cancelScheduledValues(t);
+            this.decayer.gain.value = 0;
+            this.decayer.gain.linearRampToValueAtTime(1, t);
+            this.decayer.gain.linearRampToValueAtTime(0.5, t + 1);
             this.playing = true;
             console.log("hz", this.signal.frequency.value);
         }
@@ -157,8 +166,9 @@ class Note {
     }
     pause() {
         if (this.playing) {
-            const t = webpage.audioCtx.currentTime;
-            this.decayer.gain.linearRampToValueAtTime(0, t + 0.3);
+            const t = this.synctime();
+            this.decayer.gain.cancelScheduledValues(t);
+            this.decayer.gain.linearRampToValueAtTime(0, t+0.3);
             this.playing = false;
         }
     }
