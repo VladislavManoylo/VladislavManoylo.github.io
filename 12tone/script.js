@@ -46,11 +46,6 @@ const webpage = {
     },
 }
 
-function updateNumTerms(n) {
-    webpage.numTerms = n;
-    updateSound();
-}
-
 const keyboard = [// padded with spaces to make 4x12
     "1234567890-=",
     "qwertyuiop[]",
@@ -195,15 +190,6 @@ function updatePlayers() {
     }
 }
 
-document.addEventListener("keydown", (e) => {
-    heldKeys.add(e.key);
-    updatePlayers();
-})
-document.addEventListener("keyup", (e) => {
-    heldKeys.delete(e.key);
-    updatePlayers();
-})
-
 // rendering
 const p = [0, 20];
 for (let r = 0; r < 4; r++) {
@@ -251,3 +237,32 @@ function updateLayout() {
     updateSound();
 }
 updateLayout();
+
+document.addEventListener("keydown", (e) => {
+    heldKeys.add(e.key);
+    updatePlayers();
+});
+document.addEventListener("keyup", (e) => {
+    heldKeys.delete(e.key);
+    updatePlayers();
+});
+document.addEventListener("keydown", (e) => {
+    switch (e.key) {
+        case "ArrowLeft":
+            p[1] -= 1;
+            updateLayout();
+            break;
+        case "ArrowRight":
+            p[1] += 1;
+            updateLayout();
+            break;
+        case "ArrowUp":
+            p[0] -= 1;
+            updateLayout();
+            break;
+        case "ArrowDown":
+            p[0] += 1;
+            updateLayout();
+            break;
+    }
+});
