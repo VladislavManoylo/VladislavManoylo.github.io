@@ -165,7 +165,14 @@ const tunings = {
         const pitch = webpage.a4 * ratios[posmod(i, 12)];
         const octave = Math.floor(i / 12);
         return pitch * Math.pow(2, octave);
-    }
+    },
+    pythagorean: i => {
+        i -= 69;
+        const ratios = [1, 256 / 243, 9 / 8, 32 / 27, 81 / 64, 4 / 3, 1024 / 729, 3 / 2, 128 / 81, 27 / 16, 16 / 9, 243 / 128]
+        const pitch = webpage.a4 * ratios[posmod(i, 12)];
+        const octave = Math.floor(i / 12);
+        return pitch * Math.pow(2, octave);
+    },
 }
 
 /** @param{HTMLDivElement} div*/
