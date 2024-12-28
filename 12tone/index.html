@@ -18,6 +18,10 @@
             overflow-x: hidden;
         }
 
+        #controls>div {
+            border: 1px solid white;
+        }
+
         label {
             display: inline-block;
             border: 1px dotted white;
@@ -92,6 +96,7 @@
         <div class="row" id="row2"></div>
         <div class="row" id="row3"></div>
         <div class="row" id="row4"></div>
+        <br>
         use arrow keys to move keyboard
     </div>
 
@@ -110,25 +115,29 @@
             <label>piano
                 <input type="radio" name="layout" value="piano" onchange="updateLayout()"> </label>
         </div>
-        <label>A4 = <input id="A4" type="number" value="440" onchange="updateSound()"></label>
-        <div id="sound">
-            <label>sine
-                <input type="radio" name="waveform" value="sine" checked onchange="updateSound()"> </label>
-            <label>square
-                <input type="radio" name="waveform" value="square" onchange="updateSound()"> </label>
-            <label>triangle
-                <input type="radio" name="waveform" value="triangle" onchange="updateSound()"> </label>
-            <label>sawtooth
-                <input type="radio" name="waveform" value="sawtooth" onchange="updateSound()"> </label>
-            <label>custom
-                <input type="radio" name="waveform" value="custom" onchange="updateSound()"> </label>
+        <div id="sound">sound
+            <div>
+                <label>A4 = <input id="A4" type="number" value="440" onchange="updateSound()"></label>
+            </div>
+            <div>
+                <label>sine
+                    <input type="radio" name="waveform" value="sine" checked onchange="updateSound()"> </label>
+                <label>square
+                    <input type="radio" name="waveform" value="square" onchange="updateSound()"> </label>
+                <label>triangle
+                    <input type="radio" name="waveform" value="triangle" onchange="updateSound()"> </label>
+                <label>sawtooth
+                    <input type="radio" name="waveform" value="sawtooth" onchange="updateSound()"> </label>
+                <label>custom
+                    <input type="radio" name="waveform" value="custom" onchange="updateSound()"> </label>
+            </div>
+            <label title="number of terms to expand to"># terms
+                <input type="number" id="numTerms" value="5" onchange="updateSound()"> </label>
+            <label title="cos coefficients of harmonics">cos terms
+                <input type="text" id="cosTerms" value="0" onchange="updateSound()"> </label>
+            <label title="sin coefficients of harmonics">sin terms
+                <input type="text" id="sinTerms" value="1/n,0" onchange="updateSound()"> </label>
         </div>
-        <label title="number of terms to expand to"># terms
-            <input type="number" id="numTerms" value="5" onchange="updateSound()"> </label>
-        <label title="cos coefficients of harmonics">cos terms
-            <input type="text" id="cosTerms" value="0" onchange="updateSound()"> </label>
-        <label title="sin coefficients of harmonics">sin terms
-            <input type="text" id="sinTerms" value="1/n,0" onchange="updateSound()"> </label>
     </div>
 </body>
 
