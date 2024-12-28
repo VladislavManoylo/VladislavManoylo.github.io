@@ -144,7 +144,8 @@ class Note {
         }
         if (!this.playing) {
             const t = webpage.audioCtx.currentTime;
-            this.decayer.gain.linearRampToValueAtTime(1, t + 0.1);
+            this.decayer.gain.linearRampToValueAtTime(1, t + 0.2);
+            this.decayer.gain.linearRampToValueAtTime(0.7, t + 0.8);
             this.playing = true;
             console.log("hz", this.signal.frequency.value);
         }
@@ -157,7 +158,7 @@ class Note {
     pause() {
         if (this.playing) {
             const t = webpage.audioCtx.currentTime;
-            this.decayer.gain.linearRampToValueAtTime(0, t + 0.5);
+            this.decayer.gain.linearRampToValueAtTime(0, t + 0.3);
             this.playing = false;
         }
     }
