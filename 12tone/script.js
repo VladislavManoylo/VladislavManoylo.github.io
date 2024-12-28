@@ -52,6 +52,8 @@ const keyboard = [// padded with spaces to make 4x12
     "asdfghjkl;' ",
     "zxcvbnm,./  "]
 
+const posmod = (a, b) => (a % b + b) % b;
+
 /**
  * @type {Object<string, (a: number, b: number) => number | null>}
  */
@@ -65,10 +67,8 @@ const keyboardLayouts = {
         const roff = Math.floor(r / 2);
         const coff = Math.floor(c / 7);
         const layout = [[1, 0], [0, 1], [1, 1], [0, 2], [1, 2], [1, 3], [0, 4], [1, 4], [0, 5], [1, 5], [0, 6], [1, 6]]
-        r %= 2;
-        c %= 7;
         for (let i = 0; i < 12; i++) { //lmao, (let i in layout) returns a string
-            if (layout[i][0] == r && layout[i][1] == c)
+            if (layout[i][0] == posmod(r, 2) && layout[i][1] == posmod(c, 7))
                 return i + 12 * (roff + roff + coff);
         }
         return null;
@@ -76,7 +76,7 @@ const keyboardLayouts = {
 };
 
 function toNoteName(i) {
-    const letter = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][(i % 12 + 12) % 12];
+    const letter = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][posmod(i, 12)];
     const octave = Math.floor(i / 12) - 1;
     return [letter, octave];
 }
