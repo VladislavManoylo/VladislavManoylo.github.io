@@ -17,6 +17,15 @@ const webpage = {
         for (const x of document.getElementsByName("tuning"))
             x.checked = x.value == value;
     },
+    get colorscheme() {
+        for (const x of document.getElementsByName("colorscheme"))
+            if (x.checked) return x.value;
+        return undefined;
+    },
+    set colorscheme(value) {
+        for (const x of document.getElementsByName("colorscheme"))
+            x.checked = x.value == value;
+    },
     get layout() {
         for (const x of document.getElementsByName("layout"))
             if (x.checked) return x.value;
@@ -240,6 +249,19 @@ function updateSound() {
 }
 
 function updateLayout() {
+    console.log("HUH", webpage.colorscheme);
+    const colorclass = (note) => {
+        switch (webpage.colorscheme) {
+            case "traditional":
+                return ["natural", "sharp", "natural", "sharp", "natural", "natural", "sharp", "natural", "sharp", "natural", "sharp", "natural"][note]
+            case "whole":
+                return "color" + note % 2;
+            case "thirds":
+                return "color" + note % 3;
+            case "fourths":
+                return "color" + note % 4;
+        }
+    };
     for (let r = 0; r < 4; r++) {
         for (let c = 0; c < 12; c++) {
             const div = webpage.keyboardRows[r].children[c];
@@ -250,11 +272,8 @@ function updateLayout() {
                 continue;
             }
             div.classList.add(`noteI${note}`); // AWFUL hack to save the note
+            div.classList.add(colorclass(posmod(note, 12)));
             const noteName = toNoteName(note);
-            if (noteName[0].includes("#"))
-                div.classList.add("sharp");
-            else
-                div.classList.remove("sharp");
             div.innerHTML = noteName;
         }
     }

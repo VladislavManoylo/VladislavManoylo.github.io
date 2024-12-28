@@ -60,17 +60,37 @@
         .note {
             text-align: center;
             vertical-align: middle;
-            background: white;
             border-radius: 50%;
             width: 6vmin;
             aspect-ratio: 1;
             border-radius: 50%;
-            color: gray;
+            color: black;
             box-shadow: red 0.2em 0.2em 0.4em;
         }
 
+        .natural {
+            background: white;
+        }
+
         .sharp {
-            background-color: black;
+            background: black;
+            color: white;
+        }
+
+        .color0 {
+            background: white;
+        }
+
+        .color1 {
+            background: hsl(200 75 75);
+        }
+
+        .color2 {
+            background: hsl(40 75 75);
+        }
+
+        .color3 {
+            background: hsl(300 75 75);
         }
 
         .pressed {
@@ -103,7 +123,7 @@
     <div id="controls">
         <div id="layouts" title="keyboard layouts">keyboard layouts<br>
             <label title="a more compact and regular layout for piano keys">janko
-                <input type="radio" name="layout" value="janko" checked="" onchange="updateLayout()"> </label>
+                <input type="radio" name="layout" value="janko" checked onchange="updateLayout()"> </label>
             <label title="modified janko that changes octaves over rows">split janko
                 <input type="radio" name="layout" value="jankoSplit" onchange="updateLayout()"> </label>
             <label title="layout for concertinas and bandoneons">Wicki-Hayden
@@ -114,6 +134,16 @@
                 <input type="radio" name="layout" value="western" onchange="updateLayout()"> </label>
             <label>piano
                 <input type="radio" name="layout" value="piano" onchange="updateLayout()"> </label>
+        </div>
+        <div id="color scheme">color scheme<br>
+            <label title="ivory naturals, ebony accidentals, your grandfather's piano">traditional
+                <input type="radio" name="colorscheme" value="traditional" checked onchange="updateLayout()"> </label>
+            <label title="alternating colors">whole tones
+                <input type="radio" name="colorscheme" value="whole" onchange="updateLayout()"> </label>
+            <label>thirds
+                <input type="radio" name="colorscheme" value="thirds" onchange="updateLayout()"> </label>
+            <label>fourths
+                <input type="radio" name="colorscheme" value="fourths" onchange="updateLayout()"> </label>
         </div>
         <div id="sound">sound
             <div>
