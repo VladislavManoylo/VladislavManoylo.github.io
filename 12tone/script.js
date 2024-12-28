@@ -148,7 +148,7 @@ class Note {
     pause() {
         if (this.playing) {
             const t = webpage.audioCtx.currentTime;
-            this.decayer.gain.linearRampToValueAtTime(0, t + 0.1);
+            this.decayer.gain.linearRampToValueAtTime(0, t + 0.5);
             this.playing = false;
         }
     }
