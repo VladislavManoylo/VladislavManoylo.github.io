@@ -91,30 +91,30 @@
     <div id="controls">
         <div id="layouts" title="keyboard layouts">keyboard layouts<br>
             <label>janko
-                <input type="radio" name="layout" value="janko" checked="" onchange="updateLayout(this.value)"> </label>
+                <input type="radio" name="layout" value="janko" checked="" onchange="updateLayout()"> </label>
             <label title="modified janko that changes octaves over rows">split janko
-                <input type="radio" name="layout" value="jankoSplit" onchange="updateLayout(this.value)"> </label>
+                <input type="radio" name="layout" value="jankoSplit" onchange="updateLayout()"> </label>
             <label>hayden
-                <input type="radio" name="layout" value="hayden" onchange="updateLayout(this.value)"> </label>
+                <input type="radio" name="layout" value="hayden" onchange="updateLayout()"> </label>
             <label>moscow
-                <input type="radio" name="layout" value="moscow" onchange="updateLayout(this.value)"> </label>
+                <input type="radio" name="layout" value="moscow" onchange="updateLayout()"> </label>
             <label>western
-                <input type="radio" name="layout" value="western" onchange="updateLayout(this.value)"> </label>
+                <input type="radio" name="layout" value="western" onchange="updateLayout()"> </label>
             <label>piano
-                <input type="radio" name="layout" value="piano" onchange="updateLayout(this.value)"> </label>
+                <input type="radio" name="layout" value="piano" onchange="updateLayout()"> </label>
         </div>
-        <label>A4 = <input id="A4" type="number" value="440" onchange="updatea4(this.value)"></label>
+        <label>A4 = <input id="A4" type="number" value="440" onchange="updateSound()"></label>
         <div id="sound">
             <label>sine
-                <input type="radio" name="waveform" value="sine" checked onchange="updateWaveform(this.value)"> </label>
+                <input type="radio" name="waveform" value="sine" checked onchange="updateSound()"> </label>
             <label>square
-                <input type="radio" name="waveform" value="square" onchange="updateWaveform(this.value)"> </label>
+                <input type="radio" name="waveform" value="square" onchange="updateSound()"> </label>
             <label>triangle
-                <input type="radio" name="waveform" value="triangle" onchange="updateWaveform(this.value)"> </label>
+                <input type="radio" name="waveform" value="triangle" onchange="updateSound()"> </label>
             <label>sawtooth
-                <input type="radio" name="waveform" value="sawtooth" onchange="updateWaveform(this.value)"> </label>
+                <input type="radio" name="waveform" value="sawtooth" onchange="updateSound()"> </label>
             <label>custom
-                <input type="radio" name="waveform" value="custom" onchange="updateWaveform(this.value)"> </label>
+                <input type="radio" name="waveform" value="custom" onchange="updateSound()"> </label>
         </div>
         <label title="number of terms to expand to"># terms
             <input type="number" id="terms" value="5" onchange="updateSound()"> </label>

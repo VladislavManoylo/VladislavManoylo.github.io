@@ -4,9 +4,53 @@ const webpage = {
     /** @type{HTMLDivElement[]} */
     noteDivs: [],
     audioCtx: new AudioContext(),
-    a4: 440,
-    selectedLayout: "janko",
-    selectedWaveform: "sine",
+    get a4() {
+        return document.getElementById("A4").value;
+    },
+    set a4(value) {
+        document.getElementById("A4").value = value;
+    },
+    get layout() {
+        for (const x of document.getElementsByName("layout"))
+            if (x.checked) return x.value;
+        return undefined;
+    },
+    set layout(value) {
+        for (const x of document.getElementsByName("layout"))
+            x.checked = x.value == value;
+    },
+    get waveform() {
+        for (const x of document.getElementsByName("waveform"))
+            if (x.checked) return x.value;
+        return undefined;
+    },
+    set waveform(value) {
+        for (const x of document.getElementsByName("waveform"))
+            x.checked = x.value == value;
+    },
+    get numTerms() {
+        return document.getElementById("numTerms").value;
+    },
+    set numTerms(value) {
+        document.getElementById("numTerms").value = value;
+    },
+    get cosTerms() {
+        return document.getElementById("cosTerms").value;
+    },
+    set cosTerms(value) {
+        document.getElementById("cosTerms").value = value;
+    },
+    get sinTerms() {
+        return document.getElementById("sinTerms").value;
+    },
+    set sinTerms(value) {
+        document.getElementById("sinTerms").value = value;
+    },
+}
+
+function updateNumTerms(n) {
+    webpage.numTerms = n;
+    updateSound();
 }
 
 const keyboard = // padded with spaces to make 4x14
@@ -44,7 +88,6 @@ function toNoteName(i) {
     return [letter, octave];
 }
 
-
 const heldKeys = new Set();
 function updatePlayers() {
     // press down screen buttons
@@ -80,29 +123,14 @@ for (let r = 0; r < 4; r++) {
     }
 }
 
-function updateLayout(layout) {
-    webpage.selectedLayout = layout;
-    changeNotes();
-}
-
-function updateWaveform(waveform) {
-    webpage.selectedWaveform = waveform;
-    updateSound();
-}
-
-function updatea4(a4) {
-    webpage.a4 = a4;
-    updateSound();
-}
-
 function updateSound() {
 }
 
-function changeNotes() {
+function updateLayout() {
     for (let r = 0; r < 4; r++) {
         for (let c = 0; c < 12; c++) {
             const div = webpage.keyboardRows[r].children[c];
-            const note = keyboardLayouts[webpage.selectedLayout](p[0] + r, p[1] + c);
+            const note = keyboardLayouts[webpage.layout](p[0] + r, p[1] + c);
             div.className = "note";
             if (note == null) {
                 div.classList.add("null");
@@ -117,4 +145,4 @@ function changeNotes() {
         }
     }
 }
-changeNotes();
+updateLayout();
