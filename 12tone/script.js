@@ -243,13 +243,13 @@ function updateSound() {
             const k = keyboard[r][c];
             if (k == " ") continue;
             const button = webpage.keyboardRows[r].children[c];
+            if (button.classList.contains("null")) continue;
             playNotes[button.innerHTML] = playNotes[button.innerHTML] || createNote(button);
         }
     }
 }
 
 function updateLayout() {
-    console.log("HUH", webpage.colorscheme);
     const colorclass = (note) => {
         switch (webpage.colorscheme) {
             case "traditional":
