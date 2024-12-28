@@ -118,6 +118,10 @@
         <div id="sound">sound
             <div>
                 <label>A4 = <input id="A4" type="number" value="440" onchange="updateSound()"></label>
+                <label title="equal temperament, the modern tuning, 12 equal divisions of the octave">equal
+                    <input type="radio" name="tuning" value="equal" checked onchange="updateSound()"> </label>
+                <label title="just intonation, tuning to whole number ratios">just
+                    <input type="radio" name="tuning" value="just" onchange="updateSound()"> </label>
             </div>
             <div>
                 <label>sine

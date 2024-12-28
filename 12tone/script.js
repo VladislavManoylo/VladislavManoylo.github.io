@@ -8,6 +8,15 @@ const webpage = {
     set a4(value) {
         document.getElementById("A4").value = value;
     },
+    get tuning() {
+        for (const x of document.getElementsByName("tuning"))
+            if (x.checked) return x.value;
+        return undefined;
+    },
+    set tuning(value) {
+        for (const x of document.getElementsByName("tuning"))
+            x.checked = x.value == value;
+    },
     get layout() {
         for (const x of document.getElementsByName("layout"))
             if (x.checked) return x.value;
@@ -128,6 +137,7 @@ class Note {
             const t = webpage.audioCtx.currentTime;
             this.decayer.gain.linearRampToValueAtTime(1, t + 0.1);
             this.playing = true;
+            console.log("hz", this.signal.frequency.value);
         }
     }
     stop() {
@@ -148,7 +158,14 @@ class Note {
  * @type {Object<string, (i: number) => number}
  */
 const tunings = {
-    edo: i => webpage.a4 * Math.pow(2, (i - 69) / 12),
+    equal: i => webpage.a4 * Math.pow(2, (i - 69) / 12),
+    just: i => {
+        i -= 69;
+        const ratios = [1, 16 / 15, 9 / 8, 6 / 5, 5 / 4, 4 / 3, Math.sqrt(2), 3 / 2, 8 / 5, 5 / 3, 7 / 4, 15 / 8];
+        const pitch = webpage.a4 * ratios[posmod(i, 12)];
+        const octave = Math.floor(i / 12);
+        return pitch * Math.pow(2, octave);
+    }
 }
 
 /** @param{HTMLDivElement} div*/
@@ -160,7 +177,7 @@ function createNote(div) {
             break;
         }
     }
-    return new Note(tunings.edo(i));
+    return new Note(tunings[webpage.tuning](i));
 }
 
 const playNotes = {};
