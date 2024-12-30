@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>32 bits</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            counter-reset: value;
+            font-size: x-large;
+        }
+
+        #bits {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+        }
+
+        input {
+            width: 3em;
+            height: 3em;
+        }
+
+        input:checked::after { content: "1"; color: black; }
+        input:not(checked)::after { content: "0"; color: white; }
+
+        #bits input:nth-last-child(1):checked { counter-increment: value 1; }
+        #bits input:nth-last-child(2):checked { counter-increment: value 2; }
+        #bits input:nth-last-child(3):checked { counter-increment: value 4; }
+        #bits input:nth-last-child(4):checked { counter-increment: value 8; }
+        #bits input:nth-last-child(5):checked { counter-increment: value 16; }
+        #bits input:nth-last-child(6):checked { counter-increment: value 32; }
+        #bits input:nth-last-child(7):checked { counter-increment: value 64; }
+        #bits input:nth-last-child(8):checked { counter-increment: value 128; }
+        #bits input:nth-last-child(9):checked { counter-increment: value 256; }
+        #bits input:nth-last-child(10):checked { counter-increment: value 512; }
+        #bits input:nth-last-child(11):checked { counter-increment: value 1024; }
+        #bits input:nth-last-child(12):checked { counter-increment: value 2048; }
+        #bits input:nth-last-child(13):checked { counter-increment: value 4096; }
+        #bits input:nth-last-child(14):checked { counter-increment: value 8192; }
+        #bits input:nth-last-child(15):checked { counter-increment: value 16384; }
+        #bits input:nth-last-child(16):checked { counter-increment: value 32768; }
+        #bits input:nth-last-child(17):checked { counter-increment: value 65536; }
+        #bits input:nth-last-child(18):checked { counter-increment: value 131072; }
+        #bits input:nth-last-child(19):checked { counter-increment: value 262144; }
+        #bits input:nth-last-child(20):checked { counter-increment: value 524288; }
+        #bits input:nth-last-child(21):checked { counter-increment: value 1048576; }
+        #bits input:nth-last-child(22):checked { counter-increment: value 2097152; }
+        #bits input:nth-last-child(23):checked { counter-increment: value 4194304; }
+        #bits input:nth-last-child(24):checked { counter-increment: value 8388608; }
+        #bits input:nth-last-child(25):checked { counter-increment: value 16777216; }
+        #bits input:nth-last-child(26):checked { counter-increment: value 33554432; }
+        #bits input:nth-last-child(27):checked { counter-increment: value 67108864; }
+        #bits input:nth-last-child(28):checked { counter-increment: value 134217728; }
+        #bits input:nth-last-child(29):checked { counter-increment: value 268435456; }
+        #bits input:nth-last-child(30):checked { counter-increment: value 536870912; }
+        #bits input:nth-last-child(31):checked { counter-increment: value 1073741824; }
+        #bits input:nth-last-child(32):checked { counter-increment: value -2147483648; }
+
+        #value::after {
+            content: counter(value);
+        }
+    </style>
+</head>
+
+<body scroll="no">
+    <div id="bits">
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+        <input type="checkbox"></input>
+    </div>
+    <div id="value"></div>
+</body>
+
+</html>
