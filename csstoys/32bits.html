@@ -13,18 +13,21 @@
         }
 
         #bits {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(4, 1fr);
+            display: flex;
         }
 
         input {
-            width: 3em;
-            height: 3em;
+            visibility: hidden;
         }
 
-        input:checked::after { content: "1"; color: black; }
-        input:not(checked)::after { content: "0"; color: white; }
+        input::after {
+            visibility: visible;
+            font-size: large;
+            cursor: pointer;
+        }
+
+        input:checked::after { content: "1"; }
+        input:not(checked)::after { content: "0"; }
 
         #bits input:nth-last-child(1):checked { counter-increment: value 1; }
         #bits input:nth-last-child(2):checked { counter-increment: value 2; }
@@ -66,6 +69,7 @@
 </head>
 
 <body scroll="no">
+    click on bits below to toggle them
     <div id="bits">
         <input type="checkbox"></input>
         <input type="checkbox"></input>
@@ -91,7 +95,7 @@
         <input type="checkbox"></input>
         <input type="checkbox"></input>
         <input type="checkbox"></input>
-        <input type="checkbox"></input>
+        <input type="checkbox" checked></input>
         <input type="checkbox"></input>
         <input type="checkbox"></input>
         <input type="checkbox"></input>
@@ -100,7 +104,7 @@
         <input type="checkbox"></input>
         <input type="checkbox"></input>
     </div>
-    <div id="value"></div>
+    <div id="value">= </div>
 </body>
 
 </html>
