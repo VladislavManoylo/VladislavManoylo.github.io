@@ -16,11 +16,11 @@
             display: flex;
         }
 
-        input {
+        #bits input {
             visibility: hidden;
         }
 
-        input::after {
+        #bits input::after {
             visibility: visible;
             font-size: large;
             cursor: pointer;
@@ -62,9 +62,35 @@
         #bits input:nth-last-child(31):checked { counter-increment: value 1073741824; }
         #bits input:nth-last-child(32):checked { counter-increment: value -2147483648; }
 
-        #value::after {
+        #decimal::after {
             content: counter(value);
         }
+
+        #roman::after {
+            content: counter(value, upper-roman);
+        }
+
+        @counter-style octal {
+            system: numeric;
+            symbols: "0" "1" "2" "3" "4" "5" "6" "7";
+            suffix: " ";
+        }
+
+        #octal::after {
+            content: counter(value, octal);
+        }
+
+        @counter-style hex {
+            system: numeric;
+            symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F";
+            suffix: " ";
+        }
+
+        #hex::after {
+            content: counter(value, hex);
+        }
+    </style>
+</head>
     </style>
 </head>
 
@@ -104,7 +130,10 @@
         <input type="checkbox"></input>
         <input type="checkbox"></input>
     </div>
-    <div id="value">= </div>
+    <div id="decimal">decimal = </div>
+    <div id="octal">octal = </div>
+    <div id="hex">hexadecimal = </div>
+    <div id="roman">roman = </div>
 </body>
 
 </html>
