@@ -17,16 +17,20 @@
             font-family: monospace, monospace;
         }
 
+        @counter-style arrow {
+            system: cyclic;
+            symbols: ">";
+            suffix: " ";
+        }
+
         ul {
             display: grid;
             max-width: 100%;
             width: 30em;
             grid-template-columns: 1fr 1fr;
             position: absolute;
-            box-sizing: border-box;
-            padding: 0;
             align-self: center;
-            list-style-type: none;
+            list-style-type: arrow;
             font-size: xx-large;
         }
 
@@ -65,68 +69,68 @@
             &nbsp;/V/<br>
             //K<br>
         </p>
-        <!-- <li>&gt; <a href="brick-games/">Brick Games</a></li> -->
-        <li>&gt; <a href="csstoys/">CSS Toys</a></li>
+        <!-- <li><a href="brick-games/">Brick Games</a></li> -->
+        <li><a href="csstoys/">CSS Toys</a></li>
         <div class="preview">
             Animations and interactions done purely in CSS
             (no javascript)
             <iframe src="csstoys/"></iframe>
         </div>
-        <li>&gt; <a href="12tone/">12 tones</a></li>
+        <li><a href="12tone/">12 tones</a></li>
         <div class="preview">
             test alternative piano layouts with different synth sounds
             <img src="preview/12tone.png">
         </div>
-        <li>&gt; <a href="oscillator/">Oscillator</a></li>
+        <li><a href="oscillator/">Oscillator</a></li>
         <div class="preview">
             Synthesize, hear, and view different wave forms
             <img src="preview/oscillator.png">
         </div>
-        <li>&gt; <a href="accordion/">Accordion</a></li>
+        <li><a href="accordion/">Accordion</a></li>
         <div class="preview">
             Play a stradella bass accordion with your keyboard
             <img src="preview/accordion.png">
         </div>
-        <li>&gt; <a href="lambdacalculus/">Lambda Calculus</a></li>
+        <li><a href="lambdacalculus/">Lambda Calculus</a></li>
         <div class="preview">
             Step through expressions written in lambda calculus
             <img src="preview/lambda.png">
         </div>
-        <li>&gt; <a href="alphabet/">Alphabet</a></li>
+        <li><a href="alphabet/">Alphabet</a></li>
         <div class="preview">
             Switch between letters, morsecode, braille, and others
             <img src="preview/alphabet.png">
         </div>
-        <li>&gt; <a href="nearestfraction/">Nearest Fraction</a></li>
+        <li><a href="nearestfraction/">Nearest Fraction</a></li>
         <div class="preview">
             Calculate the nearest fractions for a decimal number
             <img src="preview/fraction.png">
         </div>
-        <li>&gt; <a href="piano/">Piano</a></li>
+        <li><a href="piano/">Piano</a></li>
         <div class="preview">
             Play synthesized sounds on a virtual piano
             in different temperaments
             <img src="preview/piano.png">
         </div>
-        <li>&gt; <a href="eye/">👁</a></li>
+        <li><a href="eye/">👁</a></li>
         <div class="preview">
             Watch some eyes move around the screen
             <img src="preview/eye.png">
         </div>
-        <li>&gt; <a href="regression/">Best Fit Line</a></li>
+        <li><a href="regression/">Best Fit Line</a></li>
         <div class="preview">
             Find the best fit polynomial
             for a set of points using
             linear regression or gradient descent
         </div>
-        <!-- <li>&gt; <a href="graph/">Graph</a></li> -->
-        <!-- li>&gt; <a href="kmeans.html">kmeans</a></li -->
-        <li>&gt; <a href="plot/">Plot</a></li>
+        <!-- <li><a href="graph/">Graph</a></li> -->
+        <!-- li><a href="kmeans.html">kmeans</a></li -->
+        <li><a href="plot/">Plot</a></li>
         <div class="preview">
             Plot polynomials
             <img src="preview/plot.png">
         </div>
-        <li>&gt; <a href="borscht/">Soup</a></li>
+        <li><a href="borscht/">Soup</a></li>
         <div class="preview">
             Make a tasty bowl of soup
             <img src="preview/soup.png">
