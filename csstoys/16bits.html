@@ -36,22 +36,22 @@
 
         #bits input:nth-child(4n) { margin-right: 1em;}
         #bits input { margin-bottom: 1em; }
-        #bits input:nth-last-child(1):checked  { counter-increment: unsigned 1     onecomplement 1     twocomplement 1     magnitude 1    ; }
-        #bits input:nth-last-child(2):checked  { counter-increment: unsigned 2     onecomplement 2     twocomplement 2     magnitude 2    ; }
-        #bits input:nth-last-child(3):checked  { counter-increment: unsigned 4     onecomplement 4     twocomplement 4     magnitude 4    ; }
-        #bits input:nth-last-child(4):checked  { counter-increment: unsigned 8     onecomplement 8     twocomplement 8     magnitude 8    ; }
-        #bits input:nth-last-child(5):checked  { counter-increment: unsigned 16    onecomplement 16    twocomplement 16    magnitude 16   ; }
-        #bits input:nth-last-child(6):checked  { counter-increment: unsigned 32    onecomplement 32    twocomplement 32    magnitude 32   ; }
-        #bits input:nth-last-child(7):checked  { counter-increment: unsigned 64    onecomplement 64    twocomplement 64    magnitude 64   ; }
-        #bits input:nth-last-child(8):checked  { counter-increment: unsigned 128   onecomplement 128   twocomplement 128   magnitude 128  ; }
-        #bits input:nth-last-child(9):checked  { counter-increment: unsigned 256   onecomplement 256   twocomplement 256   magnitude 256  ; }
-        #bits input:nth-last-child(10):checked { counter-increment: unsigned 512   onecomplement 512   twocomplement 512   magnitude 512  ; }
-        #bits input:nth-last-child(11):checked { counter-increment: unsigned 1024  onecomplement 1024  twocomplement 1024  magnitude 1024 ; }
-        #bits input:nth-last-child(12):checked { counter-increment: unsigned 2048  onecomplement 2048  twocomplement 2048  magnitude 2048 ; }
-        #bits input:nth-last-child(13):checked { counter-increment: unsigned 4096  onecomplement 4096  twocomplement 4096  magnitude 4096 ; }
-        #bits input:nth-last-child(14):checked { counter-increment: unsigned 8192  onecomplement 8192  twocomplement 8192  magnitude 8192 ; }
-        #bits input:nth-last-child(15):checked { counter-increment: unsigned 16384 onecomplement 16384 twocomplement 16384 magnitude 16384; }
-        #bits input:nth-last-child(16):checked { counter-increment: unsigned 32768 onecomplement 32768 twocomplement 32768 sign; }
+        #bits input:nth-last-child(1):checked  { counter-increment: unsigned 1     onecomplement 1      twocomplement 1      magnitude 1    ; }
+        #bits input:nth-last-child(2):checked  { counter-increment: unsigned 2     onecomplement 2      twocomplement 2      magnitude 2    ; }
+        #bits input:nth-last-child(3):checked  { counter-increment: unsigned 4     onecomplement 4      twocomplement 4      magnitude 4    ; }
+        #bits input:nth-last-child(4):checked  { counter-increment: unsigned 8     onecomplement 8      twocomplement 8      magnitude 8    ; }
+        #bits input:nth-last-child(5):checked  { counter-increment: unsigned 16    onecomplement 16     twocomplement 16     magnitude 16   ; }
+        #bits input:nth-last-child(6):checked  { counter-increment: unsigned 32    onecomplement 32     twocomplement 32     magnitude 32   ; }
+        #bits input:nth-last-child(7):checked  { counter-increment: unsigned 64    onecomplement 64     twocomplement 64     magnitude 64   ; }
+        #bits input:nth-last-child(8):checked  { counter-increment: unsigned 128   onecomplement 128    twocomplement 128    magnitude 128  ; }
+        #bits input:nth-last-child(9):checked  { counter-increment: unsigned 256   onecomplement 256    twocomplement 256    magnitude 256  ; }
+        #bits input:nth-last-child(10):checked { counter-increment: unsigned 512   onecomplement 512    twocomplement 512    magnitude 512  ; }
+        #bits input:nth-last-child(11):checked { counter-increment: unsigned 1024  onecomplement 1024   twocomplement 1024   magnitude 1024 ; }
+        #bits input:nth-last-child(12):checked { counter-increment: unsigned 2048  onecomplement 2048   twocomplement 2048   magnitude 2048 ; }
+        #bits input:nth-last-child(13):checked { counter-increment: unsigned 4096  onecomplement 4096   twocomplement 4096   magnitude 4096 ; }
+        #bits input:nth-last-child(14):checked { counter-increment: unsigned 8192  onecomplement 8192   twocomplement 8192   magnitude 8192 ; }
+        #bits input:nth-last-child(15):checked { counter-increment: unsigned 16384 onecomplement 16384  twocomplement 16384  magnitude 16384; }
+        #bits input:nth-last-child(16):checked { counter-increment: unsigned 32768 onecomplement -32767 twocomplement -32768 sign; }
 
         @counter-style octal {
             system: numeric;
