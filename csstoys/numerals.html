@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>change of base</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            counter-reset: value;
+            font-size: x-large;
+        }
+
+        select {
+            font-size: large;
+            overflow-y: auto;
+        }
+
+        #input select:nth-last-child(4) option:nth-child(1):checked  { counter-increment: value 0000; }
+        #input select:nth-last-child(4) option:nth-child(2):checked  { counter-increment: value 1000; }
+        #input select:nth-last-child(4) option:nth-child(3):checked  { counter-increment: value 2000; }
+        #input select:nth-last-child(4) option:nth-child(4):checked  { counter-increment: value 3000; }
+        #input select:nth-last-child(4) option:nth-child(5):checked  { counter-increment: value 4000; }
+        #input select:nth-last-child(4) option:nth-child(6):checked  { counter-increment: value 5000; }
+        #input select:nth-last-child(4) option:nth-child(7):checked  { counter-increment: value 6000; }
+        #input select:nth-last-child(4) option:nth-child(8):checked  { counter-increment: value 7000; }
+        #input select:nth-last-child(4) option:nth-child(9):checked  { counter-increment: value 8000; }
+        #input select:nth-last-child(4) option:nth-child(10):checked { counter-increment: value 9000; }
+
+        #input select:nth-last-child(3) option:nth-child(1):checked  { counter-increment: value 000; }
+        #input select:nth-last-child(3) option:nth-child(2):checked  { counter-increment: value 100; }
+        #input select:nth-last-child(3) option:nth-child(3):checked  { counter-increment: value 200; }
+        #input select:nth-last-child(3) option:nth-child(4):checked  { counter-increment: value 300; }
+        #input select:nth-last-child(3) option:nth-child(5):checked  { counter-increment: value 400; }
+        #input select:nth-last-child(3) option:nth-child(6):checked  { counter-increment: value 500; }
+        #input select:nth-last-child(3) option:nth-child(7):checked  { counter-increment: value 600; }
+        #input select:nth-last-child(3) option:nth-child(8):checked  { counter-increment: value 700; }
+        #input select:nth-last-child(3) option:nth-child(9):checked  { counter-increment: value 800; }
+        #input select:nth-last-child(3) option:nth-child(10):checked { counter-increment: value 900; }
+
+        #input select:nth-last-child(2) option:nth-child(1):checked  { counter-increment: value 00; }
+        #input select:nth-last-child(2) option:nth-child(2):checked  { counter-increment: value 10; }
+        #input select:nth-last-child(2) option:nth-child(3):checked  { counter-increment: value 20; }
+        #input select:nth-last-child(2) option:nth-child(4):checked  { counter-increment: value 30; }
+        #input select:nth-last-child(2) option:nth-child(5):checked  { counter-increment: value 40; }
+        #input select:nth-last-child(2) option:nth-child(6):checked  { counter-increment: value 50; }
+        #input select:nth-last-child(2) option:nth-child(7):checked  { counter-increment: value 60; }
+        #input select:nth-last-child(2) option:nth-child(8):checked  { counter-increment: value 70; }
+        #input select:nth-last-child(2) option:nth-child(9):checked  { counter-increment: value 80; }
+        #input select:nth-last-child(2) option:nth-child(10):checked { counter-increment: value 90; }
+
+        #input select:nth-last-child(1) option:nth-child(1):checked  { counter-increment: value 0; }
+        #input select:nth-last-child(1) option:nth-child(2):checked  { counter-increment: value 1; }
+        #input select:nth-last-child(1) option:nth-child(3):checked  { counter-increment: value 2; }
+        #input select:nth-last-child(1) option:nth-child(4):checked  { counter-increment: value 3; }
+        #input select:nth-last-child(1) option:nth-child(5):checked  { counter-increment: value 4; }
+        #input select:nth-last-child(1) option:nth-child(6):checked  { counter-increment: value 5; }
+        #input select:nth-last-child(1) option:nth-child(7):checked  { counter-increment: value 6; }
+        #input select:nth-last-child(1) option:nth-child(8):checked  { counter-increment: value 7; }
+        #input select:nth-last-child(1) option:nth-child(9):checked  { counter-increment: value 8; }
+        #input select:nth-last-child(1) option:nth-child(10):checked { counter-increment: value 9; }
+
+        #output {
+            column-width: 9em;
+        }
+
+        #output #numeric div:nth-child(1)::after  { content: "decimal: " counter(value, decimal); }
+        #output #numeric div:nth-child(2)::after  { content: "ethipic: "counter(value, ethiopic-numeric); }
+        #output #numeric div:nth-child(3)::after  { content: "arabic-indic: " counter(value, arabic-indic); }
+        #output #numeric div:nth-child(4)::after  { content: "myanmar: " counter(value, myanmar); }
+        #output #numeric div:nth-child(5)::after  { content: "adlam: " counter(value, adlam); }
+        #output #numeric div:nth-child(6)::after  { content: "arabic-indic: " counter(value, arabic-indic); }
+        #output #numeric div:nth-child(7)::after  { content: "persian: " counter(value, persian); }
+        #output #numeric div:nth-child(8)::after  { content: "urdu: " counter(value, urdu); }
+        #output #numeric div:nth-child(9)::after  { content: "balinese: " counter(value, balinese); }
+        #output #numeric div:nth-child(10)::after { content: "bamum: " counter(value, bamum); }
+        #output #numeric div:nth-child(11)::after { content: "bengali: " counter(value, bengali); }
+        #output #numeric div:nth-child(12)::after { content: "devanagari: " counter(value, devanagari); }
+        #output #numeric div:nth-child(13)::after { content: "gujarati: " counter(value, gujarati); }
+        #output #numeric div:nth-child(14)::after { content: "gurmukhi: " counter(value, gurmukhi); }
+        #output #numeric div:nth-child(15)::after { content: "hanifi-rohingya: " counter(value, hanifi-rohingya); }
+        #output #numeric div:nth-child(16)::after { content: "cjk-decimal: " counter(value, cjk-decimal); }
+        #output #numeric div:nth-child(17)::after { content: "javanese: " counter(value, javanese); }
+        #output #numeric div:nth-child(18)::after { content: "kannada: " counter(value, kannada); }
+        #output #numeric div:nth-child(19)::after { content: "kayah-li: " counter(value, kayah-li); }
+        #output #numeric div:nth-child(20)::after { content: "cambodian: " counter(value, cambodian); }
+        #output #numeric div:nth-child(21)::after { content: "khmer: " counter(value, khmer); }
+        #output #numeric div:nth-child(22)::after { content: "lanna-hora: " counter(value, lanna-hora); }
+        #output #numeric div:nth-child(23)::after { content: "lanna-tham: " counter(value, lanna-tham); }
+        #output #numeric div:nth-child(24)::after { content: "lao: " counter(value, lao); }
+        #output #numeric div:nth-child(25)::after { content: "lepcha: " counter(value, lepcha); }
+        #output #numeric div:nth-child(26)::after { content: "limbu: " counter(value, limbu); }
+        #output #numeric div:nth-child(27)::after { content: "malayalam: " counter(value, malayalam); }
+        #output #numeric div:nth-child(28)::after { content: "meetei: " counter(value, meetei); }
+        #output #numeric div:nth-child(29)::after { content: "mongolian: " counter(value, mongolian); }
+        #output #numeric div:nth-child(30)::after { content: "mro: " counter(value, mro); }
+        #output #numeric div:nth-child(31)::after { content: "myanmar: " counter(value, myanmar); }
+        #output #numeric div:nth-child(32)::after { content: "shan: " counter(value, shan); }
+        #output #numeric div:nth-child(33)::after { content: "nko-cardinal: " counter(value, nko-cardinal); }
+        #output #numeric div:nth-child(34)::after { content: "nag-mundari: " counter(value, nag-mundari); }
+        #output #numeric div:nth-child(35)::after { content: "newa: " counter(value, newa); }
+        #output #numeric div:nth-child(36)::after { content: "ol-chiki: " counter(value, ol-chiki); }
+        #output #numeric div:nth-child(37)::after { content: "oriya: " counter(value, oriya); }
+        #output #numeric div:nth-child(38)::after { content: "sundanese: " counter(value, sundanese); }
+        #output #numeric div:nth-child(39)::after { content: "tai-lue: " counter(value, tai-lue); }
+        #output #numeric div:nth-child(40)::after { content: "tamil: " counter(value, tamil); }
+        #output #numeric div:nth-child(41)::after { content: "telugu: " counter(value, telugu); }
+        #output #numeric div:nth-child(42)::after { content: "thai: " counter(value, thai); }
+        #output #numeric div:nth-child(43)::after { content: "tibetan: " counter(value, tibetan); }
+        #output #numeric div:nth-child(44)::after { content: "warang-citi: " counter(value, warang-citi); }
+        #output #numeric div:nth-child(45)::after { content: "binary: " counter(value, binary); }
+        #output #numeric div:nth-child(46)::after { content: "decimal: " counter(value, decimal); }
+        #output #numeric div:nth-child(47)::after { content: "fullwidth-decimal: " counter(value, fullwidth-decimal); }
+        #output #numeric div:nth-child(48)::after { content: "lower-hexadecimal: " counter(value, lower-hexadecimal); }
+        #output #numeric div:nth-child(49)::after { content: "new-base-60: " counter(value, new-base-60); }
+        #output #numeric div:nth-child(50)::after { content: "octal: " counter(value, octal); }
+        #output #numeric div:nth-child(51)::after { content: "super-decimal: " counter(value, super-decimal); }
+        #output #numeric div:nth-child(52)::after { content: "upper-hexadecimal: " counter(value, upper-hexadecimal); }
+
+        #output #additive div:nth-child(1)::after  { content: "armenian: " counter(value, armenian); }
+        #output #additive div:nth-child(2)::after  { content: "lower-armenian: " counter(value, lower-armenian); }
+        #output #additive div:nth-child(3)::after  { content: "upper-armenian: " counter(value, upper-armenian); }
+        #output #additive div:nth-child(4)::after  { content: "georgian: " counter(value, georgian); }
+        #output #additive div:nth-child(5)::after  { content: "greek-lower-modern: " counter(value, greek-lower-modern); }
+        #output #additive div:nth-child(6)::after  { content: "greek-upper-modern: " counter(value, greek-upper-modern); }
+        #output #additive div:nth-child(7)::after  { content: "greek-lower-ancient: " counter(value, greek-lower-ancient); }
+        #output #additive div:nth-child(8)::after  { content: "greek-upper-ancient: " counter(value, greek-upper-ancient); }
+        #output #additive div:nth-child(9)::after  { content: "hebrew: " counter(value, hebrew); }
+        #output #additive div:nth-child(10)::after { content: "cjk-tally-mark: " counter(value, cjk-tally-mark); }
+        #output #additive div:nth-child(11)::after { content: "japanese-informal: " counter(value, japanese-informal); }
+        #output #additive div:nth-child(12)::after { content: "japanese-formal: " counter(value, japanese-formal); }
+        #output #additive div:nth-child(13)::after { content: "korean-hangul-formal: " counter(value, korean-hangul-formal); }
+        #output #additive div:nth-child(14)::after { content: "korean-hanja-informal: " counter(value, korean-hanja-informal); }
+        #output #additive div:nth-child(15)::after { content: "korean-hanja-formal: " counter(value, korean-hanja-formal); }
+        #output #additive div:nth-child(16)::after { content: "ancient-tamil: " counter(value, ancient-tamil); }
+        #output #additive div:nth-child(17)::after { content: "tally-mark: " counter(value, tally-mark); }
+        #output #additive div:nth-child(18)::after { content: "lower-roman: " counter(value, lower-roman); }
+        #output #additive div:nth-child(19)::after { content: "simple-lower-roman: " counter(value, simple-lower-roman); }
+        #output #additive div:nth-child(20)::after { content: "simple-upper-roman: " counter(value, simple-upper-roman); }
+        #output #additive div:nth-child(21)::after { content: "upper-roman: " counter(value, upper-roman); }
+
+        #output #fixed div:nth-child(1)::after  { content: "arabic-abjad: " counter(value, arabic-abjad); }
+        #output #fixed div:nth-child(2)::after  { content: "maghrebi-abjad: " counter(value, maghrebi-abjad); }
+        #output #fixed div:nth-child(3)::after  { content: "persian-abjad: " counter(value, persian-abjad); }
+        #output #fixed div:nth-child(4)::after  { content: "persian-alphabetic: " counter(value, persian-alphabetic); }
+        #output #fixed div:nth-child(5)::after  { content: "urdu-abjad: " counter(value, urdu-abjad); }
+        #output #fixed div:nth-child(6)::after  { content: "urdu-alphabetic: " counter(value, urdu-alphabetic); }
+        #output #fixed div:nth-child(7)::after  { content: "cjk-earthly-branch: " counter(value, cjk-earthly-branch); }
+        #output #fixed div:nth-child(8)::after  { content: "cjk-heavenly-stem: " counter(value, cjk-heavenly-stem); }
+        #output #fixed div:nth-child(9)::after  { content: "circled-ideograph: " counter(value, circled-ideograph); }
+        #output #fixed div:nth-child(10)::after { content: "parenthesized-ideograph: " counter(value, parenthesized-ideograph); }
+        #output #fixed div:nth-child(11)::after { content: "circled-katakana: " counter(value, circled-katakana); }
+        #output #fixed div:nth-child(12)::after { content: "circled-korean-consonant: " counter(value, circled-korean-consonant); }
+        #output #fixed div:nth-child(13)::after { content: "circled-korean-syllable: " counter(value, circled-korean-syllable); }
+        #output #fixed div:nth-child(14)::after { content: "parenthesized-hangul-consonant: " counter(value, parenthesized-hangul-consonant); }
+        #output #fixed div:nth-child(15)::after { content: "parenthesized-hangul-syllable: " counter(value, parenthesized-hangul-syllable); }
+        #output #fixed div:nth-child(16)::after { content: "parenthesized-lower-latin: " counter(value, parenthesized-lower-latin); }
+        #output #fixed div:nth-child(17)::after { content: "circled-decimal: " counter(value, circled-decimal); }
+        #output #fixed div:nth-child(18)::after { content: "circled-lower-latin: " counter(value, circled-lower-latin); }
+        #output #fixed div:nth-child(19)::after { content: "circled-upper-latin: " counter(value, circled-upper-latin); }
+        #output #fixed div:nth-child(20)::after { content: "decimal-leading-zero: " counter(value, decimal-leading-zero); }
+        #output #fixed div:nth-child(21)::after { content: "dotted-decimal: " counter(value, dotted-decimal); }
+        #output #fixed div:nth-child(22)::after { content: "double-circled-decimal: " counter(value, double-circled-decimal); }
+        #output #fixed div:nth-child(23)::after { content: "filled-circled-decimal: " counter(value, filled-circled-decimal); }
+        #output #fixed div:nth-child(24)::after { content: "fullwidth-upper-roman: " counter(value, fullwidth-upper-roman); }
+        #output #fixed div:nth-child(25)::after { content: "parenthesized-decimal: " counter(value, parenthesized-decimal); }
+
+        #output #alphabetic div:nth-child(1)::after  { content: "kashmiri: " counter(value, kashmiri); }
+        #output #alphabetic div:nth-child(2)::after  { content: "bangla: " counter(value, bangla); }
+        #output #alphabetic div:nth-child(3)::after  { content: "zhuyin: " counter(value, zhuyin); }
+        #output #alphabetic div:nth-child(4)::after  { content: "lower-belorussian: " counter(value, lower-belorussian); }
+        #output #alphabetic div:nth-child(5)::after  { content: "upper-belorussian: " counter(value, upper-belorussian); }
+        #output #alphabetic div:nth-child(6)::after  { content: "lower-bulgarian: " counter(value, lower-bulgarian); }
+        #output #alphabetic div:nth-child(7)::after  { content: "upper-bulgarian: " counter(value, upper-bulgarian); }
+        #output #alphabetic div:nth-child(8)::after  { content: "lower-macedonian: " counter(value, lower-macedonian); }
+        #output #alphabetic div:nth-child(9)::after  { content: "upper-macedonian: " counter(value, upper-macedonian); }
+        #output #alphabetic div:nth-child(10)::after { content: "lower-russian: " counter(value, lower-russian); }
+        #output #alphabetic div:nth-child(11)::after { content: "upper-russian: " counter(value, upper-russian); }
+        #output #alphabetic div:nth-child(12)::after { content: "lower-russian-full: " counter(value, lower-russian-full); }
+        #output #alphabetic div:nth-child(13)::after { content: "upper-russian-full: " counter(value, upper-russian-full); }
+        #output #alphabetic div:nth-child(14)::after { content: "lower-serbian: " counter(value, lower-serbian); }
+        #output #alphabetic div:nth-child(15)::after { content: "upper-serbian: " counter(value, upper-serbian); }
+        #output #alphabetic div:nth-child(16)::after { content: "lower-ukrainian: " counter(value, lower-ukrainian); }
+        #output #alphabetic div:nth-child(17)::after { content: "upper-ukrainian: " counter(value, upper-ukrainian); }
+        #output #alphabetic div:nth-child(18)::after { content: "lower-ukrainian-full: " counter(value, lower-ukrainian-full); }
+        #output #alphabetic div:nth-child(19)::after { content: "upper-ukrainian-full: " counter(value, upper-ukrainian-full); }
+        #output #alphabetic div:nth-child(20)::after { content: "bodo: " counter(value, bodo); }
+        #output #alphabetic div:nth-child(21)::after { content: "dogri: " counter(value, dogri); }
+        #output #alphabetic div:nth-child(22)::after { content: "hindi: " counter(value, hindi); }
+        #output #alphabetic div:nth-child(23)::after { content: "konkani: " counter(value, konkani); }
+        #output #alphabetic div:nth-child(24)::after { content: "maithili: " counter(value, maithili); }
+        #output #alphabetic div:nth-child(25)::after { content: "marathi: " counter(value, marathi); }
+        #output #alphabetic div:nth-child(26)::after { content: "sanskrit: " counter(value, sanskrit); }
+        #output #alphabetic div:nth-child(27)::after { content: "sindhi: " counter(value, sindhi); }
+        #output #alphabetic div:nth-child(28)::after { content: "afar: " counter(value, afar); }
+        #output #alphabetic div:nth-child(29)::after { content: "agaw: " counter(value, agaw); }
+        #output #alphabetic div:nth-child(30)::after { content: "ari: " counter(value, ari); }
+        #output #alphabetic div:nth-child(31)::after { content: "blin: " counter(value, blin); }
+        #output #alphabetic div:nth-child(32)::after { content: "dizi: " counter(value, dizi); }
+        #output #alphabetic div:nth-child(33)::after { content: "ethiopic-halehame: " counter(value, ethiopic-halehame); }
+        #output #alphabetic div:nth-child(34)::after { content: "ethiopic-halehame-am: " counter(value, ethiopic-halehame-am); }
+        #output #alphabetic div:nth-child(35)::after { content: "ethiopic-halehame-ti-er: " counter(value, ethiopic-halehame-ti-er); }
+        #output #alphabetic div:nth-child(36)::after { content: "ethiopic-halehame-ti-et: " counter(value, ethiopic-halehame-ti-et); }
+        #output #alphabetic div:nth-child(37)::after { content: "gedeo: " counter(value, gedeo); }
+        #output #alphabetic div:nth-child(38)::after { content: "gumuz: " counter(value, gumuz); }
+        #output #alphabetic div:nth-child(39)::after { content: "hadiyya: " counter(value, hadiyya); }
+        #output #alphabetic div:nth-child(40)::after { content: "harari: " counter(value, harari); }
+        #output #alphabetic div:nth-child(41)::after { content: "kaffa: " counter(value, kaffa); }
+        #output #alphabetic div:nth-child(42)::after { content: "kebena: " counter(value, kebena); }
+        #output #alphabetic div:nth-child(43)::after { content: "kembata: " counter(value, kembata); }
+        #output #alphabetic div:nth-child(44)::after { content: "konso: " counter(value, konso); }
+        #output #alphabetic div:nth-child(45)::after { content: "kunama: " counter(value, kunama); }
+        #output #alphabetic div:nth-child(46)::after { content: "meen: " counter(value, meen); }
+        #output #alphabetic div:nth-child(47)::after { content: "oromo: " counter(value, oromo); }
+        #output #alphabetic div:nth-child(48)::after { content: "saho: " counter(value, saho); }
+        #output #alphabetic div:nth-child(49)::after { content: "sidama: " counter(value, sidama); }
+        #output #alphabetic div:nth-child(50)::after { content: "silti: " counter(value, silti); }
+        #output #alphabetic div:nth-child(51)::after { content: "tigre: " counter(value, tigre); }
+        #output #alphabetic div:nth-child(52)::after { content: "wolaita: " counter(value, wolaita); }
+        #output #alphabetic div:nth-child(53)::after { content: "yemsa: " counter(value, yemsa); }
+        #output #alphabetic div:nth-child(54)::after { content: "lower-greek: " counter(value, lower-greek); }
+        #output #alphabetic div:nth-child(55)::after { content: "gujarati-alpha: " counter(value, gujarati-alpha); }
+        #output #alphabetic div:nth-child(56)::after { content: "punjabi: " counter(value, punjabi); }
+        #output #alphabetic div:nth-child(57)::after { content: "hiragana: " counter(value, hiragana); }
+        #output #alphabetic div:nth-child(58)::after { content: "hiragana-iroha: " counter(value, hiragana-iroha); }
+        #output #alphabetic div:nth-child(59)::after { content: "katakana: " counter(value, katakana); }
+        #output #alphabetic div:nth-child(60)::after { content: "katakana-iroha: " counter(value, katakana-iroha); }
+        #output #alphabetic div:nth-child(61)::after { content: "kannada-alpha: " counter(value, kannada-alpha); }
+        #output #alphabetic div:nth-child(62)::after { content: "khmer-consonant: " counter(value, khmer-consonant); }
+        #output #alphabetic div:nth-child(63)::after { content: "hangul: " counter(value, hangul); }
+        #output #alphabetic div:nth-child(64)::after { content: "hangul-consonant: " counter(value, hangul-consonant); }
+        #output #alphabetic div:nth-child(65)::after { content: "korean-consonant: " counter(value, korean-consonant); }
+        #output #alphabetic div:nth-child(66)::after { content: "korean-syllable: " counter(value, korean-syllable); }
+        #output #alphabetic div:nth-child(67)::after { content: "lower-alpha: " counter(value, lower-alpha); }
+        #output #alphabetic div:nth-child(68)::after { content: "upper-alpha: " counter(value, upper-alpha); }
+        #output #alphabetic div:nth-child(69)::after { content: "fullwidth-lower-alpha: " counter(value, fullwidth-lower-alpha); }
+        #output #alphabetic div:nth-child(70)::after { content: "fullwidth-upper-alpha: " counter(value, fullwidth-upper-alpha); }
+        #output #alphabetic div:nth-child(71)::after { content: "lower-oromo-qubee: " counter(value, lower-oromo-qubee); }
+        #output #alphabetic div:nth-child(72)::after { content: "upper-oromo-qubee: " counter(value, upper-oromo-qubee); }
+        #output #alphabetic div:nth-child(73)::after { content: "malayalam-alpha: " counter(value, malayalam-alpha); }
+        #output #alphabetic div:nth-child(74)::after { content: "manipuri: " counter(value, manipuri); }
+        #output #alphabetic div:nth-child(75)::after { content: "santali: " counter(value, santali); }
+        #output #alphabetic div:nth-child(76)::after { content: "odia: " counter(value, odia); }
+        #output #alphabetic div:nth-child(77)::after { content: "telugu-alpha: " counter(value, telugu-alpha); }
+        #output #alphabetic div:nth-child(78)::after { content: "thai-alpha: " counter(value, thai-alpha); }
+
+        #output #extends div:nth-child(1)::after  { content: "myanmar-section: " counter(value, myanmar-section); }
+        #output #extends div:nth-child(2)::after  { content: "kashmiri-dbl-paren: " counter(value, kashmiri-dbl-paren); }
+        #output #extends div:nth-child(3)::after  { content: "bangla-dbl-paren: " counter(value, bangla-dbl-paren); }
+        #output #extends div:nth-child(4)::after  { content: "bodo-dbl-paren: " counter(value, bodo-dbl-paren); }
+        #output #extends div:nth-child(5)::after  { content: "dogri-dbl-paren: " counter(value, dogri-dbl-paren); }
+        #output #extends div:nth-child(6)::after  { content: "konkani-dbl-paren: " counter(value, konkani-dbl-paren); }
+        #output #extends div:nth-child(7)::after  { content: "maithili-dbl-paren: " counter(value, maithili-dbl-paren); }
+        #output #extends div:nth-child(8)::after  { content: "marathi-dbl-paren: " counter(value, marathi-dbl-paren); }
+        #output #extends div:nth-child(9)::after  { content: "sanskrit-dbl-paren: " counter(value, sanskrit-dbl-paren); }
+        #output #extends div:nth-child(10)::after { content: "sindhi-dbl-paren: " counter(value, sindhi-dbl-paren); }
+        #output #extends div:nth-child(11)::after { content: "gujarati-alpha-paren: " counter(value, gujarati-alpha-paren); }
+        #output #extends div:nth-child(12)::after { content: "gujarati-alpha-period: " counter(value, gujarati-alpha-period); }
+        #output #extends div:nth-child(13)::after { content: "punjabi-dbl-paren: " counter(value, punjabi-dbl-paren); }
+        #output #extends div:nth-child(14)::after { content: "kannada-alpha-dbl-paren: " counter(value, kannada-alpha-dbl-paren); }
+        #output #extends div:nth-child(15)::after { content: "ol-chiki-space: " counter(value, ol-chiki-space); }
+        #output #extends div:nth-child(16)::after { content: "ol-chiki-dbl-paren: " counter(value, ol-chiki-dbl-paren); }
+        #output #extends div:nth-child(17)::after { content: "santali-paren: " counter(value, santali-paren); }
+        #output #extends div:nth-child(18)::after { content: "santali-oblique: " counter(value, santali-oblique); }
+        #output #extends div:nth-child(19)::after { content: "santali-dbl-paren: " counter(value, santali-dbl-paren); }
+        #output #extends div:nth-child(20)::after { content: "telugu-alpha-dbl-paren: " counter(value, telugu-alpha-dbl-paren); }
+    </style>
+</head>
+</style>
+</head>
+
+<body scroll="no">
+    select the number combination
+    <div id="input">
+        <select size="10">
+            <option selected>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+        </select>
+        <select size="10">
+            <option selected>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+        </select>
+        <select size="10">
+            <option selected>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+        </select>
+        <select size="10">
+            <option selected>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+        </select>
+    </div>
+
+    https://www.w3.org/TR/predefined-counter-styles/#builtins
+    <div id="output">
+        <h1>numeric</h1>
+        <div id="numeric">
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div>
+        </div>
+        <h1>additive</h1>
+        <div id="additive">
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div>
+        </div>
+        <h1>fixed</h1>
+        <div id="fixed">
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div>
+        </div>
+        <h1>alphabetic</h1>
+        <div id="alphabetic">
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+        </div>
+        <h1>extends</h1>
+        <div id="extends">
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+        </div>
+    </div>
+</body>
+
+</html>
