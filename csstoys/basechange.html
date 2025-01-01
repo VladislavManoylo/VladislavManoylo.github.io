@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>change of base</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            counter-reset: value base;
+            font-size: x-large;
+        }
+
+        #input {
+            width: 5em;
+            height: 3em;
+            background-color: var(--bg-color2);
+        }
+
+        #input * {
+            height: 0;
+        }
+
+        #input div {
+            counter-increment: value;
+        }
+
+        @counter-style base1 { system: symbol; symbols: "|"; }
+        @counter-style base2 { system: numeric; symbols: "0" "1"; }
+        @counter-style base3 { system: numeric; symbols: "0" "1" "2"; }
+        @counter-style base4 { system: numeric; symbols: "0" "1" "2" "3"; }
+        @counter-style base5 { system: numeric; symbols: "0" "1" "2" "3" "4"; }
+        @counter-style base6 { system: numeric; symbols: "0" "1" "2" "3" "4" "5"; }
+        @counter-style base7 { system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6"; }
+        @counter-style base8 { system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7"; }
+        @counter-style base9 { system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8"; }
+        @counter-style base10{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"; }
+        @counter-style base11{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A"; }
+        @counter-style base12{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B"; }
+        @counter-style base13{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C"; }
+        @counter-style base14{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D"; }
+        @counter-style base15{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E"; }
+        @counter-style base16{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F"; }
+        @counter-style base17{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G"; }
+        @counter-style base18{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H"; }
+        @counter-style base19{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I"; }
+        @counter-style base20{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J"; }
+        @counter-style base21{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K"; }
+        @counter-style base22{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L"; }
+        @counter-style base23{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M"; }
+        @counter-style base24{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N"; }
+        @counter-style base25{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O"; }
+        @counter-style base26{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P"; }
+        @counter-style base27{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q"; }
+        @counter-style base28{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R"; }
+        @counter-style base29{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S"; }
+        @counter-style base30{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"; }
+        @counter-style base31{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U"; }
+        @counter-style base32{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V"; }
+        @counter-style base33{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W"; }
+        @counter-style base34{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X"; }
+        @counter-style base35{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y"; }
+        @counter-style base36{ system: numeric; symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z"; }
+
+
+        #output {
+            list-style: none;
+            column-width: 7em;
+        }
+
+        #output *::before {
+            counter-increment: base;
+            content: "base " counter(base) " - ";
+        }
+
+        #output *:nth-child(1)::after { content: counter(value, base1); }
+        #output *:nth-child(2)::after { content: counter(value, base2); }
+        #output *:nth-child(3)::after { content: counter(value, base3); }
+        #output *:nth-child(4)::after { content: counter(value, base4); }
+        #output *:nth-child(5)::after { content: counter(value, base5); }
+        #output *:nth-child(6)::after { content: counter(value, base6); }
+        #output *:nth-child(7)::after { content: counter(value, base7); }
+        #output *:nth-child(8)::after { content: counter(value, base8); }
+        #output *:nth-child(9)::after { content: counter(value, base9); }
+        #output *:nth-child(10)::after { content: counter(value, base10); }
+        #output *:nth-child(11)::after { content: counter(value, base11); }
+        #output *:nth-child(12)::after { content: counter(value, base12); }
+        #output *:nth-child(13)::after { content: counter(value, base13); }
+        #output *:nth-child(14)::after { content: counter(value, base14); }
+        #output *:nth-child(15)::after { content: counter(value, base15); }
+        #output *:nth-child(16)::after { content: counter(value, base16); }
+        #output *:nth-child(17)::after { content: counter(value, base17); }
+        #output *:nth-child(18)::after { content: counter(value, base18); }
+        #output *:nth-child(19)::after { content: counter(value, base19); }
+        #output *:nth-child(20)::after { content: counter(value, base20); }
+        #output *:nth-child(21)::after { content: counter(value, base21); }
+        #output *:nth-child(22)::after { content: counter(value, base22); }
+        #output *:nth-child(23)::after { content: counter(value, base23); }
+        #output *:nth-child(24)::after { content: counter(value, base24); }
+        #output *:nth-child(25)::after { content: counter(value, base25); }
+        #output *:nth-child(26)::after { content: counter(value, base26); }
+        #output *:nth-child(27)::after { content: counter(value, base27); }
+        #output *:nth-child(28)::after { content: counter(value, base28); }
+        #output *:nth-child(29)::after { content: counter(value, base29); }
+        #output *:nth-child(30)::after { content: counter(value, base30); }
+        #output *:nth-child(31)::after { content: counter(value, base31); }
+        #output *:nth-child(32)::after { content: counter(value, base32); }
+        #output *:nth-child(33)::after { content: counter(value, base33); }
+        #output *:nth-child(34)::after { content: counter(value, base34); }
+        #output *:nth-child(35)::after { content: counter(value, base35); }
+        #output *:nth-child(36)::after { content: counter(value, base36); }
+    </style>
+</head>
+</style>
+</head>
+
+<body scroll="no">
+    click the below box<br>
+    press enter to increment, backspace to decrement
+    <div id="input" contenteditable>
+        <div></div>
+    </div>
+    <div id="output">
+        <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+        <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+        <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+        <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+        <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+        <div></div> <div></div> <div></div> <div></div> <div></div> <div></div>
+    </div>
+</body>
+
+</html>
