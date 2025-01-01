@@ -4,12 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>32 bits</title>
+    <title>16 bits</title>
     <link rel="stylesheet" href="../style.css">
     <style>
         body {
-            counter-reset: value;
+            counter-reset: unsigned twocomplement onecomplement sign magnitude;
             font-size: x-large;
+        }
+
+        tr, td {
+            outline: 1px solid white;
+            padding: 0.1em;
         }
 
         #bits {
@@ -29,66 +34,56 @@
         input:checked::after { content: "1"; }
         input:not(checked)::after { content: "0"; }
 
-        #bits input:nth-last-child(1):checked { counter-increment: value 1; }
-        #bits input:nth-last-child(2):checked { counter-increment: value 2; }
-        #bits input:nth-last-child(3):checked { counter-increment: value 4; }
-        #bits input:nth-last-child(4):checked { counter-increment: value 8; }
-        #bits input:nth-last-child(5):checked { counter-increment: value 16; }
-        #bits input:nth-last-child(6):checked { counter-increment: value 32; }
-        #bits input:nth-last-child(7):checked { counter-increment: value 64; }
-        #bits input:nth-last-child(8):checked { counter-increment: value 128; }
-        #bits input:nth-last-child(9):checked { counter-increment: value 256; }
-        #bits input:nth-last-child(10):checked { counter-increment: value 512; }
-        #bits input:nth-last-child(11):checked { counter-increment: value 1024; }
-        #bits input:nth-last-child(12):checked { counter-increment: value 2048; }
-        #bits input:nth-last-child(13):checked { counter-increment: value 4096; }
-        #bits input:nth-last-child(14):checked { counter-increment: value 8192; }
-        #bits input:nth-last-child(15):checked { counter-increment: value 16384; }
-        #bits input:nth-last-child(16):checked { counter-increment: value 32768; }
-        #bits input:nth-last-child(17):checked { counter-increment: value 65536; }
-        #bits input:nth-last-child(18):checked { counter-increment: value 131072; }
-        #bits input:nth-last-child(19):checked { counter-increment: value 262144; }
-        #bits input:nth-last-child(20):checked { counter-increment: value 524288; }
-        #bits input:nth-last-child(21):checked { counter-increment: value 1048576; }
-        #bits input:nth-last-child(22):checked { counter-increment: value 2097152; }
-        #bits input:nth-last-child(23):checked { counter-increment: value 4194304; }
-        #bits input:nth-last-child(24):checked { counter-increment: value 8388608; }
-        #bits input:nth-last-child(25):checked { counter-increment: value 16777216; }
-        #bits input:nth-last-child(26):checked { counter-increment: value 33554432; }
-        #bits input:nth-last-child(27):checked { counter-increment: value 67108864; }
-        #bits input:nth-last-child(28):checked { counter-increment: value 134217728; }
-        #bits input:nth-last-child(29):checked { counter-increment: value 268435456; }
-        #bits input:nth-last-child(30):checked { counter-increment: value 536870912; }
-        #bits input:nth-last-child(31):checked { counter-increment: value 1073741824; }
-        #bits input:nth-last-child(32):checked { counter-increment: value -2147483648; }
-
-        #decimal::after {
-            content: counter(value);
-        }
-
-        #roman::after {
-            content: counter(value, upper-roman);
-        }
+        #bits input:nth-child(4n) { margin-right: 1em;}
+        #bits input { margin-bottom: 1em; }
+        #bits input:nth-last-child(1):checked  { counter-increment: unsigned 1     onecomplement 1     twocomplement 1     magnitude 1    ; }
+        #bits input:nth-last-child(2):checked  { counter-increment: unsigned 2     onecomplement 2     twocomplement 2     magnitude 2    ; }
+        #bits input:nth-last-child(3):checked  { counter-increment: unsigned 4     onecomplement 4     twocomplement 4     magnitude 4    ; }
+        #bits input:nth-last-child(4):checked  { counter-increment: unsigned 8     onecomplement 8     twocomplement 8     magnitude 8    ; }
+        #bits input:nth-last-child(5):checked  { counter-increment: unsigned 16    onecomplement 16    twocomplement 16    magnitude 16   ; }
+        #bits input:nth-last-child(6):checked  { counter-increment: unsigned 32    onecomplement 32    twocomplement 32    magnitude 32   ; }
+        #bits input:nth-last-child(7):checked  { counter-increment: unsigned 64    onecomplement 64    twocomplement 64    magnitude 64   ; }
+        #bits input:nth-last-child(8):checked  { counter-increment: unsigned 128   onecomplement 128   twocomplement 128   magnitude 128  ; }
+        #bits input:nth-last-child(9):checked  { counter-increment: unsigned 256   onecomplement 256   twocomplement 256   magnitude 256  ; }
+        #bits input:nth-last-child(10):checked { counter-increment: unsigned 512   onecomplement 512   twocomplement 512   magnitude 512  ; }
+        #bits input:nth-last-child(11):checked { counter-increment: unsigned 1024  onecomplement 1024  twocomplement 1024  magnitude 1024 ; }
+        #bits input:nth-last-child(12):checked { counter-increment: unsigned 2048  onecomplement 2048  twocomplement 2048  magnitude 2048 ; }
+        #bits input:nth-last-child(13):checked { counter-increment: unsigned 4096  onecomplement 4096  twocomplement 4096  magnitude 4096 ; }
+        #bits input:nth-last-child(14):checked { counter-increment: unsigned 8192  onecomplement 8192  twocomplement 8192  magnitude 8192 ; }
+        #bits input:nth-last-child(15):checked { counter-increment: unsigned 16384 onecomplement 16384 twocomplement 16384 magnitude 16384; }
+        #bits input:nth-last-child(16):checked { counter-increment: unsigned 32768 onecomplement 32768 twocomplement 32768 sign; }
 
         @counter-style octal {
             system: numeric;
             symbols: "0" "1" "2" "3" "4" "5" "6" "7";
-            suffix: " ";
-        }
-
-        #octal::after {
-            content: counter(value, octal);
         }
 
         @counter-style hex {
             system: numeric;
             symbols: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F";
-            suffix: " ";
         }
 
-        #hex::after {
-            content: counter(value, hex);
+        @counter-style sign {
+            system: cyclic;
+            symbols: "-" "";
         }
+
+        .roman::after { content: counter(unsigned, upper-roman); }
+
+        .decimal.unsigned::after { content: counter(unsigned) }
+        .decimal.twocomplement::after { content: counter(twocomplement) }
+        .decimal.onecomplement::after { content: counter(onecomplement) }
+        .decimal.sign::after { content: counter(sign, sign) counter(magnitude) }
+
+        .octal.unsigned::after { content: counter(unsigned, octal) }
+        .octal.twocomplement::after { content: counter(twocomplement, octal) }
+        .octal.onecomplement::after { content: counter(onecomplement, octal) }
+        .octal.sign::after { content: counter(sign, sign) counter(magnitude, octal) }
+
+        .hex.unsigned::after { content: counter(unsigned, hex) }
+        .hex.twocomplement::after { content: counter(twocomplement, hex) }
+        .hex.onecomplement::after { content: counter(onecomplement, hex) }
+        .hex.sign::after { content: counter(sign, sign) counter(magnitude, hex) }
     </style>
 </head>
     </style>
@@ -97,22 +92,6 @@
 <body scroll="no">
     click on bits below to toggle them
     <div id="bits">
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
-        <input type="checkbox"></input>
         <input type="checkbox"></input>
         <input type="checkbox"></input>
         <input type="checkbox"></input>
@@ -130,10 +109,39 @@
         <input type="checkbox"></input>
         <input type="checkbox"></input>
     </div>
-    <div id="decimal">decimal = </div>
-    <div id="octal">octal = </div>
-    <div id="hex">hexadecimal = </div>
-    <div id="roman">roman = </div>
+    <table>
+        <th>
+            <td>unsigned</td>
+            <td>two's complement</td>
+            <td>one's complement</td>
+            <td>sign-magnitude</td>
+        </th>
+        <tr>
+            <td>decimal</td>
+            <td class="decimal unsigned"></td>
+            <td class="decimal twocomplement"></td>
+            <td class="decimal onecomplement"></td>
+            <td class="decimal sign"></td>
+        </tr>
+        <tr>
+            <td>octal</td>
+            <td class="octal unsigned"></td>
+            <td class="octal twocomplement"></td>
+            <td class="octal onecomplement"></td>
+            <td class="octal sign"></td>
+        </tr>
+        <tr>
+            <td>hexadecimal</td>
+            <td class="hex unsigned"></td>
+            <td class="hex twocomplement"></td>
+            <td class="hex onecomplement"></td>
+            <td class="hex sign"></td>
+        </tr>
+        <tr>
+            <td>roman</td>
+            <td class="roman"></td>
+        </tr>
+    </table>
 </body>
 
 </html>
