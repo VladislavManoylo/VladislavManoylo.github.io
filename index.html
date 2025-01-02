@@ -19,6 +19,22 @@
             suffix: " ";
         }
 
+        #bird {
+            font-size: xx-large;
+        }
+
+        #bird *:last-child {
+            display: none;
+        }
+
+        #bird:hover *:first-child {
+            display: none;
+        }
+
+        #bird:hover *:last-child {
+            display: block;
+        }
+
         ul {
             display: grid;
             max-width: 100%;
@@ -50,7 +66,8 @@
             background-color: var(--bg-color2);
         }
 
-        li:hover+.preview, .preview:hover {
+        li:hover+.preview,
+        .preview:hover {
             display: flex;
             flex-flow: column nowrap;
             background-color: var(--bg-color2);
@@ -59,11 +76,17 @@
 </head>
 
 <body>
-    <ul>
+    <div id="bird">
         <pre title="On Varied Knowledge">
-  /O>
+  /O&gt;
  /V/
 //K</pre>
+        <pre title="On Varied Knowledge">
+\ /O&lt; caw
+\| /
+//K</pre>
+    </div>
+    <ul>
         <!-- <li><a href="brick-games/">Brick Games</a></li> -->
         <li><a href="csstoys/">CSS Toys</a></li>
         <div class="preview">
