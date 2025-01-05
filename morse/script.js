@@ -53,7 +53,7 @@ const morsecode = [
     ["7", "--..."],
     ["8", "---.."],
     ["9", "----."],
-]
+];
 
 /**
  * Give button element callbacks for holding and releasing, and an optional keybind
@@ -153,11 +153,16 @@ const telegraph = {
             timer.lap();
             this.started = true
         }
-        this.record()
     },
     off: function() {
         this.tape.push(timer.lap());
         this.record()
+    },
+    get morse() {
+        return tapeToMorse(this.tape, webpage.wpm.value);
+    },
+    set morse(morse) {
+        this.tape = morseToTape(morse, webpage.wpm.value);
     },
 }
 
@@ -230,15 +235,14 @@ function morseToTape(morse, wpm = 20) {
  * @returns {string}
  */
 function morseToAlpha(morse) {
-    let res = "";
-    for (const word of morse.split("/")) {
-        for (const code of word.split(" ")) {
-            const f = morsecode.find((x) => x[1] === code);
-            res += f === undefined ? code : f[0];
-        }
-        res += " ";
+    const codeToLetter = (code) => {
+        const f = morsecode.find((x) => x[1] === code);
+        return f === undefined ? "" : f[0];
     }
-    return res;
+    return morse
+        .split("/")
+        .map((word) => word.split(" ").map(codeToLetter).join(""))
+        .join(" ");
 }
 
 /**
@@ -246,16 +250,14 @@ function morseToAlpha(morse) {
  * @returns {string}
  */
 function alphaToMorse(alpha) {
-    let res = "";
-    for (const word of alpha.split(" ")) {
-        for (const c of word) {
-            const f = morsecode.find((x) => x[0] === c);
-            res += f === undefined ? c : f[1];
-            res += " ";
-        }
-        res += "/";
+    const letterToCode = (letter) => {
+        const f = morsecode.find((x) => x[0] === letter);
+        return f === undefined ? "" : f[1];
     }
-    return res.replaceAll(/[ /]{2,}/g, "/");
+    return alpha
+        .split(" ")
+        .map((word) => word.split("").map(letterToCode).join(" "))
+        .join("/");
 }
 
 holdButton(webpage.b,
@@ -269,28 +271,23 @@ function changeMorse(morse) {
     morse = morse.replaceAll(/[ /]{2,}/g, "/");
     webpage.morse.value = morse;
     webpage.alpha.value = morseToAlpha(morse);
+    telegraph.morse = morse;
 }
 
 function changeAlpha(alpha) {
-    alpha ??= webpage.alpha.value;
-    webpage.alpha.value = alpha;
-    webpage.morse.value = alphaToMorse(alpha);
+    console.log("change", alpha);
+    changeMorse(alphaToMorse(alpha ?? webpage.alpha.value));
 }
 
 document.addEventListener("keyup", () => {
-    if (document.activeElement.id === "morse") {
+    if (document.activeElement.id === "morse")
         changeMorse();
-        telegraph.reset();
-    }
-    if (document.activeElement.id === "alpha") {
+    if (document.activeElement.id === "alpha")
         changeAlpha();
-        telegraph.reset();
-    }
 });
 
 function appendMorse(c) {
     changeMorse(webpage.morse.value + c);
-    telegraph.reset();
 }
 
 webpage.dit.addEventListener("click", () => { appendMorse("."); });
