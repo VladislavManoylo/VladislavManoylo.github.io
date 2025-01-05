@@ -11,6 +11,8 @@ const webpage = {
     delLetter: document.getElementById("delLetter"),
     delWord: document.getElementById("delWord"),
     delAll: document.getElementById("delAll"),
+    wpm: document.getElementById("wpm"),
+    hz: document.getElementById("hz"),
     audio: new AudioContext(),
 }
 
@@ -142,7 +144,7 @@ const telegraph = {
         this.started = false;
     },
     record: function() {
-        changeMorse(tapeToMorse(this.tape));
+        changeMorse(tapeToMorse(this.tape, webpage.wpm.value));
     },
     on: function() {
         if (this.started) {
@@ -295,7 +297,7 @@ webpage.letterBr.addEventListener("click", () => { appendMorse(" "); });
 webpage.wordBr.addEventListener("click", () => { appendMorse("/"); });
 
 webpage.play.addEventListener("click", () => {
-    note.play(morseToTape(webpage.morse.value));
+    note.play(morseToTape(webpage.morse.value, webpage.wpm.value));
 });
 
 webpage.delSym.addEventListener("click", () => {
@@ -309,4 +311,8 @@ webpage.delWord.addEventListener("click", () => {
 });
 webpage.delAll.addEventListener("click", () => {
     changeAlpha("");
+});
+
+webpage.hz.addEventListener("change", () => {
+    note.signal.frequency.value = webpage.hz.value;
 });
