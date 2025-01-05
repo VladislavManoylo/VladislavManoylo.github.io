@@ -242,3 +242,13 @@ document.addEventListener("keydown", () => {
         webpage.morse.value = alphaToMorse(webpage.alpha.value);
     }
 });
+
+function appendMorse(c) {
+    webpage.morse.value += c;
+    webpage.alpha.value = morseToAlpha(webpage.morse.value);
+}
+
+webpage.dit.addEventListener("click", () => { appendMorse("."); });
+webpage.dah.addEventListener("click", () => { appendMorse("-"); });
+webpage.letterBr.addEventListener("click", () => { appendMorse(" "); });
+webpage.wordBr.addEventListener("click", () => { appendMorse("/"); });
