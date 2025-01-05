@@ -265,6 +265,8 @@ holdButton(webpage.b,
 
 function changeMorse(morse) {
     morse ??= webpage.morse.value;
+    morse = morse.replaceAll(/[^ /.-]/g, "");
+    morse = morse.replaceAll(/[ /]{2,}/g, "/");
     webpage.morse.value = morse;
     webpage.alpha.value = morseToAlpha(morse);
 }
@@ -275,7 +277,7 @@ function changeAlpha(alpha) {
     webpage.morse.value = alphaToMorse(alpha);
 }
 
-document.addEventListener("keydown", () => {
+document.addEventListener("keyup", () => {
     if (document.activeElement.id === "morse") {
         changeMorse();
         telegraph.reset();
