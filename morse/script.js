@@ -138,25 +138,14 @@ const timer = {
 
 const telegraph = {
     tape: [], // alternating on/off times
-    started: false,
-    reset: function() {
-        this.tape = [];
-        this.started = false;
-    },
-    record: function() {
-        changeMorse(tapeToMorse(this.tape, webpage.wpm.value));
-    },
     on: function() {
-        if (this.started) {
+        if (this.tape.length > 0)
             this.tape.push(timer.lap());
-        } else {
-            timer.lap();
-            this.started = true
-        }
+        timer.lap();
     },
     off: function() {
         this.tape.push(timer.lap());
-        this.record()
+        changeMorse(tapeToMorse(this.tape, webpage.wpm.value));
     },
     get morse() {
         return tapeToMorse(this.tape, webpage.wpm.value);
