@@ -81,11 +81,11 @@ function holdButton(button, onhold, onrelease, key = undefined) {
     button.addEventListener("pointerleave", release);
     if (key !== undefined) {
         document.addEventListener("keydown", (e) => {
-            if (document.activeElement.tagName === "TEXTAREA") return;
+            if (document.activeElement.id === "alpha") return;
             if (e.key === key) hold();
         });
         document.addEventListener("keyup", (e) => {
-            if (document.activeElement.tagName === "TEXTAREA") return;
+            if (document.activeElement.id === "alpha") return;
             if (e.key === key) release();
         });
     }
@@ -117,6 +117,7 @@ const note = {
         this.gain.gain.value = 0;
     },
     play: function(timings) {
+        if (timings.length === 0) return;
         this.on();
         let t = webpage.audio.currentTime;
         for (let i = 0; i < timings.length; i++) {
@@ -288,19 +289,33 @@ webpage.play.addEventListener("click", () => {
     note.play(morseToTape(webpage.morse.value, webpage.wpm.value));
 });
 
-webpage.delSym.addEventListener("click", () => {
+function delSym() {
     changeMorse(webpage.morse.value.slice(0, -1));
-});
-webpage.delLetter.addEventListener("click", () => {
+}
+function delLetter() {
     const s = webpage.morse.value;
     changeMorse(s.substring(0, Math.max(s.lastIndexOf("/"), s.lastIndexOf(" "))));
-});
-webpage.delWord.addEventListener("click", () => {
+}
+function delWord() {
     const s = webpage.morse.value;
     changeMorse(s.substring(0, s.lastIndexOf("/")));
-});
-webpage.delAll.addEventListener("click", () => {
+}
+function delAll() {
     changeMorse("");
+}
+
+webpage.delSym.addEventListener("click", delSym);
+webpage.delLetter.addEventListener("click", delLetter);
+webpage.delWord.addEventListener("click", delWord);
+webpage.delAll.addEventListener("click", delAll);
+
+document.addEventListener("keyup", (e) => {
+    if (document.activeElement.id === "alpha") return;
+    if (e.key !== "Backspace") return;
+    if (e.shiftKey) delAll();
+    else if (e.ctrlKey) delWord();
+    else if (e.altKey) delSym();
+    else delLetter();
 });
 
 webpage.hz.addEventListener("change", () => {

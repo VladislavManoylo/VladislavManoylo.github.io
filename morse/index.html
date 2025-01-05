@@ -4,6 +4,7 @@
 <head>
     <title>Alphabet</title>
     <link rel="stylesheet" href="../style.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -29,7 +30,7 @@
                 "alpha alpha alpha alpha"
                 "morse morse morse morse"
                 "dit dah letterBr wordBr"
-                "delSym delLetter delWord delAll"
+                "delLetter delSym delWord delAll"
                 "play b b speed";
         }
 
@@ -96,12 +97,12 @@
         <button id="play" accesskey="p">&#9658;</button>
         <button id="dit">.</button>
         <button id="dah">-</button>
-        <button id="letterBr"> </button>
+        <button id="letterBr">_</button>
         <button id="wordBr">/</button>
-        <button id="delSym">&lt;</button>
-        <button id="delLetter">&lt;&lt;</button>
-        <button id="delWord">&lt;&lt;&lt;</button>
-        <button id="delAll">&lt;&lt;&lt;&lt;</button>
+        <button id="delLetter"><i class="material-icons">&#xe14a;</i></button>
+        <button id="delSym">A-<i class="material-icons">&#xe14a;</i></button>
+        <button id="delWord">C-<i class="material-icons">&#xe14a;</i></button>
+        <button id="delAll">S-<i class="material-icons">&#xe14a;</i></button>
         <button id="b" accesskey="b"><div>b</div></button>
         <div id="speed">
             <label title="wpm based on 50 dits per word">wpm <input id="wpm" type="number" value="20" size="4" min="1"/></label>
