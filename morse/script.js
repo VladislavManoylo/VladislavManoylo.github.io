@@ -146,13 +146,13 @@ const telegraph = {
     },
     off: function() {
         this.tape.push(timer.lap());
-        changeMorse(tapeToMorse(this.tape, webpage.wpm.value));
+        changeMorse(tapeToMorse(this.tape));
     },
     get morse() {
-        return tapeToMorse(this.tape, webpage.wpm.value);
+        return tapeToMorse(this.tape);
     },
     set morse(morse) {
-        this.tape = morseToTape(morse, webpage.wpm.value);
+        this.tape = morseToTape(morse);
     },
 }
 
@@ -167,11 +167,11 @@ function roundTo(n, near) {
 /**
  * tapeToMorse translates timings to morse code
  * @param {number[]} tape - timings of alternating on/off sections
- * @param {n} wpm - based on 50 dits per word
  * @returns {string}
  */
-function tapeToMorse(tape, wpm = 20) {
+function tapeToMorse(tape) {
     let res = "";
+    const wpm = webpage.wpm.value;
     const ditlength = (1 / wpm) * 60 / 50 * 1000; // in ms
     const onMorse = (n) => {
         switch (roundTo(n, [1, 3])) {
@@ -196,11 +196,11 @@ function tapeToMorse(tape, wpm = 20) {
 /**
  * morseToTape translates morse code to on/off timings
  * @param {string} morse
- * @param {n} wpm - based on 50 dits per word
  * @returns {number[]}
  */
-function morseToTape(morse, wpm = 20) {
+function morseToTape(morse) {
     let res = [];
+    const wpm = webpage.wpm.value;
     const ditlength = (1 / wpm) * 60 / 50 * 1000; // in ms
     const dit1 = ditlength, dit3 = ditlength * 3, dit7 = ditlength * 7;
     let last = "/";
@@ -265,7 +265,6 @@ function changeMorse(morse) {
 }
 
 function changeAlpha(alpha) {
-    console.log("change", alpha);
     changeMorse(alphaToMorse(alpha ?? webpage.alpha.value));
 }
 
@@ -275,6 +274,17 @@ document.addEventListener("keyup", () => {
     if (document.activeElement.id === "alpha")
         changeAlpha();
 });
+
+webpage.hz.addEventListener("change", () => {
+    note.signal.frequency.value = webpage.hz.value;
+});
+
+webpage.alpha.addEventListener("input", (e) => {
+    if (e.data === null) return;
+    note.play(morseToTape(alphaToMorse(e.data)));
+});
+
+// telegraph keyboard
 
 function appendMorse(c) {
     changeMorse(webpage.morse.value + c);
@@ -286,7 +296,7 @@ webpage.letterBr.addEventListener("click", () => { appendMorse(" "); });
 webpage.wordBr.addEventListener("click", () => { appendMorse("/"); });
 
 webpage.play.addEventListener("click", () => {
-    note.play(morseToTape(webpage.morse.value, webpage.wpm.value));
+    note.play(morseToTape(webpage.morse.value));
 });
 
 function delSym() {
@@ -311,7 +321,7 @@ webpage.delAll.addEventListener("click", delAll);
 
 document.addEventListener("keydown", (e) => {
     if (document.activeElement.id === "morse" &&
-        ".- /".includes(e.key) || e.key === "Backspace") {
+        (".- /".includes(e.key) || e.key === "Backspace")) {
         document.activeElement.blur();
     }
 });
@@ -320,8 +330,8 @@ document.addEventListener("keyup", (e) => {
     if (document.activeElement.id === "alpha") return;
     if (document.activeElement.id === "morse") document.activeElement.blur();
     switch (e.key) {
-        case ".": appendMorse("."); break;
-        case "-": appendMorse("-"); break;
+        case ".": appendMorse("."); note.play(morseToTape(".")); break;
+        case "-": appendMorse("-"); note.play(morseToTape("-")); break;
         case " ": appendMorse(" "); break;
         case "/": appendMorse("/"); break;
         case "Backspace":
@@ -331,8 +341,4 @@ document.addEventListener("keyup", (e) => {
             else delLetter();
             break;
     }
-});
-
-webpage.hz.addEventListener("change", () => {
-    note.signal.frequency.value = webpage.hz.value;
 });
