@@ -293,12 +293,12 @@ function delSym() {
     changeMorse(webpage.morse.value.slice(0, -1));
 }
 function delLetter() {
-    const s = webpage.morse.value;
-    changeMorse(s.substring(0, Math.max(s.lastIndexOf("/"), s.lastIndexOf(" "))));
+    const s = webpage.morse.value.slice(0, -1);
+    changeMorse(s.substring(0, Math.max(s.lastIndexOf("/"), s.lastIndexOf(" "))) + " ");
 }
 function delWord() {
-    const s = webpage.morse.value;
-    changeMorse(s.substring(0, s.lastIndexOf("/")));
+    const s = webpage.morse.value.slice(0, -1);
+    changeMorse(s.substring(0, s.lastIndexOf("/")) + "/");
 }
 function delAll() {
     changeMorse("");
