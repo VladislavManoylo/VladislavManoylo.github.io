@@ -23,8 +23,24 @@
 
         #screen {
             display: grid;
-            grid-template-rows: 1fr 1fr 1fr 1fr;
+            grid-template-rows: repeat(1fr, 5);
+            grid-template-columns: repeat(1fr, 4);
+            grid-template-areas:
+                "alpha alpha alpha"
+                "morse morse morse"
+                "play play play"
+                "dit dah b"
+                "letterBr wordBr b";
         }
+
+        #alpha { grid-area: alpha; }
+        #morse { grid-area: morse; }
+        #play { grid-area: play; }
+        #dit { grid-area: dit; }
+        #dah { grid-area: dah; }
+        #b { grid-area: b; }
+        #letterBr { grid-area: letterBr; }
+        #wordBr { grid-area: wordBr; }
 
         textarea {
             font-size: 1.7rem;
@@ -33,21 +49,6 @@
         button {
             font-size: 3rem;
         }
-
-        /* telegraph grid */
-        #telegraph {
-            display: grid;
-            grid-template:
-                "dit dah b"
-                "letterBr wordBr b";
-            grid-template-rows: 1fr 1fr;
-            grid-template-columns: 1fr 1fr 2fr;
-        }
-        #dit { grid-area: dit; }
-        #dah { grid-area: dah; }
-        #letterBr { grid-area: letterBr; }
-        #wordBr { grid-area: wordBr; }
-        #b { grid-area: b; }
 
         #b {
             text-align: center;
@@ -76,13 +77,11 @@
         <div id="playback">
             <button id="play" accesskey="p">play</button>
         </div>
-        <div id="telegraph">
-            <button id="dit">.</button>
-            <button id="dah">-</button>
-            <button id="letterBr">_</button>
-            <button id="wordBr">/</button>
-            <button id="b" accesskey="b"><div>b</div></button>
-        </div>
+        <button id="dit">.</button>
+        <button id="dah">-</button>
+        <button id="letterBr">_</button>
+        <button id="wordBr">/</button>
+        <button id="b" accesskey="b"><div>b</div></button>
     </div>
     <!--
         [highlight letter]
