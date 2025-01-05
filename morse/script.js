@@ -309,13 +309,28 @@ webpage.delLetter.addEventListener("click", delLetter);
 webpage.delWord.addEventListener("click", delWord);
 webpage.delAll.addEventListener("click", delAll);
 
+document.addEventListener("keydown", (e) => {
+    if (document.activeElement.id === "morse" &&
+        ".- /".includes(e.key) || e.key === "Backspace") {
+        document.activeElement.blur();
+    }
+});
+
 document.addEventListener("keyup", (e) => {
     if (document.activeElement.id === "alpha") return;
-    if (e.key !== "Backspace") return;
-    if (e.shiftKey) delAll();
-    else if (e.ctrlKey) delWord();
-    else if (e.altKey) delSym();
-    else delLetter();
+    if (document.activeElement.id === "morse") document.activeElement.blur();
+    switch (e.key) {
+        case ".": appendMorse("."); break;
+        case "-": appendMorse("-"); break;
+        case " ": appendMorse(" "); break;
+        case "/": appendMorse("/"); break;
+        case "Backspace":
+            if (e.shiftKey) delAll();
+            else if (e.ctrlKey) delWord();
+            else if (e.altKey) delSym();
+            else delLetter();
+            break;
+    }
 });
 
 webpage.hz.addEventListener("change", () => {
