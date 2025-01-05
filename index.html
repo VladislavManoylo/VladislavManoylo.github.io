@@ -47,6 +47,11 @@
             overflow: hidden;
         }
 
+        iframe.static {
+            pointer-events: none;
+            animation: none;
+        }
+
         li:hover {
             background-color: var(--bg-color2);
         }
@@ -92,6 +97,11 @@
 <body>
     <ul>
         <!-- <li><a href="brick-games/">Brick Games</a></li> -->
+        <li><a href="morse/">Morse</a></li>
+        <div class="preview">
+            Virtual telegraph and morse code translator
+            <iframe class="static" src="morse/"></iframe>
+        </div>
         <li><a href="csstoys/">CSS Toys</a></li>
         <div class="preview">
             Animations and interactions done purely in CSS

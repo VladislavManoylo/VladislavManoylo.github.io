@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Alphabet</title>
+    <link rel="stylesheet" href="../style.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* single screen */
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #screen {
+            width: 100%;
+            height: 100%;
+            outline: 1px solid red;
+        }
+
+        #screen {
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr 1fr;
+        }
+
+        textarea {
+            font-size: 1.7rem;
+        }
+
+        button {
+            font-size: 3rem;
+        }
+
+        /* telegraph grid */
+        #telegraph {
+            display: grid;
+            grid-template:
+                "dit dah b"
+                "letterBr wordBr b";
+            grid-template-rows: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 2fr;
+        }
+        #dit { grid-area: dit; }
+        #dah { grid-area: dah; }
+        #letterBr { grid-area: letterBr; }
+        #wordBr { grid-area: wordBr; }
+        #b { grid-area: b; }
+
+        #b {
+            border-radius: 50%;
+            background: gold;
+        }
+        #b.held {
+            opacity: 50%;
+        }
+        #b:hover {
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="screen">
+        <textarea id="alpha" accesskey="a">paris</textarea>
+        <textarea id="morse" accesskey="m">.--. .- .-. .. ...</textarea>
+        <div id="playback">
+            <button id="play" accesskey="p">play</button>
+        </div>
+        <div id="telegraph">
+            <button id="dit">.</button>
+            <button id="dah">-</button>
+            <button id="letterBr">_</button>
+            <button id="wordBr">/</button>
+            <div id="b" accesskey="b"></button>
+        </div>
+    </div>
+    <!--
+        [highlight letter]
+        [highlight dit/dah]
+        [dit/dah buttons]
+    playback
+        play/stop
+        [wpm]
+        [tone]
+        [wpm]
+    reference
+        chart
+        tree
+        codes
+    -->
+    <script src="script.js"> </script>
+</body>
+
+</html>
