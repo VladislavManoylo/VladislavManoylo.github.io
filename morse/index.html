@@ -26,11 +26,11 @@
             grid-template-rows: repeat(1fr, 5);
             grid-template-columns: repeat(1fr, 4);
             grid-template-areas:
-                "alpha alpha alpha"
-                "morse morse morse"
-                "play play play"
-                "dit dah b"
-                "letterBr wordBr b";
+                "alpha alpha alpha alpha"
+                "morse morse morse morse"
+                "dit dah letterBr wordBr"
+                "delSym delLetter delWord delAll"
+                "play b b wpm"
         }
 
         #alpha { grid-area: alpha; }
@@ -41,6 +41,10 @@
         #b { grid-area: b; }
         #letterBr { grid-area: letterBr; }
         #wordBr { grid-area: wordBr; }
+        #delSym { grid-area: delSym; }
+        #delLetter { grid-area: delLetter; }
+        #delWord { grid-area: delWord; }
+        #delAll { grid-area: delAll; }
 
         textarea {
             font-size: 1.7rem;
@@ -74,13 +78,15 @@
     <div id="screen">
         <textarea id="alpha" accesskey="a">paris</textarea>
         <textarea id="morse" accesskey="m">.--. .- .-. .. .../</textarea>
-        <div id="playback">
-            <button id="play" accesskey="p">play</button>
-        </div>
+        <button id="play" accesskey="p">play</button>
         <button id="dit">.</button>
         <button id="dah">-</button>
-        <button id="letterBr">_</button>
+        <button id="letterBr">space</button>
         <button id="wordBr">/</button>
+        <button id="delSym">del</button>
+        <button id="delLetter">del letter</button>
+        <button id="delWord">del word</button>
+        <button id="delAll">del all</button>
         <button id="b" accesskey="b"><div>b</div></button>
     </div>
     <!--

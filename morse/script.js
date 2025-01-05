@@ -7,6 +7,10 @@ const webpage = {
     wordBr: document.getElementById("wordBr"),
     play: document.getElementById("play"),
     b: document.getElementById("b"),
+    delSym: document.getElementById("delSym"),
+    delLetter: document.getElementById("delLetter"),
+    delWord: document.getElementById("delWord"),
+    delAll: document.getElementById("delAll"),
     audio: new AudioContext(),
 }
 
@@ -292,4 +296,17 @@ webpage.wordBr.addEventListener("click", () => { appendMorse("/"); });
 
 webpage.play.addEventListener("click", () => {
     note.play(morseToTape(webpage.morse.value));
+});
+
+webpage.delSym.addEventListener("click", () => {
+    changeMorse(webpage.morse.value.slice(0, -1));
+});
+webpage.delLetter.addEventListener("click", () => {
+    changeAlpha(webpage.alpha.value.slice(0, -1));
+});
+webpage.delWord.addEventListener("click", () => {
+    changeAlpha(webpage.alpha.value.split(" ").slice(0, -1).join(" "));
+});
+webpage.delAll.addEventListener("click", () => {
+    changeAlpha("");
 });
