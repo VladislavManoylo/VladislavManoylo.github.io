@@ -62,6 +62,10 @@
         #b:hover {
             filter: brightness(1.2);
         }
+        #b>div {
+            background: red;
+            clip-path: circle(20%);
+        }
     </style>
 </head>
 
@@ -77,7 +81,7 @@
             <button id="dah">-</button>
             <button id="letterBr">_</button>
             <button id="wordBr">/</button>
-            <div id="b" accesskey="b">b</button>
+            <button id="b" accesskey="b"><div>b</div></button>
         </div>
     </div>
     <!--
@@ -85,7 +89,7 @@
         [highlight dit/dah]
         [dit/dah buttons]
     playback
-        play/stop
+        stop
         [wpm]
         [tone]
         [wpm]

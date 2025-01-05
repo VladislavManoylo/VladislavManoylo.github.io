@@ -138,9 +138,7 @@ const telegraph = {
         this.started = false;
     },
     record: function() {
-        const morse = tapeToMorse(this.tape);
-        webpage.morse.value = morse;
-        webpage.alpha.value = morseToAlpha(morse);
+        changeMorse(tapeToMorse(this.tape));
     },
     on: function() {
         if (this.started) {
@@ -251,7 +249,7 @@ function alphaToMorse(alpha) {
         }
         res += "/";
     }
-    return res; // .replaceAll(" /", "/");
+    return res.replaceAll(/[ /]{2,}/g, "/");
 }
 
 holdButton(webpage.b,
@@ -259,20 +257,32 @@ holdButton(webpage.b,
     () => { note.start(); note.off(); telegraph.off(); },
     'b');
 
+function changeMorse(morse) {
+    morse ??= webpage.morse.value;
+    webpage.morse.value = morse;
+    webpage.alpha.value = morseToAlpha(morse);
+}
+
+function changeAlpha(alpha) {
+    alpha ??= webpage.alpha.value;
+    webpage.alpha.value = alpha;
+    webpage.morse.value = alphaToMorse(alpha);
+}
+
 document.addEventListener("keydown", () => {
     if (document.activeElement.id === "morse") {
-        webpage.alpha.value = morseToAlpha(webpage.morse.value);
+        changeMorse();
         telegraph.reset();
     }
     if (document.activeElement.id === "alpha") {
-        webpage.morse.value = alphaToMorse(webpage.alpha.value);
+        changeAlpha();
         telegraph.reset();
     }
 });
 
 function appendMorse(c) {
-    webpage.morse.value += c;
-    webpage.alpha.value = morseToAlpha(webpage.morse.value);
+    changeMorse(webpage.morse.value + c);
+    telegraph.reset();
 }
 
 webpage.dit.addEventListener("click", () => { appendMorse("."); });
