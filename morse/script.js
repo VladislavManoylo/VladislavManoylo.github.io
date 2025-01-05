@@ -292,13 +292,15 @@ webpage.delSym.addEventListener("click", () => {
     changeMorse(webpage.morse.value.slice(0, -1));
 });
 webpage.delLetter.addEventListener("click", () => {
-    changeAlpha(webpage.alpha.value.slice(0, -1));
+    const s = webpage.morse.value;
+    changeMorse(s.substring(0, Math.max(s.lastIndexOf("/"), s.lastIndexOf(" "))));
 });
 webpage.delWord.addEventListener("click", () => {
-    changeAlpha(webpage.alpha.value.split(" ").slice(0, -1).join(" "));
+    const s = webpage.morse.value;
+    changeMorse(s.substring(0, s.lastIndexOf("/")));
 });
 webpage.delAll.addEventListener("click", () => {
-    changeAlpha("");
+    changeMorse("");
 });
 
 webpage.hz.addEventListener("change", () => {
