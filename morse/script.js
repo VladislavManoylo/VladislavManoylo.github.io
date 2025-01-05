@@ -60,14 +60,12 @@ function holdButton(button, onhold, onrelease, key = undefined) {
     let held = false;
     const hold = () => {
         if (held) return;
-        console.log("hold");
         onhold();
         held = true;
         button.classList.add("held");
     };
     const release = () => {
         if (!held) return;
-        console.log("release");
         onrelease();
         held = false;
         button.classList.remove("held");
@@ -111,6 +109,14 @@ const note = {
     off: function() {
         this.start();
         this.gain.gain.value = 0;
+    },
+    play: function(timings) {
+        this.on();
+        let t = webpage.audio.currentTime;
+        for (let i = 0; i < timings.length; i++) {
+            t += timings[i] / 1000;
+            this.gain.gain.setValueAtTime(i % 2 === 0 ? 0 : 1, t);
+        }
     },
 }
 
@@ -183,9 +189,35 @@ function tapeToMorse(tape, wpm = 20) {
     };
     for (let i = 0; i < tape.length; i++) {
         const dits = tape[i] / ditlength;
-        console.log("dits", tape[i], ditlength, dits);
         res += i % 2 === 0 ? onMorse(dits) : offMorse(dits);
     }
+    return res;
+}
+
+/**
+ * morseToTape translates morse code to on/off timings
+ * @param {string} morse
+ * @param {n} wpm - based on 50 dits per word
+ * @returns {number[]}
+ */
+function morseToTape(morse, wpm = 20) {
+    let res = [];
+    const ditlength = (1 / wpm) * 60 / 50 * 1000; // in ms
+    const dit1 = ditlength, dit3 = ditlength * 3, dit7 = ditlength * 7;
+    let last = "/";
+    for (let c of morse) {
+        if (!".- /".includes(c)) continue;
+        if (".-".includes(c) && ".-".includes(last))
+            res.push(dit1);
+        switch (c) {
+            case ".": res.push(dit1); break;
+            case "-": res.push(dit3); break;
+            case " ": res.push(dit3); break;
+            case "/": res.push(dit7); break;
+        }
+        last = c;
+    }
+    if (" /".includes(last)) res.pop();
     return res;
 }
 
@@ -219,7 +251,7 @@ function alphaToMorse(alpha) {
         }
         res += "/";
     }
-    return res;
+    return res; // .replaceAll(" /", "/");
 }
 
 holdButton(webpage.b,
@@ -227,19 +259,14 @@ holdButton(webpage.b,
     () => { note.start(); note.off(); telegraph.off(); },
     'b');
 
-webpage.play.addEventListener("click", () => {
-    console.log(telegraph.tape);
-    console.log(tapeToMorse(telegraph.tape));
-});
-
 document.addEventListener("keydown", () => {
     if (document.activeElement.id === "morse") {
         webpage.alpha.value = morseToAlpha(webpage.morse.value);
-        console.log("morse", webpage.morse.value);
+        telegraph.reset();
     }
     if (document.activeElement.id === "alpha") {
-        console.log("alpha", webpage.alpha.value);
         webpage.morse.value = alphaToMorse(webpage.alpha.value);
+        telegraph.reset();
     }
 });
 
@@ -252,3 +279,7 @@ webpage.dit.addEventListener("click", () => { appendMorse("."); });
 webpage.dah.addEventListener("click", () => { appendMorse("-"); });
 webpage.letterBr.addEventListener("click", () => { appendMorse(" "); });
 webpage.wordBr.addEventListener("click", () => { appendMorse("/"); });
+
+webpage.play.addEventListener("click", () => {
+    note.play(morseToTape(webpage.morse.value));
+});
